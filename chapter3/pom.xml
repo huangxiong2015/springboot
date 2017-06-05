@@ -33,6 +33,12 @@
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-web</artifactId>
+		    <exclusions>
+		        <exclusion>
+		            <groupId>org.springframework.boot</groupId>
+		            <artifactId>spring-boot-starter-tomcat</artifactId>
+		        </exclusion>
+   			 </exclusions>
 		</dependency>
 		
 		<!--jsp页面使用jstl标签-->
@@ -52,6 +58,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 		</dependency>
+		
+		<dependency>  
+		    <groupId>commons-codec</groupId>  
+		    <artifactId>commons-codec</artifactId>  
+    	<version>1.5</version>  
+</dependency> 
 		
 	</dependencies>
 	<build>
