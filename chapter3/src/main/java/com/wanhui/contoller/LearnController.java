@@ -31,8 +31,4 @@ public class LearnController {
 		mv.addObject("learnResouces", learnResouces);
 		return mv;
 	}
-	
-	public void test(){
-		//
-	}
 }
