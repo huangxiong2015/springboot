@@ -30,7 +30,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-<!-- 		提供服务给eureka发现 -->
+		
+		<dependency>
+	        <groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-ribbon</artifactId>
+    	</dependency>
+    	
+    	<!-- 		提供服务给eureka发现 -->
 <!-- 		<dependency> -->
 <!-- 	        <groupId>org.springframework.cloud</groupId> -->
 <!-- 			<artifactId>spring-cloud-starter-eureka</artifactId> -->
@@ -43,7 +49,7 @@
 		  <groupId>org.springframework.cloud</groupId>
 		  <artifactId>spring-cloud-starter-consul-discovery</artifactId>
 		</dependency>
-    	
+		
     	<dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
@@ -53,20 +59,21 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        
+    
 	</dependencies>
 	
 			<dependencyManagement>
 		    <dependencies>
-		        <dependency>
-			    <groupId>org.springframework.cloud</groupId>
-			    <artifactId>spring-cloud-dependencies</artifactId>
-			    <version>Dalston.SR1</version>
-			    <type>pom</type>
-			    <scope>import</scope>
-			</dependency>
-		    </dependencies>
+        <dependency>
+           <groupId>org.springframework.cloud</groupId>
+           <artifactId>spring-cloud-dependencies</artifactId>
+           <version>Dalston.SR1</version>
+           <type>pom</type>
+           <scope>import</scope>
+        </dependency>
+    </dependencies>
 		</dependencyManagement>
+		
 		
 		<build>
         <plugins>
