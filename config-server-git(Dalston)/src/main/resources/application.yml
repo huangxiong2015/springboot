@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          # https://github.com/huangxiong2015/springboot/tree/master/config-repo-demo/ 这样就会报错
+          #仓库配置文件最好放在跟目录下面
+          uri: https://github.com/huangxiong2015/demo/
+          #username: huangxiong2015
+          #password: hx5201314
+server:
+  port: 1201
+
+
+
+
+
