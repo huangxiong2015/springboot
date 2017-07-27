@@ -17,7 +17,10 @@ public class DemoController {
 	
 //	@RequestMapping(value="/add",method=RequestMethod.GET)
 	@GetMapping(value="/add")
-	public String add(HttpServletRequest request){
+	public String add(HttpServletRequest request) throws InterruptedException{
+		//Spring Cloud构建微服务架构：服务容错保护（hystrix服务降级）
+		//为了触发服务降级逻辑,加一些延迟
+		//Thread.sleep(5000l);
 		String  service = "Services:"+client.getServices();
 		logger.info(service);
 		return service;
