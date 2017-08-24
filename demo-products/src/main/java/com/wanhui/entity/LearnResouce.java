@@ -9,7 +9,6 @@ public class LearnResouce {
 	private String url;
 
 	public LearnResouce(String title, String author, String url) {
-		super();
 		this.title = title;
 		this.author = author;
 		this.url = url;
