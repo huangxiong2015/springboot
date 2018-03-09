@@ -1,0 +1,27 @@
+package com.yikuyi.party;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import com.yikuyi.workflow.WorkflowClient;
+import com.ykyframework.web.aop.RestControllerAdvice;
+
+@SpringBootApplication
+public class PartyApplication {
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(PartyApplication.class, args);
+	}
+
+	@Bean
+	public RestControllerAdvice initRestControllerAdvice() {
+		return new RestControllerAdvice();
+	}
+
+	@Bean
+	public WorkflowClient initWorkflowClient(@Value("${api.workflow.serverUrlPrefix}") String workflowUrlPrefix) {
+		return new WorkflowClient(workflowUrlPrefix);
+	}
+}

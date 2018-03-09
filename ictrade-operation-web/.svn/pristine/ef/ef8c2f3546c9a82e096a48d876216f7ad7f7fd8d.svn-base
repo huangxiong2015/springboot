@@ -1,0 +1,166 @@
+.dn {
+    display: none;
+}
+.ui-qual {
+    font-size: 13px;
+}
+input[type=radio] {
+    width: auto;
+    height: auto;
+}
+.ui-select {
+    box-sizing: border-box;
+    width: 170px;
+    height: 32px;
+    line-height: 32px;
+    text-indent: 16px;
+    font-size: 14px;
+    color: #999999;
+    cursor: pointer;
+    -moz-user-select: none;
+    background: #fff;
+}
+.ui-select .ui-select-list {
+    width: 100%;
+    max-height: 170px;
+    color: #333333;
+    background: #fff;
+}
+.ui-select .ui-select-item {
+    height: 24px;
+    line-height: 24px;
+}
+.ui-select .ui-select-item:hover {
+    color: #b1191a;
+}
+.ui-area:after {
+    display: block;
+    content: '';
+    clear: both;
+}
+.ui-area .ui-select {
+    float: left;
+}
+.ui-area .city,
+.ui-area .county {
+    margin-left: 10px;
+}
+.radio-item {
+    display: block;
+    margin-right: 15px;
+    cursor: default;
+}
+.radio-item input {
+    display: none;
+}
+.radio-item .radio {
+    display: inline-block;
+    margin-right: 5px;
+    width: 17px;
+    height: 17px;
+    line-height:17px;
+    min-height: inherit;
+    vertical-align: -3px;
+    background: url("../../images/static/sprite.png") no-repeat -20px -378px;
+}
+.radio-item .radio-selected {
+    background-position: 0 -378px;
+}
+.radio-item input[type="radio"]:disabled+.radio{
+    cursor: not-allowed;
+}
+.ui-qual .input-group {
+    margin-top: 15px;
+    *zoom: 1;
+}
+.ui-qual .input-group:after {
+    display: block;
+    content: '';
+    clear: both;
+}
+.ui-qual .input-group .input-text,
+.ui-qual .input-group .input-content {
+    float: left;
+    line-height: 30px;
+}
+.ui-qual .input-text {
+    margin-right: 10px;
+    width: 130px;
+    text-align: right;
+    color: #666;
+}
+.ui-qual .input-text .must {
+    margin-right: 5px;
+    color: #b1191a;
+}
+.ui-qual .input-content {
+    color: #999;
+    *zoom: 1;
+}
+.ui-qual .input-content:after {
+    display: block;
+    content: '';
+    clear: both;
+}
+.ui-qual .qual-item {
+    *zoom: 1;
+}
+.ui-qual .qual-item:after {
+    display: block;
+    content: '';
+    clear: both;
+}
+.ui-qual .qual-item .uploadImg {
+	overflow: hidden;
+    position: relative;
+    float: left;
+    width: 163px;
+    height: 108px;
+    border: 1px solid #e4e4e4;
+    background: url(../../images/zizi-default.png) no-repeat center 20px;
+}
+.ui-qual .qual-item .uploadImg .img {
+    width: 163px;
+    height: 108px;
+    background: #fff;
+}
+.ui-qual .qual-item .uploadImg .pdf {
+    width: 72px;
+    height: auto;
+}
+.ui-qual .qual-item .uploadImg .upload-btn {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 32px;
+    line-height: 32px;
+    border-radius: 0;
+    font-size: 14px;
+    color: #fff;
+    background: #666;
+}
+.ui-qual .qual-item .uploadCz {
+    position: relative;
+    float: left;
+    margin-left: 15px;
+    height: 110px;
+}
+.ui-qual .qual-item .uploadCz .tips {
+    line-height: 22px;
+}
+.ui-qual .qual-item .uploadCz .ck-btn {
+    position: absolute;
+    bottom: 0;
+    width: 64px;
+    height: 22px;
+    line-height: 20px;
+    color: #999;
+    border: 1px solid #e4e4e4;
+    border-radius: 3px;
+    background: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+}

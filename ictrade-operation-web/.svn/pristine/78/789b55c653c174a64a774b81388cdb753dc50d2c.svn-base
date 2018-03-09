@@ -1,0 +1,413 @@
+var vm;
+var addData;
+var recommendationId = getQueryString("recommendationId");
+var action=getQueryString("action");
+
+$(function() {
+	var validate= false;
+	vm = new Vue({
+			        el: '#advertise_edit',
+			        data: {
+			        	onlyRead:false,
+						initData : {
+							categoryId : '',  //这里定义的，是干嘛的
+							attachUrl1:'',
+							title:''
+						},
+						recommendationId: getQueryString('recommendationId'),
+						checkModel : {},
+					    query:"",
+					    first:"",
+					    url:'',//详情链接
+					    info:{
+					    	"categoryId": "6001",       //广告类型
+						    "categoryTypeId": "advertisement",    //固定要传类型为广告
+							//"content": "",
+							"expiryDate": "",    //结束时间
+							"startDate": "",     //开始时间
+							"extend1":"7001",     //广告页面
+							"extend2":"8001",       //广告位置
+					    	"content":{
+						    	title:'',
+								categoryId: "6001",  //广告类型
+								categoryName:"图片广告",     
+								pageId:'7001',        //广告页面
+								pageName:'首页', 
+								positionId:'8001',    //广告位置
+								positionName:'顶部',    
+								proportion:'',     //曝光占比
+								image:'',     //图片路径
+								url:'',      //链接地址
+								background:''      //背景色
+						    }
+					    }					    					    	
+					},
+					methods : {
+						init : function(res) {
+							this.initData.title = res.title;
+							this.initData.categoryTypeId = res.categoryTypeId;
+							this.initData.attachUrl = res.newsAttachment && res.newsAttachment.attachUrl; 
+						
+						
+						},
+						saveNews : function(event) {
+							this.initData.newsContent = event.data;
+							$('#create').submit();
+						}
+					}
+	 		    });
+			 //	时间控件绑定选择面板弹出 
+			 $('#startDate').datetimepicker({
+				    language:  config.language, 
+				    minView: 'day',   //设置只显示到小时
+			        format: "yyyy-mm-dd hh:00:00",
+			        autoclose: true
+			    }).on('change',function(ev){
+			        var startDate = $('#startDate').val();
+			        $("#expiryDate").datetimepicker('setStartDate',startDate);
+			        if(startDate){
+			        	$('#startDate').valid();    //输入框失去焦点时，校验
+			        }
+			        
+			        });
+			    $('#expiryDate').datetimepicker({
+			    	 language:  config.language, 
+					 minView: 'day',   //设置只显示到小时
+				     format: "yyyy-mm-dd hh:00:00",
+			         autoclose: true
+			    }).on('change',function(ev){
+			        var endDate = $('#expiryDate').val();
+			        $("#startDate").datetimepicker('setEndDate',endDate);
+			        if(endDate ){
+			        	$('#expiryDate').valid();    //输入框失去焦点时，校验
+			        }
+			    });
+
+	 
+
+	 //上传图片组件
+	 var uploader1 = createUploader({
+			buttonId: "uploadback", 
+			uploadType: "notice.publicRead",   //文件夹地址要后台给
+			url:  ykyUrl.webres,
+			types: "jpg,png,jpeg,gif",
+			fileSize: "5mb",
+			isImage: true, 
+			init:{
+				FileUploaded : function(up, file, info) { 
+		            layer.close(index);
+					if (info.status == 200 || info.status == 203) {
+						console.log(_fileUrl);
+						console.log(file); 
+						vm.info.content.image = _fileUrl;
+					} else {
+						layer.msg("上传文件失败,请重新上传！",{icon:2,offset:120}); 
+					}
+					up.files=[];
+				}
+			}
+	    }); 
+		uploader1.init();
+
+	
+	
+	//保存按钮传参数
+	var addData={
+			"categoryId": "6001",       //广告类型
+		    "categoryTypeId": "advertisement",    //固定要传类型为广告
+			"content": "",
+			"expiryDate": "",    //结束时间
+			"startDate": "",     //开始时间
+			"extend1":"7001",     //广告页面
+			"extend2":"8001"       //广告位置
+	}
+
+	//保存新增字段content
+	var content ={
+				title:'广告标题',
+				categoryId: "6001",  //广告类型
+				categoryName:"图片广告",     
+				pageId:'7001',        //广告页面
+				pageName:'首页',                                //名称是列表页使用？
+				positionId:'8001',    //广告位置
+				positionName:'顶部',  
+				proportion:$('#proportion').val(),     //曝光占比
+				image:'',     //图片路径
+				url:'',      //链接地址
+				background:$('#background').val()      //背景色
+			}
+
+
+	
+
+	//广告位置，下拉框改变时赋值
+	$('#positionId').on("change",function(){
+		content.positionId=$('#positionId').val();
+		
+	}) 
+	
+       	$("#startDate").trigger("change");
+		$("#expiryDate").trigger("change");
+	//请求获取初始数据 ，赋值
+	if(recommendationId){
+		
+		$('.edit_state').text('编辑');
+		//flag = true;
+		$.aAjax({
+			url:ykyUrl.info + '/v1/recommendations/' + recommendationId,
+			type:'GET',
+			success:function(data){	
+				data.content  =	JSON.parse(data.content);
+				
+				if(data. startDate){
+					  //投放时间
+				$('#startDate').val(data.startDate);
+			   }
+			   if(data.expiryDate){
+					  //投放时间
+				$('#expiryDate').val(data.expiryDate);
+			   }
+			   if(data.content.url){
+					  //投放时间
+				   $("#url").val(data.content.url);
+			   }
+				//content = data.contentMap;				
+				vm.info = $.extend({},vm.info,data);    //初始化content
+				$("#startDate").trigger("change");
+				$("#expiryDate").trigger("change");
+			},
+			error:function(){
+				console.log("error")
+			}
+		})
+		
+		if(action == "detail" ){  //详情页 
+			vm.onlyRead = true;
+		}
+	}else{
+		$('.edit_state').text('添加');
+	}
+	$("#cancel_btn").on("click",function(){
+		history.go(-1);
+	})
+	
+	
+	/* 保存数据 */
+	$("#save_btn").on("click",function(){
+		//描述 
+		var title= $("#title").val();
+		if(!title){
+			layer.msg("请输入广告标题！",{
+				skin:"c_tip"
+			});
+			return;
+		}else{
+			addData.title = $("#title").val();
+		}
+		
+		//上传图片
+		if($(".background").attr("src") == ykyUrl._this+"/images/static/defaultImg.120.jpg" && content.image==""){
+			layer.msg("请上传图片！",{
+				skin:"c_tip"
+			});
+		   return;
+	    }else{
+	    	content.image = $(".background").attr("src");
+	    }
+		
+		//活动链接  校验链接 
+		var url = $("#url").val();
+		if(!url){
+			$("#url").addClass("error");
+			layer.msg("请输入广告链接！",{
+				skin:"c_tip"
+			});
+			return;
+		}else if(url.indexOf("http:")>=0){
+			$("#url").removeClass("error");
+			var url = $("#url").val();
+			vm.info.content.url = url.replace("http:","");
+		}else if(url.indexOf("https:")>=0){
+			$("#url").removeClass("error");
+			var url = $("#url").val();
+			vm.info.content.url = url.replace("https:","");
+		}else{
+			$("#url").removeClass("error");
+			var url = $("#url").val();
+			if(url.substring(0,2) === "//"){
+				vm.info.content.url = url;
+			}else{
+				vm.info.content.url = "//" + url;
+			}
+			
+		}
+		
+		//上传时间校验开始，结束
+		var  startDate= $("#startDate").val();
+		if(!startDate){
+			layer.msg("请输入开始时间！",{
+				skin:"c_tip"
+			});
+			return;
+		}else{
+			addData.startDate = $("#startDate").val();
+		}
+		var  expiryDate= $("#expiryDate").val();
+		if(!expiryDate){
+			layer.msg("请输入结束时间！",{
+				skin:"c_tip"
+			});
+			return;
+		}else{
+			addData.expiryDate = $("#expiryDate").val();
+		}
+	   var currentTime = new Date();
+	   //字符串转换为时间戳
+	   expiryTimer = Date.parse(expiryDate);
+	   startTimer = Date.parse( startDate );
+	   
+	   if( currentTime  >  expiryTimer ){
+		   layer.msg("活动时间必须大于当前时间！",{
+				skin:"c_tip"
+			});
+		   return;
+	   }
+	   if( expiryTimer  ==  startTimer ){
+		   layer.msg("开始时间不能等于结束时间！",{
+				skin:"c_tip"
+			});
+		   return;
+	   }
+	   
+		saveData();
+		function saveData(){
+			$("#manu-from").submit();
+			if(validate == false){
+				return
+			}
+			addData.recommendationId=recommendationId;
+			
+			addData = $.extend({},vm.info); 
+			var cont=vm.info.content;
+			addData.content = JSON.stringify(cont);
+			addData.content.url = content.url;
+			addData.startDate = startDate;
+			addData.expiryDate = expiryDate;
+			//delete addData.contentMap
+			
+			$.aAjax({
+				url:recommendationId ? ykyUrl.info + '/v1/recommendations/' + recommendationId : ykyUrl.info + '/v1/recommendations',
+				type:recommendationId ? 'PUT':'POST',		
+				data:JSON.stringify(addData),
+				success:function(data){
+					layer.msg("保存成功！",{
+						skin:"c_tip"
+					});
+					$("#save_btn").unbind("click");
+					$("#cancel_btn").unbind("click");
+					
+					setTimeout(function(){
+					   location.href = ykyUrl._this + "/advertisement.htm";  //保存成功跳转列表页
+						
+					},2000)				
+				},
+				error:function(data){
+					addData.content = JSON.parse(addData.content);
+					if(data.responseJSON.errCode == "ADVERTISEMENTTITLE_EXIST"){
+						layer.msg("广告名称已存在！",{
+							skin:"c_tip"
+						});
+					}
+					
+				}
+			})
+		}
+	})
+	
+  initval();
+	function initval() {
+		validator = $("#manu-from").validate({
+		    rules: {
+		    	title: {
+		            required: true
+		        },
+		        categoryId: {
+		            required: true,
+		        },
+		        pageId: {
+		            required: true,
+		        },
+		        positionId: {
+		            required: true,   
+		        },
+		        startDate: { 
+		            required: true, 
+		        },
+		        expiryDate: {
+		            required: true, 
+		        },
+		        proportion: {    //曝光占比
+		            required: true, 
+		            number: true,
+		            digits:true,
+                    range: [1, 9]
+		        },
+		        background: {
+		            required: true, 
+		        },
+		        url: {
+		            required: true, 
+		        }
+		    },
+		    messages: {
+		    	title: {
+		            required: "X"
+		        },
+		        categoryId: {
+		            required: "X"
+		        },
+		        pageId: {
+		            required: "X"
+		        },
+		        positionId: {
+		            required: "X"
+		        },
+		        startDate: {
+		            required: "X"
+		        },
+		        expiryDate: {
+		            required: "X"
+		        },
+		        proportion: {
+		            required: "0~9的数字"
+		        },
+		        background : {
+		            required: "X"
+		        },
+		        url: {
+		            required: "X"
+		        }
+		        
+		    },
+		    errorElement: "em",
+		    success: function(label) {},
+		    errorPlacement: function(error, element) {
+		    	  var f = error[0].getAttribute("for");
+	                var ele = $("em[for=" + f + "]");
+	                if (ele.length > 0) {
+	                    $(ele[0]).remove();
+	                }
+	                $(error).siblings("i-input").addClass("error");
+	                $(error).siblings("i-input").eq(1).addClass("error");
+	                $(error).addClass("error");
+		    },
+		    submitHandler: function() {
+		        validate = true;
+		    }
+		});
+
+	}
+	
+ });
+
+

@@ -1,0 +1,72 @@
+package com.yikuyi.party.user.api;
+
+import com.yikuyi.party.v8.message.vo.MessageCodeVo;
+import com.yikuyi.party.v8.message.vo.PartyVo;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+public interface IUserResourceV8 {
+	
+	/**
+	 * 根据id查找用户基本信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	@ApiOperation(value = "根据id查找用户简单基本信息", notes = "根据id查找用户简单基本信息", response = PartyVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public PartyVo getUserByUserId(@ApiParam(value = "用户登录id", required = true) String userId);
+	
+
+	
+	/**
+	 * 根据id查找用户基本信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	@ApiOperation(value = "根据id查找用户基本信息", notes = "根据id查找用户基本信息", response = PartyVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public PartyVo getAllUserByUserId(@ApiParam(value = "用户登录id", required = true) String userId);
+	
+	
+	
+	/**
+	 * 修改账号信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	@ApiOperation(value ="修改账号信息",notes="修改账号信息",response = MessageCodeVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class)
+			})
+	public MessageCodeVo editUserInfo(@ApiParam(value="partyVo",required = true)PartyVo partyVo);
+	
+	
+	/**
+	 * 用户登陆
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	@ApiOperation(value ="用户登陆",notes="用户登陆",response = PartyVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class)
+			})
+	public PartyVo login(@ApiParam(value="userId",required = true)String userId);
+	
+}

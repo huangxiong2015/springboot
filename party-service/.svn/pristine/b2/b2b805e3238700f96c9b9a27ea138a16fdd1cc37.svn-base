@@ -1,0 +1,174 @@
+package com.yikuyi.party.person.model;
+
+
+import com.ykyframework.model.AbstractEntity;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+/**
+ * 
+ * @author zr.aoxianbing@yikuyi.com
+ * @version 1.0.0
+ */
+@ApiModel("Person")
+public class Person extends AbstractEntity {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5700601759583307976L;
+	@ApiModelProperty(value = "称呼")
+	private String salutation;
+	@ApiModelProperty(value = "姓")
+	private String firstName;
+	@ApiModelProperty(value = "名")
+	private String lastName;
+	@ApiModelProperty(value = "职位、头衔")
+	private String personalTitle;
+	@ApiModelProperty(value = "本地姓")
+	private String firstNameLocal;
+	@ApiModelProperty(value = "本地名")
+	private String lastNameLocal;
+	@ApiModelProperty(value = "性别")
+	private Integer gender;
+	@ApiModelProperty(value = "备注")
+	private String comments;
+	@ApiModelProperty(value = "职业")
+	private String occupation;
+	
+	@ApiModelProperty(value = "图片地址大图")
+	private String logoImageUrl;
+	
+	@ApiModelProperty(value = "图片地址小图")
+	private String logoImageUrlSmall;
+	
+	@ApiModelProperty(value = "用户关联状态")
+	private RelationSratus relationSratus;
+
+	@ApiModelProperty(value = "电话")
+	private String tel;
+	@ApiModelProperty(value = "邮箱")
+	private String mail;
+	@ApiModelProperty(value = "手机是否验证 0：未验证，1：已验证")
+	private Integer telStatus;
+	@ApiModelProperty(value = "邮箱是否验证 0：未验证，1：已验证")
+	private Integer mailStatus;
+	public enum RelationSratus{
+		/**
+		 * 表示已经关联
+		 */
+		RELATED ,
+		/**
+		 * 表示未关联
+		 */
+		NOT_RELATED,
+		/**
+		 * 表示待审核
+		 */
+		WAIT_APPROVE , 
+		/**
+		 * 表示驳回
+		 */
+		REJECTED
+	}
+	
+	public String getSalutation() {
+		return salutation;
+	}
+	public void setSalutation(String salutation) {
+		this.salutation = salutation;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getPersonalTitle() {
+		return personalTitle;
+	}
+	public void setPersonalTitle(String personalTitle) {
+		this.personalTitle = personalTitle;
+	}
+	public String getFirstNameLocal() {
+		return firstNameLocal;
+	}
+	public void setFirstNameLocal(String firstNameLocal) {
+		this.firstNameLocal = firstNameLocal;
+	}
+	public String getLastNameLocal() {
+		return lastNameLocal;
+	}
+	public void setLastNameLocal(String lastNameLocal) {
+		this.lastNameLocal = lastNameLocal;
+	}
+	public String getComments() {
+		return comments;
+	}
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+	public String getOccupation() {
+		return occupation;
+	}
+	public void setOccupation(String occupation) {
+		this.occupation = occupation;
+	}
+
+	public String getLogoImageUrl() {
+		return logoImageUrl;
+	}
+	public void setLogoImageUrl(String logoImageUrl) {
+		this.logoImageUrl = logoImageUrl;
+	}
+	public String getLogoImageUrlSmall() {
+		return logoImageUrlSmall;
+	}
+	public void setLogoImageUrlSmall(String logoImageUrlSmall) {
+		this.logoImageUrlSmall = logoImageUrlSmall;
+	}
+	public RelationSratus getRelationSratus() {
+		return relationSratus;
+	}
+	public void setRelationSratus(RelationSratus relationSratus) {
+		this.relationSratus = relationSratus;
+	}
+	public Integer getGender() {
+		return gender;
+	}
+	public void setGender(Integer gender) {
+		this.gender = gender;
+	}
+	public String getTel() {
+		return tel;
+	}
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+	public String getMail() {
+		return mail;
+	}
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+	public Integer getTelStatus() {
+		return telStatus;
+	}
+	public void setTelStatus(Integer telStatus) {
+		this.telStatus = telStatus;
+	}
+	public Integer getMailStatus() {
+		return mailStatus;
+	}
+	public void setMailStatus(Integer mailStatus) {
+		this.mailStatus = mailStatus;
+	}
+	
+	
+}

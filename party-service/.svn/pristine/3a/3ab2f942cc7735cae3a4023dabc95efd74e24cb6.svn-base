@@ -1,0 +1,28 @@
+package com.yikuyi.party.v8.message.vo;
+
+import io.swagger.annotations.ApiModelProperty;
+
+public class CompanyInfoVo {
+	@ApiModelProperty(value = "公司名称")
+	private String companyName;
+	
+	@ApiModelProperty(value = "账号状态")
+	private String companyStatus;
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	public String getCompanyStatus() {
+		return companyStatus;
+	}
+
+	public void setCompanyStatus(String companyStatus) {
+		this.companyStatus = companyStatus;
+	}
+
+}

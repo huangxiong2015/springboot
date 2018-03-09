@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans.xsd 
+     http://www.springframework.org/schema/context 
+     http://www.springframework.org/schema/context/spring-context.xsd
+     http://www.springframework.org/schema/aop 
+     http://www.springframework.org/schema/aop/spring-aop.xsd
+     http://www.springframework.org/schema/tx 
+     http://www.springframework.org/schema/tx/spring-tx.xsd" default-lazy-init="true">
+
+	<context:property-placeholder file-encoding="UTF-8" properties-ref="appProps" />
+	
+	<!-- 	<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> -->
+<!-- 		<property name="ignoreResourceNotFound" value="true" /> -->
+<!-- 	    <property name="locations"> -->
+<!-- 	        <list> -->
+<!-- 	        	<value>classpath*:config/jdbc.properties</value> -->
+<!-- 	        	<value>classpath*:config/system.properties</value> -->
+<!-- 	        	<value>classpath*:config/webcustom1.properties</value> -->
+<!-- 	        </list> -->
+<!-- 	    </property> -->
+<!-- 	</bean> -->
+	
+	
+	<!-- <context:annotation-config /> -->
+	<!-- 这里要设置lazy-init = false ,否则无法注入SpringContext . -->
+	<bean class="com.ykyframework.utils.SpringContextUtils" lazy-init="false" />
+	
+	<!-- expose specific properties to web application 
+	与context:property-placeholder是不同的概念，context:property-placeholder是暴露给spring的配置文件，而PropertiesFactoryBean是暴露给应用
+	参见：http://stackoverflow.com/questions/3933862/how-to-use-property-from-property-file-specified-in-propertyplaceholderconfigure -->
+	
+	<!-- 配置环境分profile的，主要包含dev, sit, uat, performance, production -->
+	<beans profile="dev">
+		<bean id="appProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="ignoreResourceNotFound" value="true" />
+			<property name="singleton" value="true" />
+			<property name="locations">
+		        <list>
+		        	<value>classpath*:common-config/properties/jdbc.properties</value>
+		        	<value>classpath*:common-config/properties/global.properties</value>
+		        	<value>classpath*:common-config/properties/system.properties</value>
+		        	<value>classpath*:application.properties</value>
+		        	<value>classpath*:application-dev.properties</value>
+		        </list>
+		    </property>
+		</bean>	
+	</beans>
+	
+	<beans profile="sit">
+		<bean id="appProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="ignoreResourceNotFound" value="true" />
+			<property name="singleton" value="true" />
+			<property name="locations">
+		        <list>
+		        	<value>classpath*:common-config/properties/global.properties</value>
+		        	<value>classpath*:common-config/properties/system_sit.properties</value>
+		        	<value>classpath*:application.properties</value>
+		        	<value>classpath*:application-sit.properties</value>
+		        </list>
+		    </property>
+		</bean>	
+	</beans>
+	
+	<beans profile="sit1">
+		<bean id="appProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="ignoreResourceNotFound" value="true" />
+			<property name="singleton" value="true" />
+			<property name="locations">
+		        <list>
+		        	<value>classpath*:common-config/properties/global.properties</value>
+		        	<value>classpath*:common-config/properties/system_sit1.properties</value>
+		        	<value>classpath*:application.properties</value>
+		        	<value>classpath*:application-sit1.properties</value>
+		        </list>
+		    </property>
+		</bean>	
+	</beans>
+	
+	<beans profile="uat">
+		<bean id="appProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="ignoreResourceNotFound" value="true" />
+			<property name="singleton" value="true" />
+			<property name="locations">
+		        <list>
+		        	<value>classpath*:common-config/properties/global.properties</value>
+		        	<value>classpath*:common-config/properties/system_uat.properties</value>
+		        	<value>classpath*:application.properties</value>
+		        	<value>classpath*:application-uat.properties</value>
+		        </list>
+		    </property>
+		</bean>	
+	</beans>
+	
+	<beans profile="hz-uat">
+		<bean id="appProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="ignoreResourceNotFound" value="true" />
+			<property name="singleton" value="true" />
+			<property name="locations">
+		        <list>
+		        	<value>classpath*:common-config/properties/global.properties</value>
+		        	<value>classpath*:common-config/properties/system_hz-uat.properties</value>
+		        	<value>classpath*:application.properties</value>
+		        	<value>classpath*:application-hz-uat.properties</value>
+		        </list>
+		    </property>
+		</bean>	
+	</beans>
+	
+	<beans profile="prod">
+		<bean id="appProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="ignoreResourceNotFound" value="true" />
+			<property name="singleton" value="true" />
+			<property name="locations">
+		        <list>
+		        	<value>classpath*:common-config/properties/global.properties</value>
+		        	<value>classpath*:common-config/properties/system_prod.properties</value>
+		        	<value>classpath*:application.properties</value>
+		        	<value>classpath*:application-prod.properties</value>
+		        </list>
+		    </property>
+		</bean>	
+	</beans>
+
+</beans>

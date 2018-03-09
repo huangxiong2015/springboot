@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.product.goods.dao.ProductSearchResultDao">
+
+	<resultMap id="BaseResultMap" type="com.yikuyi.product.model.ProductSearchResult">
+		<id column="PRODUCT_SEARCH_RESULT_ID" property="searchResultId" />		
+		<result column="PARTY_ID" property="partyId" />		
+		<result column="ORDER_BY_NAME" property="orderByName" />	
+		<result column="PARTY_IP" property="partyIp"/>	
+		<result column="KEY_WORD" property="keyWord" />		
+		<result column="PARTY_NAME" property="partyName"/>		
+		<result column="HAS_RESULT" property="hasResult"/>
+		<result column="SECONDS_TOTAL" property="secondsTotal" />
+		<result column="SEARCH_DATE" property="searchDate"/>
+	</resultMap>	
+	
+	<insert id="insert" parameterType="com.yikuyi.product.model.ProductSearchResult">
+		insert into PRODUCT_SEARCH_RESULT
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+		 		PRODUCT_SEARCH_RESULT_ID,
+		 		<if test="partyId != null">
+		 			PARTY_ID,
+		 		</if>
+		 		<if test="orderByName != null">
+		 			ORDER_BY_NAME,
+		 		</if>
+		 		<if test="partyIp != null">
+		 			PARTY_IP,
+		 		</if>
+		 		<if test="keyWord != null">
+		 			KEY_WORD,
+		 		</if>
+		 		<if test="partyName != null">
+		 			PARTY_NAME,
+		 		</if>
+		 		<if test="hasResult != null">
+		 			HAS_RESULT,
+		 		</if>
+		 		<if test="secondsTotal != null ">
+		 			SECONDS_TOTAL,
+		 		</if>
+		 		<if test="searchDate != null ">
+		 			SEARCH_DATE,
+		 		</if> 		
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+		 		#{searchResultId},
+		 		<if test="partyId != null ">
+		 			#{partyId},
+		 		</if>
+		 		<if test="orderByName != null">
+		 			#{orderByName},
+		 		</if>
+		 		<if test="partyIp != null ">
+		 			#{partyIp},
+		 		</if>
+		 		<if test="keyWord != null">
+		 			#{keyWord},
+		 		</if>
+		 		<if test="partyName != null">
+		 			#{partyName},
+		 		</if>
+		 		<if test="hasResult != null">
+		 			#{hasResult},
+		 		</if>
+				<if test="secondsTotal != null">
+		 			#{secondsTotal},
+		 		</if>
+		 		<if test="searchDate != null">
+		 			#{searchDate},
+		 		</if>
+		 </trim>
+	</insert>
+	<!-- <insert id="insert" parameterType="com.yikuyi.news.model.News">
+		insert into PRODUCT_SEARCH_RESULT
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+		 		PRODUCT_SEARCH_RESULT_ID,
+		 		<if test="partyId != null">
+		 			PARTY_ID,
+		 		</if>
+		 		<if test="orderByName != null">
+		 			ORDER_BY_NAME,
+		 		</if>
+		 		<if test="partyIp != null">
+		 			PARTY_IP,
+		 		</if>
+		 		<if test="keyWord != null">
+		 			KEY_WORD,
+		 		</if>
+		 		<if test="partyName != null">
+		 			PARTY_NAME,
+		 		</if>
+		 		<if test="hasResult != null">
+		 			HAS_RESULT,
+		 		</if>
+		 		<if test="secondsTotal != null ">
+		 			SECONDS_TOTAL,
+		 		</if>
+		 		<if test="searchDate != null ">
+		 			SEARCH_DATE,
+		 		</if> 		
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+		 		#{searchResultId},
+		 		<if test="partyId != null ">
+		 			#{partyId},
+		 		</if>
+		 		<if test="orderByName != null">
+		 			#{orderByName},
+		 		</if>
+		 		<if test="partyIp != null ">
+		 			#{partyIp},
+		 		</if>
+		 		<if test="keyWord != null">
+		 			#{keyWord},
+		 		</if>
+		 		<if test="partyName != null">
+		 			#{partyName},
+		 		</if>
+		 		<if test="hasResult != null">
+		 			#{hasResult},
+		 		</if>
+				<if test="secondsTotal != null">
+		 			#{secondsTotal},
+		 		</if>
+		 		<if test="searchDate != null">
+		 			#{searchDate},
+		 		</if>
+		 </trim>
+	</insert> -->
+	
+</mapper>

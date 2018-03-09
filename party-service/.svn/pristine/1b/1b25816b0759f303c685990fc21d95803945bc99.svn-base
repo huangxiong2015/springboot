@@ -1,0 +1,825 @@
+/*
+ * Created: 2017年2月8日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2017 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+package com.yikuyi.party.enterprise.bll;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.match.MockRestRequestMatchers;
+import org.springframework.test.web.client.response.MockRestResponseCreators;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.framework.springboot.model.LoginUser;
+import com.framewrok.springboot.web.LoginUserInjectionInterceptor;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import com.yikuyi.party.contact.vo.EnterpriseVo;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.model.Party;
+import com.yikuyi.party.model.Party.PartyStatus;
+import com.yikuyi.workflow.Apply;
+import com.yikuyi.workflow.Apply.ApplyStatus;
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+		TransactionDbUnitTestExecutionListener.class })
+@Transactional
+@Rollback
+public class EnterpriseManagerTest {
+	@Autowired
+	private EnterpriseManager enterpriseManager;
+	
+	@Before
+	public void init() {
+		LoginUser loginUser = new LoginUser("9999999901", "admin", "9999999901", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));		
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(new MockHttpServletRequest()));;
+		RequestContextHolder.currentRequestAttributes().setAttribute(LoginUserInjectionInterceptor.LOGIN_USER_KEY, loginUser, RequestAttributes.SCOPE_REQUEST);
+//		Assert.assertNotNull(RequestHelper.getLoginUserId());
+	}
+	
+	/**
+	 * 根据账号查询管理员信息
+	 * 
+	 * @param id
+	 * @param role
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+/*	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "enterprise_sampledata.xml")
+//	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "userlogin_update_data.xml")
+	public void testGetAdmin(){
+		UserVo userVo = enterpriseManager.getAdmin("9999999902", "admin");
+		assertEquals("123456@yikuyi.com",userVo.getMail());
+		assertEquals("易库易",userVo.getCompanyName());
+		assertEquals("admin",userVo.getName());
+	}*/
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "enterprise_sampledata.xml")
+	public void testGetUser(){
+		UserVo userVo = enterpriseManager.getUser("9999999902");
+		assertEquals("12345678910",userVo.getMail());
+	}
+	/**
+	 * 根据id更新状态
+	 * 
+	 * @param id
+	 * @param status
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "enterprise_sampledata1.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "enterprise_update_data.xml")
+	public void testUpdateStatus(){
+		Party party = new Party();
+		party.setId("9999999901");
+		party.setPartyStatus(PartyStatus.PARTY_DISABLED);
+		enterpriseManager.updateStatus(party);
+	}
+	
+	/**
+	 * 修改企业信息
+	 * 
+	 * @param id
+	 * @param status
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_edit_result.xml"})
+	public void testEditCompany() throws IOException{
+		EnterpriseVo entVo = new EnterpriseVo();
+		entVo.setId("88888");
+		entVo.setName("myHome");
+		entVo.setLogo("http://www.baidu.com");
+		entVo.setdCode("dCode");
+		entVo.setCorCategory("CORPORATION_CATEGORY_ID");
+		entVo.setIndustryCategory("INDUSTRY_CATEGORY_ID");
+		entVo.setWebSite("WebSite");
+		entVo.setDescription("PARTY_BRIEF");
+		
+		entVo.setAddress("中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼");
+		entVo.setProvince("10000");
+		entVo.setProvinceName("广东省");
+		entVo.setCity("10001");
+		entVo.setCityName("深圳市");
+		entVo.setCountry("10002");
+		entVo.setCountryName("南山区");
+		entVo.setMail("12345@qq.com");
+		
+		entVo.setContactUserName("叶良辰");
+		//entVo.setContactUserQQ("1249720810");
+		List<Map<String, String>> otherAttrs = new ArrayList<>();
+		Map<String, String> map = new HashMap<>();
+		map.put("INDUSTRY_CATEGORY_ID_OTHER", "这是我的other");
+		otherAttrs.add(map);
+		entVo.setContactUserTel("13066939619");
+		entVo.setOtherAttrs(otherAttrs);
+		//entVo.setFax("0755-123456");
+		enterpriseManager.editCompany(entVo);;
+	} 
+
+	
+	/**
+	 * 修改vip企业信息
+	 * 
+	 * @param id
+	 * @param status
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_edit_result.xml"})
+	public void testUpdateQualifications() throws IOException{
+		EnterpriseVo entVo = new EnterpriseVo();
+		entVo.setId("88888");
+		entVo.setName("myHome");
+		entVo.setLogo("http://www.baidu.com");
+		entVo.setdCode("dCode");
+		entVo.setCorCategory("CORPORATION_CATEGORY_ID");
+		entVo.setIndustryCategory("INDUSTRY_CATEGORY_ID");
+		entVo.setWebSite("WebSite");
+		entVo.setDescription("PARTY_BRIEF");
+		
+		entVo.setAddress("中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼");
+		entVo.setProvince("10000");
+		entVo.setProvinceName("广东省");
+		entVo.setCity("10001");
+		entVo.setCityName("深圳市");
+		entVo.setCountry("10002");
+		entVo.setCountryName("南山区");
+		entVo.setMail("12345@qq.com");
+		
+		entVo.setContactUserName("叶良辰");
+		//entVo.setContactUserQQ("1249720810");
+		List<Map<String, String>> otherAttrs = new ArrayList<>();
+		Map<String, String> map = new HashMap<>();
+		map.put("INDUSTRY_CATEGORY_ID_OTHER", "这是我的other");
+		otherAttrs.add(map);
+		entVo.setContactUserTel("13066939619");
+		entVo.setOtherAttrs(otherAttrs);
+		//entVo.setFax("0755-123456");
+		enterpriseManager.updateQualifications(entVo);
+	} 
+	/**
+	 * 根据用户的id判断是否为管理员
+	 * 
+	 * @param id
+	 * @return
+	 * @since 2017年2月7日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "enterprise_sampledata.xml")
+//	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "userlogin_update_data.xml")
+	public void testIsAdmin(){
+		Boolean falg = enterpriseManager.isAdmin("9999999901");
+		assertEquals(true,falg);
+	}
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "enterprise_sampledata.xml")
+//	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "userlogin_update_data.xml")
+	public void testIsFristActive(){
+		Boolean falg = enterpriseManager.isFristActive("9999999901");
+		assertEquals(false,falg);
+	}
+	
+	/**
+	 * 根据用户的id判断是否为激活或者关联，返回true：已经激活或者关联，fail：未激活或者未关联
+	 * 
+	 * @param id
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "enterprise_sampledata.xml")
+//	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "userlogin_update_data.xml")
+	public void testIsActivedOrRelationed(){
+		String falg = enterpriseManager.isActivedOrRelationed("9999999901");
+		assertEquals("actived",falg);
+	}
+	
+/*	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT , value={"classpath:com/yikuyi/party/enterprise/bll/person_sampledata.xml"})
+	public void testAddEnterPriserelation_REJECT(){
+		Apply apply = new Apply();
+		apply.setStatus(ApplyStatus.REJECT);
+		EnterpriseVo enterpriseVo = new EnterpriseVo();
+		enterpriseVo.setId("1001");
+		enterpriseVo.setContactUserName("胡八一");
+		enterpriseVo.setName("深圳易库易");
+		enterpriseVo.setRelationEnterpriseId("9999999901");
+		enterpriseVo.setReason("我的小鱼你醒了，还认识早晨吗？昨夜你曾经说，愿夜幕永不开启。");
+		String content = JSONObject.toJSONString(enterpriseVo);
+		apply.setApplyContent(content);
+		JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(apply));
+		enterpriseManager.addEnterPriserelation(jsonObject);
+	}*/
+	
+	/**
+	 *关联待审核单元测试 
+	 * 
+	 * @since 2017年2月25日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	/*@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT , value={"classpath:com/yikuyi/party/enterprise/bll/person_sampledata.xml"})
+	public void testAddEnterPriserelation_WAIT_APPROVE(){
+		Apply apply = new Apply();
+		apply.setStatus(ApplyStatus.WAIT_APPROVE);
+		EnterpriseVo enterpriseVo = new EnterpriseVo();
+		enterpriseVo.setId("1001");
+		enterpriseVo.setContactUserName("胡八一");
+		enterpriseVo.setName("深圳易库易");
+		enterpriseVo.setRelationEnterpriseId("9999999901");
+		enterpriseVo.setReason("我的小鱼你醒了，还认识早晨吗？昨夜你曾经说，愿夜幕永不开启。");
+		String content = JSONObject.toJSONString(enterpriseVo);
+		apply.setApplyContent(content);
+		JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(apply));
+		enterpriseManager.addEnterPriserelation(jsonObject);
+	}*/
+	
+	/**
+	 * 关联成功单元测试
+	 * 
+	 * @since 2017年2月25日
+	 * @author tb.yumu@yikuyi.com
+	 */
+/*	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT , value={"classpath:com/yikuyi/party/enterprise/bll/person_sampledata.xml"})
+	public void testAddEnterPriserelation_APPROVED(){
+		Apply apply = new Apply();
+		apply.setStatus(ApplyStatus.APPROVED);
+		EnterpriseVo enterpriseVo = new EnterpriseVo();
+		enterpriseVo.setId("1001");
+		enterpriseVo.setContactUserName("胡八一");
+		enterpriseVo.setName("深圳易库易");
+		enterpriseVo.setRelationEnterpriseId("9999999901");
+		enterpriseVo.setReason("我的小鱼你醒了，还认识早晨吗？昨夜你曾经说，愿夜幕永不开启。");
+		String content = JSONObject.toJSONString(enterpriseVo);
+		apply.setApplyContent(content);
+		JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(apply));
+		enterpriseManager.addEnterPriserelation(jsonObject);
+	}*/
+	
+	/**
+	 * 申请关联
+	 * 
+	 * @since 2017年2月25日
+	 * @author tb.yumu@yikuyi.com
+	 */
+/*	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT , value={"classpath:com/yikuyi/party/enterprise/bll/person_sampledata.xml"})
+	public void testEditRelationStatus() throws Exception {
+		Apply apply = new Apply();
+		apply.setStatus(ApplyStatus.APPROVED);
+		EnterpriseVo enterpriseVo = new EnterpriseVo();
+		enterpriseVo.setId("1001");
+		enterpriseVo.setContactUserName("胡八一");
+		enterpriseVo.setName("深圳易库易");
+		enterpriseVo.setRelationEnterpriseId("9999999901");
+		enterpriseVo.setReason("我的小鱼你醒了，还认识早晨吗？昨夜你曾经说，愿夜幕永不开启。");
+		String content = JSONObject.toJSONString(enterpriseVo);
+		apply.setApplyContent(content);
+		
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/apply")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("", MediaType.APPLICATION_JSON_UTF8));
+		
+		enterpriseManager.editRelationStatus("9999999901", apply);
+	}*/
+	
+	@Value("${api.workflow.serverUrlPrefix}")
+	private String serverUrl;
+
+	@Autowired
+	private RestTemplate restTemplateMock;
+
+	public MockRestServiceServer mockRestServiceServer() {
+		return  MockRestServiceServer.createServer(restTemplateMock);
+	}
+	
+	
+	/**
+	 * 关联成功发送邮件-单元测试
+	 * 
+	 * @since 2017年2月25日
+	 * @author tb.yumu@yikuyi.com
+	 */
+/*	@Test
+	public void testRelactionSuccessSendMailAndMessage(){
+		EnterpriseVo vo = new EnterpriseVo();
+		EnterpriseVo enterpriseVo = new EnterpriseVo();
+		enterpriseVo.setId("1001");
+		enterpriseVo.setContactUserName("胡八一");
+		enterpriseVo.setName("深圳易库易");
+		enterpriseVo.setRelationEnterpriseId("9999999901");
+		enterpriseVo.setReason("我的小鱼你醒了，还认识早晨吗？昨夜你曾经说，愿夜幕永不开启。");
+		enterpriseManager.relactionSuccessSendMailAndMessage("123456@qq.com", vo);
+	}*/
+	
+	/**
+	 * 关联驳回发送邮件
+	 * 
+	 * @since 2017年2月25日
+	 * @author tb.yumu@yikuyi.com
+	 */
+/*	@Test
+	public void testRelactionFailSendMailAndMessage(){
+		EnterpriseVo vo = new EnterpriseVo();
+		EnterpriseVo enterpriseVo = new EnterpriseVo();
+		enterpriseVo.setId("1001");
+		enterpriseVo.setContactUserName("胡八一");
+		enterpriseVo.setName("深圳易库易");
+		enterpriseVo.setRelationEnterpriseId("9999999901");
+		enterpriseVo.setReason("我的小鱼你醒了，还认识早晨吗？昨夜你曾经说，愿夜幕永不开启。");
+		enterpriseManager.relactionFailedSendMailAndMessage("123456@qq.com", vo,"不符合要求");
+	}*/
+	
+/*	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT , value={"classpath:com/yikuyi/party/enterprise/bll/partyrelactionship_sampledata.xml",
+			"classpath:com/yikuyi/party/enterprise/bll/userlogin_sampledata.xml"})
+	public void testRequestTrlationsendMailAndMessage(){
+		Apply apply = new Apply();
+		apply.setStatus(ApplyStatus.APPROVED);
+		EnterpriseVo enterpriseVo = new EnterpriseVo();
+		enterpriseVo.setId("1001");
+		enterpriseVo.setContactUserName("胡八一");
+		enterpriseVo.setName("深圳易库易");
+		enterpriseVo.setRelationEnterpriseId("9999999901");
+		enterpriseVo.setReason("我的小鱼你醒了，还认识早晨吗？昨夜你曾经说，愿夜幕永不开启。");
+		String content = JSONObject.toJSONString(enterpriseVo);
+		apply.setApplyContent(content);
+		enterpriseManager.requestTrlationsendMailAndMessage("9999999901", apply);
+	}*/
+	
+	/**
+	 * 保存关联关系单元测试
+	 * 
+	 * @since 2017年2月25日
+	 * @author tb.yumu@yikuyi.com
+	 */
+/*	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT , value={"classpath:com/yikuyi/party/enterprise/bll/partyrelactionship_sampledata.xml"})
+	public void testSavePartyRelationship(){
+		EnterpriseVo enterpriseVo = new EnterpriseVo();
+		enterpriseVo.setId("1001");
+		enterpriseVo.setContactUserName("胡八一");
+		enterpriseVo.setName("深圳易库易");
+		enterpriseVo.setRelationEnterpriseId("9999999901");
+		enterpriseVo.setReason("我的小鱼你醒了，还认识早晨吗？昨夜你曾经说，愿夜幕永不开启。");
+		enterpriseManager.savePartyRelationship(enterpriseVo);
+	}*/
+	
+
+	/**
+	 * 修改公司信息
+	 * 
+	 * @param id
+	 * @return EnterpriseVo
+	 * @since 2016年1月19日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws IOException
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_edit_result.xml"})
+	public void testUpdateParty() throws IOException{
+		EnterpriseVo entVo = new EnterpriseVo();
+		entVo.setId("88888");
+		entVo.setName("myHome");
+		entVo.setLogo("http://www.baidu.com");
+		entVo.setdCode("dCode");
+		entVo.setCorCategory("CORPORATION_CATEGORY_ID");
+		entVo.setIndustryCategory("INDUSTRY_CATEGORY_ID");
+		entVo.setWebSite("WebSite");
+		entVo.setDescription("PARTY_BRIEF");
+		
+		entVo.setAddress("中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼");
+		entVo.setProvince("10000");
+		entVo.setProvinceName("广东省");
+		entVo.setCity("10001");
+		entVo.setCityName("深圳市");
+		entVo.setCountry("10002");
+		entVo.setCountryName("南山区");
+		entVo.setMail("12345@qq.com");
+		
+		entVo.setContactUserName("叶良辰");
+		//entVo.setContactUserQQ("1249720810");
+		List<Map<String, String>> otherAttrs = new ArrayList<>();
+		Map<String, String> map = new HashMap<>();
+		map.put("INDUSTRY_CATEGORY_ID_OTHER", "这是我的other");
+		otherAttrs.add(map);
+		entVo.setContactUserTel("13066939619");
+		entVo.setOtherAttrs(otherAttrs);
+		//entVo.setFax("0755-123456");
+		enterpriseManager.updateParty(entVo, 0);
+	} 
+
+	/**
+	 * 账户激活审核成功保存数据
+	 * 
+	 * @param id
+	 * @return EnterpriseVo
+	 * @since 2016年1月19日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws IOException
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_add_result.xml"})
+	public void testSave() {
+		Apply apply = new Apply();
+		//審核通過
+		String applyContation ="{'id':'666665','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'corCategory':'CORPORATION_CATEGORY_ID',"
+				+ "'industryCategory':'INDUSTRY_CATEGORY_ID','webSite':'WebSite','description':'PARTY_BRIEF','otherAttrs':[{'INDUSTRY_CATEGORY_ID_OTHER':'测试key'}],"
+				+ "'map':{'REG_ADDR':'0','BUSI_LIS_TYPE':'COMMON','BUSI_LIC_PIC':'http://www.baidu.com',"
+		+"'TAX_REG_PIC':'http://www.baidu.com','OCC_PIC':'http://www.baidu.com','BUSI_PDF_NAME':'http://www.baidu.com',"
+		+"'TAX_PDF_NAME':'http://www.baidu.com','OCC_PDF_NAME':'http://www.baidu.com'}}";
+		apply.setApplyId("111");
+		apply.setApplyOrgId("666665");
+		apply.setApplyUserId("9999999902");
+		apply.setApplyContent(applyContation);
+		enterpriseManager.save(apply);
+		
+		
+		Apply apply1 = new Apply();
+		//審核駁回
+		String applyContation1 ="{'id':'9999999901','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'corCategory':'CORPORATION_CATEGORY_ID',"
+				+ "'industryCategory':'INDUSTRY_CATEGORY_ID','webSite':'WebSite','description':'PARTY_BRIEF','status':'REJECT','otherAttrs':[{'INDUSTRY_CATEGORY_ID_OTHER':'测试key'}]}";
+		apply1.setApplyId("111");
+		apply1.setApplyOrgId("9999999901");
+		apply1.setApplyUserId("9999999901");
+		apply1.setStatus(ApplyStatus.REJECT);
+		apply1.setApplyContent(applyContation1);
+		enterpriseManager.save(apply1);
+		
+	}
+
+	/**
+	 * 账户激活审核成功保存数据
+	 * 
+	 * @param id
+	 * @return EnterpriseVo
+	 * @since 2016年1月19日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws IOException
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_add_result.xml"})
+	public void testActiveAccountSave() throws Exception {
+		String applyContation ="{'id':'9999999901','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'corCategory':'CORPORATION_CATEGORY_ID',"
+				+ "'industryCategory':'INDUSTRY_CATEGORY_ID','otherAttrs': [ {'INDUSTRY_CATEGORY_ID_OTHER':'11111'} ],'webSite':'WebSite','description':'PARTY_BRIEF'}";
+		Apply apply = new Apply();
+		apply.setApplyContent(applyContation);
+		apply.setApplyId("111");
+		apply.setApplyUserId("9999999901");
+		apply.setApplyOrgId("9999999901");
+		
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/apply")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		
+		enterpriseManager.activeAccountSave(apply);
+		
+		//个人升级企业
+		String applyContationPerson ="{'id':'666666','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'CORPORATION_CATEGORY_ID':'CORPORATION_CATEGORY_ID',"
+				+ "'INDUSTRY_CATEGORY_ID':'INDUSTRY_CATEGORY_ID','otherAttrs': [ {'INDUSTRY_CATEGORY_ID_OTHER':'11111'} ],'webSite':'WebSite','description':'PARTY_BRIEF'}";
+		Apply applyPerson = new Apply();
+		applyPerson.setApplyContent(applyContationPerson);
+		applyPerson.setApplyId("111");
+		applyPerson.setApplyUserId("666666");
+		applyPerson.setApplyOrgId("666666");
+		
+		MockRestServiceServer serverPerson = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		serverPerson.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/apply")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		
+		enterpriseManager.activeAccountSave(applyPerson);
+	}
+	
+	@Test
+	public void testGetImagUrl(){
+		enterpriseManager.getImagUrl("http://ictrade-private-hz-uat.img-cn-hangzhou.aliyuncs.com/dev/ent/certificates/201702/16/4aa157b778a70ce9d0c8bddd377767c9.jpg?Expires=1487242582&OSSAccessKeyId=STS.BzgkDB5JgDPYFZHxtLhfy8fBX&Signature=G2jbTNx5cypBp/qDbvao83AT53o%3D&security-token=CAISkQJ1q6Ft5B2yfSjIo7nSIP722JVG85KyRHz5nHQZZOlV16Ppujz2IHpMenBhA%2B4avv83n2lT6/salol0UIQATEfPYNBrq49a6higZIyE4pDlsuZY0cH7RjTJUkZVPnwPr6arIunGc9KBNnrm9EYqs5aYGBymW1u6S%2B7r7bdsctUQWCShcDNCH604DwB%2BqcgcRxCzXLTXRXyMuGfLC1dysQdRkH527b/FoveR8R3Dllb3uIR3zsbTWsH8Mpk9YMYnDI3ug7EnLfH7vXQOu0QQxsBfl7dZ/DrLhNaZDmRK7g%2BOW%2BiuqYc3clYoPPZmS/Uc96GnyKAgoJbOnpiyzA1WNOpeXj/EAZqnxMbUjStshAKy7d8agAFrEGfVV7pgVRMhSfcgziCyyYUhJ6Wei6fKIivFoJ1cCpHp7mpAXd9a36iXVNpXA7FAqd0pKi3x4xgOA%2B9vr7PXRIDcgybadttFyXeLRAfCSDgTpf1MsCThTuRBxfnWWPRv4u/YK8hUjNigoOZeWj3KvJDt2kauvbKhNyIiiGypnw%3D%3D");
+		
+		enterpriseManager.getImagUrl("http://ictrade-private-hz-uat.img-cn-hangzhou.aliyuncs.com/dev/ent/certificates/201702/16/4aa157b778a70ce9d0c8bddd377767c9.pdf?Expires=1487242582&OSSAccessKeyId=STS.BzgkDB5JgDPYFZHxtLhfy8fBX&Signature=G2jbTNx5cypBp/qDbvao83AT53o%3D&security-token=CAISkQJ1q6Ft5B2yfSjIo7nSIP722JVG85KyRHz5nHQZZOlV16Ppujz2IHpMenBhA%2B4avv83n2lT6/salol0UIQATEfPYNBrq49a6higZIyE4pDlsuZY0cH7RjTJUkZVPnwPr6arIunGc9KBNnrm9EYqs5aYGBymW1u6S%2B7r7bdsctUQWCShcDNCH604DwB%2BqcgcRxCzXLTXRXyMuGfLC1dysQdRkH527b/FoveR8R3Dllb3uIR3zsbTWsH8Mpk9YMYnDI3ug7EnLfH7vXQOu0QQxsBfl7dZ/DrLhNaZDmRK7g%2BOW%2BiuqYc3clYoPPZmS/Uc96GnyKAgoJbOnpiyzA1WNOpeXj/EAZqnxMbUjStshAKy7d8agAFrEGfVV7pgVRMhSfcgziCyyYUhJ6Wei6fKIivFoJ1cCpHp7mpAXd9a36iXVNpXA7FAqd0pKi3x4xgOA%2B9vr7PXRIDcgybadttFyXeLRAfCSDgTpf1MsCThTuRBxfnWWPRv4u/YK8hUjNigoOZeWj3KvJDt2kauvbKhNyIiiGypnw%3D%3D");
+	}
+	
+	/**
+	 * 后台企业会员管理修改审核
+	 * 
+	 * @param id
+	 * @return EnterpriseVo
+	 * @since 2016年4月14日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws UnsupportedEncodingException 
+	 * @throws IOException
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_add_result.xml"})
+	public void testEditEntApply() throws UnsupportedEncodingException{
+		String applyContation ="{'id':'9999999901','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'corCategory':'CORPORATION_CATEGORY_ID',"
+				+ "'industryCategory':'INDUSTRY_CATEGORY_ID','webSite':'WebSite','description':'PARTY_BRIEF'}";
+		Apply apply = new Apply();
+		apply.setApplyContent(applyContation);
+		apply.setApplyId("111");
+		apply.setApplyUserId("9999999901");
+		apply.setApplyOrgId("9999999901");
+		
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/apply")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		
+		enterpriseManager.editEntApply(apply);
+		
+		String applyContationPerson ="{'id':'666666','entUserId':'6666669','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'CORPORATION_CATEGORY_ID':'CORPORATION_CATEGORY_ID',"
+				+ "'INDUSTRY_CATEGORY_ID':'INDUSTRY_CATEGORY_ID','otherAttrs': [ {'INDUSTRY_CATEGORY_ID_OTHER':'11111'} ],'webSite':'WebSite','description':'PARTY_BRIEF'}";
+		Apply applyPerson = new Apply();
+		applyPerson.setApplyContent(applyContationPerson);
+		applyPerson.setApplyId("111");
+		applyPerson.setApplyUserId("666666");
+		applyPerson.setApplyOrgId("666666");
+		
+		
+		MockRestServiceServer server1 = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server1.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/apply")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		
+		enterpriseManager.editEntApply(applyPerson);
+		
+	}
+	
+	
+	/**
+	 * 账户激活后企业修改审核成功保存数据
+	 * 
+	 * @param id
+	 * @return EnterpriseVo
+	 * @since 2017年4月14日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws IOException
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_add_result.xml"})
+	public void testEditEntApplySave() {
+		//審核通過
+		String applyContation ="{'id':'9999999901','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'corCategory':'CORPORATION_CATEGORY_ID',"
+				+ "'industryCategory':'INDUSTRY_CATEGORY_ID','webSite':'WebSite','description':'PARTY_BRIEF','otherAttrs':[{'INDUSTRY_CATEGORY_ID_OTHER':'测试key'}]}";
+		Apply apply = new Apply();
+		apply.setApplyId("111");
+		apply.setApplyUserId("9999999901");
+		apply.setApplyOrgId("9999999901");
+		apply.setApplyContent(applyContation);
+		enterpriseManager.editEntApplySave(apply);
+	
+		//審核驳回
+		String applyContation1 ="{'id':'9999999901','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'corCategory':'CORPORATION_CATEGORY_ID',"
+				+ "'industryCategory':'INDUSTRY_CATEGORY_ID','webSite':'WebSite','description':'PARTY_BRIEF','otherAttrs':[{'INDUSTRY_CATEGORY_ID_OTHER':'测试key'}]}";
+		Apply apply1 = new Apply();
+		apply1.setApplyId("111");
+		apply1.setApplyUserId("9999999901");
+		apply1.setApplyOrgId("9999999901");
+		apply1.setStatus(ApplyStatus.REJECT);
+		apply1.setApplyContent(applyContation1);
+		enterpriseManager.editEntApplySave(apply1);
+	}
+	
+	
+	/**
+	 * 账号审核通过保存
+	 * 
+	 * @param id
+	 * @return EnterpriseVo
+	 * @since 2017年4月14日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws IOException
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_add_result.xml"})
+	public void testEntAuthorize() {
+		//審核通過
+		String applyContation ="{'id':'666665','entUserId':'1','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'corCategory':'CORPORATION_CATEGORY_ID',"
+				+ "'industryCategory':'INDUSTRY_CATEGORY_ID','webSite':'WebSite','description':'PARTY_BRIEF','otherAttrs':[{'INDUSTRY_CATEGORY_ID_OTHER':'测试key'}],"
+				+ "'map':{'REG_ADDR':'0','BUSI_LIS_TYPE':'COMMON','BUSI_LIC_PIC':'http://www.baidu.com',"
+		+"'TAX_REG_PIC':'http://www.baidu.com','OCC_PIC':'http://www.baidu.com','BUSI_PDF_NAME':'http://www.baidu.com',"
+		+"'TAX_PDF_NAME':'http://www.baidu.com','OCC_PDF_NAME':'http://www.baidu.com'}}";
+		Apply apply = new Apply();
+		apply.setApplyId("111");
+		apply.setApplyUserId("9999999902");
+		apply.setApplyOrgId("666665");
+		apply.setApplyContent(applyContation);
+		enterpriseManager.entAuthorize(apply);
+		
+	
+		//審核驳回
+		String applyContation1 ="{'id':'9999999901','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'corCategory':'CORPORATION_CATEGORY_ID',"
+				+ "'industryCategory':'INDUSTRY_CATEGORY_ID','webSite':'WebSite','description':'PARTY_BRIEF','otherAttrs':[{'INDUSTRY_CATEGORY_ID_OTHER':'测试key'}]}";
+		Apply apply1 = new Apply();
+		apply1.setApplyId("111");
+		apply1.setApplyUserId("9999999902");
+		apply1.setApplyOrgId("666665");
+		apply1.setApplyContent(applyContation1);
+		apply1.setStatus(ApplyStatus.REJECT);
+		enterpriseManager.entAuthorize(apply1);
+	}
+
+	/**
+	 * 账户激活后企业修改审核成功保存数据
+	 * 
+	 * @param id
+	 * @return EnterpriseVo
+	 * @since 2017年4月14日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws UnsupportedEncodingException 
+	 * @throws IOException
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_add_result.xml"})
+	public void testEntApplyAuthorize() throws UnsupportedEncodingException {
+		String applyContation ="{'id':'9999999909','address':'中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼',"
+				+ "'name':'myHome','logo':'http://www.baidu.com','province':'10000',"
+				+ "'provinceName':'广东省','city':'10001','cityName':'深圳市','country':'10002','countryName':'南山区','mail':'12345@qq.com','contactUserName':'叶良辰','contactUserTel':'13066939619',"
+				+ "'corCategory':'CORPORATION_CATEGORY_ID',"
+				+ "'industryCategory':'INDUSTRY_CATEGORY_ID','otherAttrs': [ {'INDUSTRY_CATEGORY_ID_OTHER':'11111'} ],'webSite':'WebSite','description':'PARTY_BRIEF'}";
+		Apply apply = new Apply();
+		apply.setApplyContent(applyContation);
+		apply.setApplyId("111");
+		apply.setApplyUserId("9999999909");
+		apply.setApplyOrgId("9999999909");
+		
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/apply")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		
+		enterpriseManager.entApplyAuthorize(apply);
+		
+	}
+	
+
+	/**
+	 * 账户激活后企业修改审核成功保存数据
+	 * 
+	 * @param id
+	 * @return EnterpriseVo
+	 * @since 2017年4月14日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws UnsupportedEncodingException 
+	 * @throws IOException
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_add_result.xml"})
+	public void testInvalidAccount() throws UnsupportedEncodingException {
+		enterpriseManager.invalidAccount("10086","test");
+	}
+	
+
+	/**
+	 * 获取企业基本信息
+	 * 
+	 * @param id
+	 * @return EnterpriseVo
+	 * @since 2017年4月14日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws UnsupportedEncodingException 
+	 * @throws IOException
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_add_result.xml"})
+	public void testGetEntBaseInfo() throws UnsupportedEncodingException {
+		enterpriseManager.getEntBaseInfo("666666");
+	}
+	
+	/**
+	 * 修改企业信息
+	 * 
+	 * @param id
+	 * @param status
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {"party_edit_result.xml"})
+	public void testEditMemberCompany() throws IOException{
+		EnterpriseVo entVo = new EnterpriseVo();
+		entVo.setId("88888");
+		entVo.setName("myHome");
+		entVo.setLogo("http://www.baidu.com");
+		entVo.setdCode("dCode");
+		entVo.setCorCategory("CORPORATION_CATEGORY_ID");
+		entVo.setIndustryCategory("INDUSTRY_CATEGORY_ID");
+		entVo.setWebSite("WebSite");
+		entVo.setDescription("PARTY_BRIEF");
+		
+		entVo.setAddress("中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼");
+		entVo.setProvince("10000");
+		entVo.setProvinceName("广东省");
+		entVo.setCity("10001");
+		entVo.setCityName("深圳市");
+		entVo.setCountry("10002");
+		entVo.setCountryName("南山区");
+		entVo.setMail("12345@qq.com");
+		
+		entVo.setContactUserName("叶良辰");
+		//entVo.setContactUserQQ("1249720810");
+		List<Map<String, String>> otherAttrs = new ArrayList<>();
+		Map<String, String> map = new HashMap<>();
+		map.put("INDUSTRY_CATEGORY_ID_OTHER", "这是我的other");
+		otherAttrs.add(map);
+		entVo.setContactUserTel("13066939619");
+		entVo.setOtherAttrs(otherAttrs);
+		//entVo.setFax("0755-123456");
+		enterpriseManager.editMemberCompany(entVo);;
+	} 
+}

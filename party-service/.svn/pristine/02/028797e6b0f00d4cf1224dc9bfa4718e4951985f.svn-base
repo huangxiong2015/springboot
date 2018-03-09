@@ -1,0 +1,142 @@
+package com.yikuyi.party.register.api.impl;
+
+
+
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.druid.util.StringUtils;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.register.api.IRegisterResource;
+import com.yikuyi.party.register.bll.RegisterManager;
+import com.yikuyi.quotationtool.inquiry.vo.InquiryCustomerMqVo;
+import com.ykyframework.mqservice.sender.MsgSender;
+
+/**
+ * 定义收货地址的相关接口
+ * 
+ * @author zr.aoxianbing@yikuyi.com
+ *
+ */
+
+
+
+@RestController
+@RequestMapping("v1/customer")
+public class RegisterResource implements IRegisterResource {
+	private static final Logger logger = LoggerFactory.getLogger(RegisterResource.class);
+	@Autowired
+	private RegisterManager registerManager;
+	
+	@Autowired
+	private MsgSender msgSender;
+	
+	@Value("${mqConsumeConfig.inquiryCustomerUpdate.topicName}")
+	private String inquiryUpdateTopicName;
+	/**
+	 * 个人注册
+	 * @param userVo
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/person",method=RequestMethod.POST)
+	public String save(@RequestBody UserVo userVo) {
+		Map<String,String> map = registerManager.save(userVo);
+		String flag = map.get("flag");
+		String userId = map.get("userId");
+		//发送mq
+		if("success".equals(flag) && !StringUtils.isEmpty(userId)){
+			try{
+				logger.info("mq调用询报价服务参数----userId ：",userId);
+				logger.info("mq调用询报价服务参数----Mobile ：",userVo.getMobile());
+				InquiryCustomerMqVo vo = new InquiryCustomerMqVo();
+				vo.setMobileOrEmail(userVo.getMobile());
+				vo.setUserId(userId);
+				msgSender.sendMsg(inquiryUpdateTopicName, vo, null);
+			}catch(Exception e){
+				logger.error("调用TOPIC_ORIGINAL_MESSAGES_PROD失败:{}",e);
+			}
+			
+		}
+		return flag;
+	}
+	/**
+	 * 企业注册
+	 * @param userVo
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/enterprise",method=RequestMethod.POST)
+	public String saveEnt(@RequestBody UserVo userVo) {
+		Map<String,String> map = registerManager.saveEnt(userVo);
+		String flag = map.get("flag");
+		String userId = map.get("userId");
+		//发送mq
+		if("success".equals(flag) && !StringUtils.isEmpty(userId)){
+			try{
+				logger.info("mq调用询报价服务参数----userId ：",userId);
+				logger.info("mq调用询报价服务参数----Mail ：",userVo.getMail());
+				InquiryCustomerMqVo vo = new InquiryCustomerMqVo();
+				vo.setMobileOrEmail(userVo.getMail());
+				vo.setUserId(userId);
+				msgSender.sendMsg(inquiryUpdateTopicName, vo, null);
+			}catch(Exception e){
+				logger.error("调用TOPIC_ORIGINAL_MESSAGES_PROD失败:{}",e);
+			}
+		}
+
+		return flag;
+	}
+	/**
+	 * 重新发送注册邮件
+	 * @param userVo
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/reSend",method=RequestMethod.POST)
+	public String reSend(@RequestBody UserVo userVo) {
+		return registerManager.reSend(userVo);
+	}
+	
+	/**
+	 * 加入主账号
+	 * @param entId
+	 * @param account
+	 * @return
+	 * @since 2017年5月5日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/join",method=RequestMethod.POST)
+	public String joinMainAccount(@RequestParam(value="entId",required=true)String entId, 
+			@RequestParam(value="account",required=true)String account,
+			@RequestParam(value="applyId",required=true)String applyId) {
+		return registerManager.joinMainAccount(entId,account,applyId);
+	}
+	/**
+	 * 根据账号创建子账号(子账号设置密码)
+	 * @param account
+	 * @param entId
+	 * @return
+	 * @since 2017年5月5日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/saveAccout",method=RequestMethod.POST)
+	public String saveAccout(@RequestBody UserVo userVo) {
+		return registerManager.saveAccout(userVo);
+	}
+	
+}

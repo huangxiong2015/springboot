@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<parent>
+		<groupId>com.ykyframework</groupId>
+		<artifactId>framework-project</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>framework-all</artifactId>
+	<version>1.1.1-SNAPSHOT</version>
+	<name>framework-all</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<dep.spring.version>4.2.6.RELEASE</dep.spring.version>
+		<dep.ykyframework.version>1.0.0-SNAPSHOT</dep.ykyframework.version>
+		<dep.spring-security.version>4.1.0.RELEASE</dep.spring-security.version>
+		<dep.spring-session.version>1.2.1.RELEASE</dep.spring-session.version>
+		<dep.jackson.version>2.4.0</dep.jackson.version>
+		<dep.mybatis.version>3.2.8</dep.mybatis.version>
+		<dep.mybatis-spring.version>1.2.3</dep.mybatis-spring.version>
+		<dep.wink.version>1.4</dep.wink.version>
+		<dep.jaxb-api.version>2.2.12</dep.jaxb-api.version> <!-- wink 依赖的是 2.2 -->
+		<dep.jaxb-impl.version>2.2.11</dep.jaxb-impl.version> <!-- wink 依赖的是 2.2.1.1 -->
+		<dep.mysql-jdbc.version>5.1.37</dep.mysql-jdbc.version>
+		<dep.shiro.version>1.2.4</dep.shiro.version>
+		<!-- Plugin Versions -->
+
+		<!-- Project configuration -->
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+		
+	<dependencies>
+		<dependency>
+			<groupId>com.ykyframework</groupId>
+			<artifactId>framework-model</artifactId>
+			<version>${dep.ykyframework.version}</version>
+		</dependency>
+		<!-- apache commons -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
+		</dependency>
+		<!-- liaoke 20171017 add 替换郭文耀原来写的snowflake的源码算法 -->
+		<dependency>
+			<groupId>xyz.downgoon</groupId>
+			<artifactId>snowflake</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+			<version>${dep.shiro.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.wink</groupId>
+			<artifactId>wink-server</artifactId>
+			<version>${dep.wink.version}</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>${dep.mybatis.version}</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${dep.spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${dep.spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${dep.spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+			<version>2.6.11</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jaxrs_1.1_spec</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-web</artifactId>
+		    <version>${dep.spring-security.version}</version>
+		    <optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${dep.spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.ykyframework</groupId>
+			<artifactId>framework-test-support</artifactId>
+			<version>${dep.ykyframework.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>19.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
+		<dependency>
+		    <groupId>commons-net</groupId>
+		    <artifactId>commons-net</artifactId>
+		    <version>3.6</version>
+		    <optional>true</optional>
+		</dependency>
+	</dependencies>
+</project>

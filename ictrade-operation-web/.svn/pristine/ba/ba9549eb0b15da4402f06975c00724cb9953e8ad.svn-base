@@ -1,0 +1,174 @@
+.content-wrapper .content-header{
+	padding-top: 0;
+	height:40px; 
+	background-color:#FCFDFF;
+	margin-top:0px;
+}
+
+.content-wrapper .content{
+	background-color:#fff;
+	min-height:300px;
+	margin:10px;
+}
+
+.content-wrapper .content-header .header_tab{
+	height: 40px;
+    line-height: 40px;
+    padding: 8px 20px 12px 20px;
+    font-size: 14px;
+    color: #919191;
+}
+
+.content-wrapper .content-header .pitch_tab{
+	    background-color: #ecf0f5;
+	    border-top: 2px solid #c11f2e;
+}
+
+.content {
+	color: #666;
+}
+
+.cRed {
+	margin-right: 5px;
+	color: #f00;
+}
+
+.form-wrap {
+	margin: 10px 0;
+	padding: 20px 10px;
+	border: 1px solid #eee;
+}
+
+.verify-status {
+	margin-left: 55px;
+	padding: 4px 6px;
+	border-radius: 4px;
+	color: #fff;
+	font-weight: normal;
+}
+
+.verify-status.primary {
+	background-color: #3c8dbc;
+	border-color: #367fa9;
+}
+
+.verify-status.success {
+	background-color: #13af15;
+	border-color: #13af15;
+}
+
+.verify-status.info {
+	background-color: #31708f;
+	border-color: #31708f;
+}
+
+.verify-status.danger {
+	background-color: #eb0038;
+	border-color: #eb0038;
+}
+
+.infoFrom {
+	width: 1060px;
+}
+.form-wrap h5 {
+	margin: 20px;
+	padding-top: 20px;
+	border-top: 1px solid #eee;
+}
+.form-wrap .text {
+	line-height: 30px;
+}
+.form-wrap .log {
+	padding-bottom: 10px;
+	border-top: none;
+	border-bottom: 1px solid #eee;
+}
+
+.infoFrom .status > div {
+	padding-left: 0;
+}
+
+.title {
+	padding-left: 10px;
+}
+
+.title em {
+	font-style: normal;
+	margin-left: 30px;
+}
+.credit-memo {
+	margin-top: 47px;
+	margin-left: -15px;
+}
+.info {
+	margin: 20px;
+	padding-top: 20px;
+	border: 1px solid #eee;
+}
+.log-list {
+	padding: 10px 15px;
+	border: 1px solid #eee;
+	list-style: none;
+}
+.log-list li {
+	line-height: 30px;
+}
+.btns {
+	padding-top: 20px;
+}
+.btns .cancel {
+	margin-left: 10px;
+}
+.img-thumbnail {
+	width: 160px;
+	height: 120px;
+}
+.layui-layer-content .img-thumbnail {
+	width: auto;
+	height: auto;
+}
+
+
+
+/* 个人升级企业样式start */
+.per-up-ent .checkVal {
+	width: 107% !important;
+}
+.per-up-ent .city-picker > div {
+	margin-right: -20px;
+}
+.per-up-ent .select-area {
+	width: auto;
+}
+.per-up-ent .radio-item .radio{
+	min-height:inherit;
+}
+.per-up-ent .check-box-input:checked+label .check-box-white{
+	background-position: -20px -400px;
+}
+.per-up-ent .industry_list .other_attr{
+	border-radius:0px;
+}
+.per-up-ent .ui-qual .input-text{
+	width:150px;
+	color:#aaa;
+	margin-right:35px;
+}
+.per-up-ent .form-group.has-success .form-control{
+	border-color:#d2d6de;
+}
+.per-up-ent .has-success .form-control-feedback {
+    	display: none !important;
+} 
+.per-up-ent .module-title{
+	font-size: 14px;
+	padding:20px 0 10px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    border-bottom: solid 1px #eee;
+}
+/* 个人升级企业样式end */
+
+.info {
+	padding-top: 4px;
+}

@@ -1,0 +1,56 @@
+/*
+ * Created: 2017年1月11日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2017 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+package com.yikuyi.party.acl.api;
+
+import java.util.List;
+import java.util.Set;
+
+import com.yikuyi.party.model.Party;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+/**
+ * 用户权限信息接口
+ * @author helinmei
+ */
+public interface IACLResource {
+
+	@ApiOperation(value = "查询用户已有的角色信息", notes = "查询用户已有的角色信息", response = void.class)
+	@ApiResponses(value ={
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public Set<String> getUserRoles(@ApiParam(value = "用户id", required = true) String partyId);
+	
+	@ApiOperation(value = "查询用户已有的权限信息", notes = "查询用户已有的角色信息", response = void.class)
+	@ApiResponses(value ={
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public Set<String> getUserPermissions(@ApiParam(value = "用户id", required = true) String partyId);
+	 
+	/**
+	 * 根据角色id查询用户
+	 * @param role
+	 * @return
+	 * @since 2017年2月28日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value = "根据角色id查询用户", notes = "根据角色id查询用户", response = List.class)
+	@ApiResponses(value ={
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public List<Party> getUserByRole(@ApiParam(value = "用户角色", required = true) String role);
+}

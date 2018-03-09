@@ -1,0 +1,103 @@
+@CHARSET "UTF-8";
+
+[v-cloak] {
+   display: none;
+}
+
+.vendor-tab{
+	padding: 10px 27px;
+	overflow: hidden;
+}
+
+.vendor-tab a{
+	float:left;
+	padding: 0 20px;
+	border: 1px solid #ddd;
+	border-right: none;
+	height: 35px;
+	line-height: 35px;
+	background: #fff;
+	cursor: pointer;
+}
+.vendor-tab a:last-child{
+	border-right: 1px solid #ddd;
+}
+
+.vendor-tab a.active{
+	color: #eb0038;
+	border-bottom: 1px solid #eb0038;
+}
+
+.saveBt{
+	float: right;
+}
+
+.saveBt .btn-danger{
+	width: auto;
+}
+
+.vendor-input {
+    width: 350px;
+}
+
+.form-label{
+	font-weight: normal;
+	margin: 0 15px 5px 0;
+}
+.form-label input{
+	position: relative;
+	top: 2px;
+}
+.inline{
+	display: inline-block;
+}
+
+.vendor-input-s{
+	width: 130px;
+}
+
+.upload-file{
+	display: inline-block;
+	width: 80px;
+	text-align:center;
+	position: relative;
+	border: 1px solid #ddd;
+	height: 35px;
+	line-height: 35px;
+	cursor: pointer;
+	margin-right: 15px;
+}
+.download-temp{
+	display: inline-block;
+	margin-right: 15px;
+}
+.upload-file input{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 80px;
+	height: 35px;
+	opacity: 0;
+}
+.vendor-text{
+	line-height: 30px;
+	margin-bottom: 0;
+}
+
+.blue{
+	color: blue;
+}
+
+.product-select{
+	border: 1px solid #ddd;
+	padding: 10px;
+}
+
+.pinyin-box{ color: #333;}
+.pinyin-box a{color: #333;}
+.pinyin-t span a{ padding:3px 6px; border: 1px solid #ccc;}
+.pinyin-c{ padding: 10px 0; width: 750px; line-height: 28px;}
+.pinyin-c span{ display: inline-block; margin-left: 10px; margin-right: 10px;}
+.pinyin-c span a{ padding: 3px;}
+.pinyin-t span a.hover{border: 1px solid #b11919; color: #b11919;}
+.pinyin-c .active{color: #b11919;}

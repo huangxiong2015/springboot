@@ -1,0 +1,256 @@
+/**
+ * Created by yansha on 2017/7/26.
+ */
+/**
+ * letter-select组件  调用： <letter-select
+ :keyname="keyname"
+ :validate="validate"
+ :options="options"
+ :id="id"
+ :option-id="optionId"
+ :option-name="optionName"
+ :multiple="multiple"
+ :options="options"
+ @get-selected="getLetterSelected"
+ ></letter-select>
+ * @param keyname 字段名
+ * @param validate 检验规则，非必填
+ * @param api   获取数据接口，与options二选一
+ * @param options   静态选项数据data，与api二选一
+ * @param optionId  选项值
+ * @param optionName 选项文本
+ * @param selected   [] 默认选中，非必填
+ * @param id 输入框ID，必填
+ * @param placeholder 占位提示，非必填
+ * @method get-selected 方法，返回选中值
+ * @method multiple   是否复选
+ * @since 2017-07-26
+ * @author yansha@yikuyi.com
+ */
+
+Vue.component('letter-select',{
+    template:`<div class="form-group">         
+        <div class="checkVal"  :title="keyname"  >      	
+            <div class="pinyin-box">
+            	<div class="pinyin-h">
+	            	<label :for="id" class="control-label"> {{keyname}} <span v-if="validate&&validate.required" class="text-red">*</span></label>
+	            	<span class="search-box"><input type="text" v-model="searchText" :placeholder="placeholder" /></span>
+	                <input type="hidden" :id="id" :name="name" v-model="selecteds"  />
+            	</div>
+                <div class="pinyin-t">
+                    <span><a href="javascript:void(0)" v-on:mouseover="selects()" :class="{'hover':returnHover('')}">全部</a></span>
+                    <span><a href="javascript:void(0)" v-on:mouseover="returnObject('A')" :class="{'hover':returnHover('A')}">A</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('B')" :class="{'hover':returnHover('B')}">B</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('C')" :class="{'hover':returnHover('C')}">C</a></span>
+                    <span><a href="javascript:void(0)" v-on:mouseover="returnObject('D')" :class="{'hover':returnHover('D')}">D</a></span>
+                    <span><a href="javascript:void(0)" v-on:mouseover="returnObject('E')" :class="{'hover':returnHover('E')}">E</a></span>
+                    <span><a href="javascript:void(0)" v-on:mouseover="returnObject('F')" :class="{'hover':returnHover('F')}">F</a></span>
+                    <span><a href="javascript:void(0)" v-on:mouseover="returnObject('G')" :class="{'hover':returnHover('G')}">G</a></span>
+                    <span><a href="javascript:void(0)" v-on:mouseover="returnObject('H')" :class="{'hover':returnHover('H')}">H</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('I')" :class="{'hover':returnHover('I')}">I</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('J')" :class="{'hover':returnHover('J')}">J</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('K')" :class="{'hover':returnHover('K')}">K</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('L')" :class="{'hover':returnHover('L')}">L</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('M')" :class="{'hover':returnHover('M')}">M</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('N')" :class="{'hover':returnHover('N')}">N</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('O')" :class="{'hover':returnHover('O')}">O</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('P')" :class="{'hover':returnHover('P')}">P</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('Q')" :class="{'hover':returnHover('Q')}">Q</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('R')" :class="{'hover':returnHover('R')}" >R</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('S')" :class="{'hover':returnHover('S')}">S</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('T')" :class="{'hover':returnHover('T')}">T</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('U')" :class="{'hover':returnHover('U')}">U</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('V')" :class="{'hover':returnHover('V')}">V</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('W')" :class="{'hover':returnHover('W')}">W</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('X')" :class="{'hover':returnHover('X')}">X</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('Y')" :class="{'hover':returnHover('Y')}" >Y</a></span>
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('Z')" :class="{'hover':returnHover('Z')}">Z</a></span> 
+                    <span><a href="javascript:void(0)"  v-on:mouseover="returnObject('other')" :class="{'hover':returnHover('other')}">其他</a></span> 
+                    
+                </div>
+                <div class="pinyin-c">
+                    <div class="con">  
+                            <span v-for="el in filteredOption"><a href="javascript:void(0)" @click="getLetterSelected(el[optionId])" :class="{'active':returnActive(el[optionId])}"> {{el[optionName]}}</a> </span> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`,
+    props:{
+        keyname : '',
+        validate : Object,
+        api:String,
+        options: {
+            type: Array,
+            default() {
+                return []
+            }
+        },
+        id:'',
+        name:'',
+        optionId: '',
+        optionName: '',
+        selected:[String, Array],
+        multiple:{
+            type:Boolean,
+            default: false
+        },
+        placeholder:{
+            type:String,
+            default:'搜索'
+        }
+    },
+    data(){
+        return{
+            style:'STYLE_FIRST_LETTER',
+            retData:{},
+            retobj:[],
+            sel:this.selected,
+            selecteds: [],
+            active: false,
+            char:'',
+            dts : this.options ? this.options : [],
+            searchText:''
+        }
+    },
+    watch:{
+        options:function (val) {
+            this.dts=val;
+        },
+        selected: function (val) {
+            this.sel=val;
+        },
+        dts: function (val) {
+            this.retobj= val;
+            this._filter(val);
+        },
+        sel: function (val) {
+            var sels=this.findById(this.sel);
+            this.selecteds=sels;
+            this.changeLetterSelected(sels);
+        }
+    },
+    computed:{
+        filteredOption () {
+            if (this.retobj&&this.searchText) {
+                return this.retobj.filter(option => {
+                    return option[this.optionName].match(new RegExp(this.searchText, 'i'))
+                })
+            } else {
+                return this.retobj
+            }
+        }/*,
+         selecteds(){
+         var sels=this.findById(this.sel);
+         this.$emit('get-selected', sels);
+         return sels;
+         }*/
+    },
+    mounted(){
+        if(this.api){
+            this.loadtype();
+        }else{
+            this.retobj= this.dts;
+            this._filter(this.dts);
+        }
+    },
+    methods:{
+        changeLetterSelected: function(data){
+            this.$emit('get-selecteds', data);
+        },
+        loadtype : function() {
+            var that=this;
+            httpGet(that, that.api, {} , function (res , err) {//页面加载前调用方法
+                if(res){
+                    that.dts = res;
+                }
+            });
+        },
+        getLetterSelected: function (obj) {
+            var sels=[];
+            if(this.multiple===true){
+                var index=_.indexOf(this.sel, obj);
+                if(index>-1){
+                    this.sel.splice(index, 1);
+                }else{
+                    sels = _.union(this.sel, [obj], _.isEqual);
+                    this.sel=sels;
+                }
+            }else{
+                this.sel= obj;
+            }
+        },
+        del: function (obj) {
+            var index=_.indexOf(this.sel, obj);
+            this.sel.splice(index, 1);
+        },
+        selects: function () {
+            this.retobj= this.dts;
+            this.char='';
+        },
+        returnObject: function (py) {
+            var dts= this.retData;
+            this.retobj= dts[py.toLowerCase()];
+            this.char= py.toLowerCase();
+        },
+        _filter:function (dts) {
+            var optionName=this.optionName
+            for(var i in dts) {
+                var py= pinyin(dts[i][optionName], {
+                    style: pinyin[this.style]
+                });
+                if(py[0]){
+                    var str= py[0].join();
+                    if(str.length>1){
+                        str= str[0].toLowerCase();
+                    }
+                    var Regx  = /^[A-Za-z]+$/;
+                    if(!Regx.test(str)){
+                        str='other';
+                    }
+                    dts[i]['py'] = str;
+                }
+            }
+            this.retData = _.groupBy(dts, 'py');
+        },
+        findById:function(arr){
+            var selected=[],that=this;
+            if(this.multiple===true){
+                for( var i in arr){
+                    var obj= _.filter(this.dts, function(o) {
+                        return o[that.optionId]==arr[i]
+                    });
+                    selected=_.unionWith(selected, obj, _.isEqual);
+                }
+            } else{
+                var obj= _.filter(this.dts, function(o) {
+                    return o[that.optionId]==arr
+                });
+                if(obj.length>0){
+                    selected=obj[0];
+                }
+            }
+            return selected;
+        },
+        returnActive: function (el) {
+            var active=false;
+            if(this.multiple===true){
+                if(_.indexOf(this.sel, el)>-1) {
+                    active=true
+                }
+            }else{
+                if(this.sel==el){
+                    active=true
+                }
+            }
+            return active;
+        },
+        returnHover: function (str) {
+            var active=false;
+            if(this.char === str.toLowerCase()) {
+                active=true
+            }
+            return active;
+        }
+    }
+})

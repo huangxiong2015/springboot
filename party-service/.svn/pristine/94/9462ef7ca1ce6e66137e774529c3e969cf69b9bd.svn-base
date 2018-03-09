@@ -1,0 +1,77 @@
+package com.yikuyi.party.statistics.api.impl;
+
+
+import java.io.IOException;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yikuyi.party.PartyApplication;
+import com.yikuyi.party.statistics.vo.StatisticsVo.StatisticsType;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT ,classes = {PartyApplication.class})
+public class StatisticsResourceTest {
+	@Autowired
+	private TestRestTemplate restTemplate; // = new TestRestTemplate();	
+	
+	@LocalServerPort
+	private int port;
+	
+	private String host;
+
+	/**
+	 * @throws java.lang.Exception
+	 * @since 2016年12月9日
+	 * @author liudian@yikuyi.com
+	 */
+	@Before
+	public void setUpBefore() throws Exception {
+		this.host = "http://localhost" + ":" + this.port;
+		
+		RestTemplate rt = this.restTemplate.getRestTemplate();
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		ObjectMapper om = new ObjectMapper();
+		om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		converter.setObjectMapper(om);
+		rt.setMessageConverters(Arrays.asList(new HttpMessageConverter[]{converter}));
+		rt.setRequestFactory(new SimpleClientHttpRequestFactory() {
+			@Override
+        	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+        		ClientHttpRequest request = super.createRequest(uri, httpMethod);
+        		HttpHeaders header = request.getHeaders();
+        		header.add("Authorization", "Basic " + Base64Utils.encodeToString(("admin"+":"+"9999999901").getBytes()));
+        		return request;
+        	}
+		});
+	}
+	
+	@Test
+	public void testGetStatisticsNumByType(){
+		StringBuffer url = new StringBuffer(host);
+		url.append("v1/statistics?type=").append(StatisticsType.LOGIN_NUM);
+		ResponseEntity<Integer> response = restTemplate.exchange(url.toString(),HttpMethod.GET, null, new ParameterizedTypeReference<Integer>(){});
+		 response.getBody();
+	}
+}

@@ -1,0 +1,132 @@
+/*
+ * Created: 2016年12月9日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2016 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+/**
+ * 
+ */
+package com.yikuyi.party.partygroup.api;
+
+import java.io.IOException;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yikuyi.party.PartyApplication;
+import com.yikuyi.party.contact.vo.MsgResultVo;
+import com.yikuyi.party.group.vo.PartyGroupVo;
+import com.yikuyi.party.vo.PartyVo;
+
+/**
+ * 
+ * @author zr.shuzuo@yikuyi.com
+ * @version 1.0.0
+ */
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = { PartyApplication.class })
+public class PartyGroupResourceTest {
+
+	@Autowired
+	private TestRestTemplate restTemplate;
+
+	@LocalServerPort
+	private int port;
+
+	private String host;
+
+	/**
+	 * @throws java.lang.Exception
+	 * @since 2016年12月9日
+	 * @author liudian@yikuyi.com
+	 */
+	@Before
+	public void setUpBefore() throws Exception {
+		this.host = "http://localhost" + ":" + this.port;
+
+		RestTemplate rt = this.restTemplate.getRestTemplate();
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		ObjectMapper om = new ObjectMapper();
+		om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		converter.setObjectMapper(om);
+		rt.setMessageConverters(Arrays.asList(new HttpMessageConverter[] { converter }));
+		rt.setRequestFactory(new SimpleClientHttpRequestFactory() {
+			@Override
+			public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+				ClientHttpRequest request = super.createRequest(uri, httpMethod);
+				HttpHeaders header = request.getHeaders();
+				header.add("Authorization",
+						"Basic " + Base64Utils.encodeToString(("admin" + ":" + "9999999901").getBytes()));
+				return request;
+			}
+		});
+	}
+
+	@Test
+	public void testGetPartyGroupList() {
+		PartyGroupVo vo = new PartyGroupVo();
+		HttpEntity<PartyGroupVo> entity = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "/v1/partyGroup", HttpMethod.PUT, entity,
+				new ParameterizedTypeReference<List<PartyVo>>() {
+				});
+	}
+	
+	@Test
+	public void testFindPartyGroupByName() {
+		ResponseEntity<MsgResultVo> responseEntity = restTemplate.exchange(host + "/v1/groups/groupname?groupName=sz_junit_save", HttpMethod.GET, null,
+				new ParameterizedTypeReference<MsgResultVo>() {
+				});
+		Assert.assertNotNull(responseEntity.getBody().getValue());
+		ResponseEntity<MsgResultVo> responseEntity2 = restTemplate.exchange(host + "/v1/groups/groupname?groupName=sz_junit_save_test", HttpMethod.GET, null,
+				new ParameterizedTypeReference<MsgResultVo>() {
+				});
+		Assert.assertNotNull(responseEntity2.getBody().getValue());
+	}
+	
+	@Test
+	public void testGetAllPartyGroupList() {
+		PartyGroupVo vo = new PartyGroupVo();
+		vo.setPartyIdFrom("9999999901");
+		HttpEntity<PartyGroupVo> entity = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "/v1/party/allparty", HttpMethod.PUT, entity,
+				new ParameterizedTypeReference<List<PartyVo>>() {
+				});
+	}
+	
+	@Test
+	public void getOrderPermissions() {
+		ResponseEntity<MsgResultVo> responseEntity = restTemplate.exchange(host + "/v1/party/permissions?partyId=99999999901", HttpMethod.GET, null,
+				new ParameterizedTypeReference<MsgResultVo>() {
+				});
+		Assert.assertNotNull(responseEntity.getBody().getValue());
+	}
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+	default-lazy-init="false">
+	
+	<bean id="leadInMaterialItemReceiveListener" class="com.ictrade.utils.LeadInMaterialItemReceiveListener"/>
+	<bean id="createYkycodeReceiveListener" class="com.ictrade.utils.CreateYkycodeReceiveListener"/>
+	<!-- Topic订阅设置 -->
+	<bean id="basicsub" abstract="true">
+		<!-- 是否是需要顺序消费的消息 ，默认为false-->
+		<property name="orderly"><value type="boolean">false</value></property>
+		<!-- 是否是集群消费的消息，默认为true -->
+		<property name="clustering"><value type="boolean">true</value></property>
+	</bean>
+	<util:list id="subsListAdmin">
+	</util:list>
+	
+	<beans profile="dev">
+		<bean id="rocketMQReceiver" class="com.ykyframework.mqservice.receiver.ZeroMQReceiver" init-method="init" destroy-method="destroy">
+			<property name="subscriptions" ref="subsListAdmin"/>
+		</bean>
+	</beans>
+	
+	<beans profile="sit1,sit,uat,prod">
+		<bean id="rocketMQReceiver" class="com.ykyframework.mqservice.receiver.RocketMQReceiver" init-method="init" destroy-method="destroy">
+			<property name="namesrvAddr" value="${mq.namesrvAddr}" />
+			<property name="subscriptions" ref="subsListAdmin"/>
+		</bean>
+	</beans>
+	<beans profile="hz-uat">
+		<bean id="aliyunMQReceiver" class="com.ykyframework.mqservice.receiver.AliyunMQReceiver" init-method="init" destroy-method="destroy">
+			<property name="accessKey" value="wiPMJzbY8uCw5f5K" />
+			<property name="secretKey" value="l0DLG6da2sTyv4K86EYKPWD3cZCK38" />
+			<property name="subscriptions" ref="subsListAdmin"/>
+		</bean>
+	</beans>
+</beans>

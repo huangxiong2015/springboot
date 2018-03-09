@@ -1,0 +1,206 @@
+package com.yikuyi.party.vendors.api.impl;
+
+import java.util.List;
+
+import org.apache.ibatis.session.RowBounds;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.framewrok.springboot.web.RequestHelper;
+import com.github.pagehelper.PageInfo;
+import com.yikuyi.party.contact.vo.MsgResultVo;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.group.vo.PartyGroupVo;
+import com.yikuyi.party.model.Party;
+import com.yikuyi.party.model.Party.PartyStatus;
+import com.yikuyi.party.model.PartyRelationship;
+import com.yikuyi.party.partygroup.bll.PartyGroupManager;
+import com.yikuyi.party.role.model.RoleTypeEnum;
+import com.yikuyi.party.vendors.api.IVendorResource;
+import com.yikuyi.party.vendors.bll.VendorsManager;
+import com.yikuyi.party.vo.SupplierVo;
+import com.yikuyi.party.vo.VendorVo;
+import com.ykyframework.model.IdGen;
+
+@RestController
+@RequestMapping("v1/vendors")
+public class VendorsResource implements IVendorResource {
+
+	private static final String CODE = "10000";
+	private static final String RESULT_CODE = "10001";
+	
+	@Autowired
+	private VendorsManager vendorsManager;
+	
+	@Autowired
+	private PartyGroupManager partyGroupManager;
+	
+	/**
+	 * 查看供应商列表
+	 */
+	@Override
+	@RequestMapping(method = RequestMethod.GET)
+	public MsgResultVo getPartyList(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+			@RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+		MsgResultVo result=new MsgResultVo();
+		PartyGroupVo param = new PartyGroupVo();
+		String partyId = RequestHelper.getLoginUserId();
+		param.setPartyIdFrom(partyId);
+		param.setStatus(PartyStatus.PARTY_ENABLED);//默认启用
+		param.setRoleTypeIdTo(RoleTypeEnum.SUPPLIER.toString());
+		RowBounds rowBounds = new RowBounds((page - 1) * size, size);
+		result.setCode(CODE);
+		result.setValue(vendorsManager.getPartyList(param, rowBounds));
+		return result;
+		
+	}
+
+	/**
+	 * 获取单个供应商信息
+	 */
+	@Override
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public MsgResultVo getPartyByPartyId(@PathVariable("id") String id) {
+		MsgResultVo result=new MsgResultVo();
+		String partyId = RequestHelper.getLoginUserId();
+		result.setCode(CODE);
+		result.setValue(vendorsManager.getPartyByPartyId(id, partyId));
+		return result;
+	}
+	
+	/**
+	 * 查询供应商
+	 */
+	@Override
+	@RequestMapping(value = "/detail", method = RequestMethod.GET)
+	public MsgResultVo getVendorDetail(@RequestParam(value = "id" , required = true) String id) {
+		MsgResultVo result=new MsgResultVo();
+		result.setCode(CODE);
+		result.setValue(vendorsManager.getVendorDetail(id));
+		return result;
+	}
+
+	/**
+	 * 保存供应商信息
+	 */
+	@Override
+	@RequestMapping(method = RequestMethod.POST)
+	public MsgResultVo save(@RequestBody VendorVo vendorVo) {
+		MsgResultVo result=new MsgResultVo();
+		Long vendorId = IdGen.getInstance().nextId();
+		 // 当前登录用户
+	    String partyId = RequestHelper.getLoginUserId();
+	    
+	    if(null == vendorVo.getCode() || "".equals(vendorVo.getCode())){
+			result.setCode("400");
+			result.setValue("供应商编码必填");
+			return result;
+		}
+	    	    
+		Party hisParty = partyGroupManager.findPartyGroupByNameFull(vendorVo.getVendorNameFull());
+		if(null != hisParty){
+			result.setCode(RESULT_CODE);
+			result.setValue("供应商全称被使用");
+			return result;
+		}
+	    vendorVo.setVendorId(vendorId.toString());	    
+		result.setCode(CODE);
+		result.setValue(vendorsManager.save(vendorVo,partyId));
+		return result;
+	}
+
+	/**
+	 * 根据id修改供应商信息
+	 */
+	@Override
+	@RequestMapping(method = RequestMethod.PUT)
+	public MsgResultVo update(@RequestBody VendorVo vendorVo) {
+		MsgResultVo result=new MsgResultVo();
+		//查找需要修改的供应商的信息
+		Party party = partyGroupManager.getPartyGroupByGroupId(vendorVo.getVendorId());
+		if(null == party){
+			result.setCode(RESULT_CODE);
+			result.setValue("供应商不存在,不允许修改");
+			return result;
+		}
+		//没有修改名称则不需要验证供应商
+		if(!vendorVo.getVendorName().equals(party.getPartyGroup().getGroupName())){
+			Party hisParty = partyGroupManager.findPartyGroupByNameFull(vendorVo.getVendorName());
+			if(null != hisParty){
+				result.setCode(RESULT_CODE);
+				result.setValue("供应商全称被使用");
+				return result;
+			}
+		}
+		// 当前登录用户
+	    String partyId = RequestHelper.getLoginUserId();
+		result.setCode(CODE);
+		result.setValue(vendorsManager.update(vendorVo, partyId));
+		return result;
+	}
+
+	/**
+	 * 删除供应商信息
+	 */
+	@Override
+	@RequestMapping(value = "del", method = RequestMethod.PUT)
+	public MsgResultVo delete(@RequestBody List<String> ids) {
+		MsgResultVo result=new MsgResultVo();
+		/*String partyId = RequestHelper.getLoginUserId();
+		
+		for (String id : ids) {
+			  String hasOrder=vendorsManager.getVendorHasUncompletedOrder(id);
+			  //有订单信息在使用供应商
+			  if(("true").equals(hasOrder)){
+				  result.setCode("10001");
+				  result.setValue(id);
+				  return result;
+			  }else if("error".equals(hasOrder)){
+				  result.setCode("10002");
+				  result.setValue(id);
+				  return result;
+			  }
+			  String hasProduct=vendorsManager.isHasProduct(id);
+			  //有订单信息在使用供应商
+			  if(("true").equals(hasProduct)){
+				  result.setCode("10003");
+				  result.setValue(id);
+				  return result;
+			  }else if("error".equals(hasProduct)){
+				  result.setCode("10004");
+				  result.setValue(id);
+				  return result;
+			  }
+		}
+		vendorsManager.delete(ids, partyId);*/
+		result.setCode(CODE);
+		result.setValue("删除成功");
+		return result;
+	}
+
+	@Override
+	@RequestMapping(value = "/{id}/save" , method = RequestMethod.POST)
+	public MsgResultVo saveSupplierShare(@PathVariable(value = "id" , required=true)String id,@RequestBody UserVo userVo) {
+		return vendorsManager.saveSupplierShare(id,userVo);
+	}
+
+	@Override
+	@RequestMapping(value = "/{id}/relation" ,method = RequestMethod.GET)
+	public List<PartyRelationship> findSupplierShare(@PathVariable(value = "id" , required=true)String id) {
+		return vendorsManager.findSupplierShare(id);
+	}
+
+	@Override
+	@RequestMapping(value = "/list" ,method = RequestMethod.GET)
+	public PageInfo<SupplierVo> getVendorList(@RequestParam(value="id",required=true)String id, 
+			@RequestParam(value="page",required=false,defaultValue="1")int page,
+			@RequestParam(value="size",required=false,defaultValue="10") int size) {
+		return vendorsManager.getVendorList(id, page, size);
+	}
+
+}

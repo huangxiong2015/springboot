@@ -1,0 +1,83 @@
+/* 模块维护树型页面 */
+.ms-controller{visibility: hidden;}
+.ztree *{font-family:'Microsoft Yahei', Arial, Simsun, Helvetica, sans-serif;}
+th{font-weight:normal;background:#f2f2f2;}
+th,td{text-align:center;border:1px solid #d2d2d2;height:46px;line-height:46px;}
+a:hover{color:#b1191a;}
+.m_edit_icon{display:inline-block;width:16px;height:16px;background: url(../../images/edit_delete_sprite.png) no-repeat 0px 0px;cursor: pointer;}
+.m_delete_icon{display:inline-block;width:16px;height:16px;background: url(../../images/edit_delete_sprite.png) no-repeat -15px 0px;cursor: pointer;}
+.m_preview_icon{display:inline-block;width:16px;height:16px;background: url(../../images/edit_delete_sprite.png) no-repeat 0px -14px;cursor: pointer;}
+.g_blue,.g_blue:hover{color:#3377aa;cursor:pointer;}
+/* .icon_sy{width:34px;height:34px;background: url(../../images/newbie_guide.png) no-repeat;position:relative;top:10px;margin-left:20px;}
+.i_user{background-position: -9px -48px;}
+.i_goods{background-position: -49px -48px;}
+.i_search{background-position: -89px -48px;}
+.i_dollar{background-position: -129px -48px;}
+.i_voyage{background-position: -169px -48px;}
+.i_order{background-position: -209px -48px;}
+.i_stick{background-position: -249px -48px;}
+.i_rmb{background-position: -289px -48px;}
+.at_user{background-position: -9px -9px;}
+.at_goods{background-position: -49px -9px;}
+.at_search{background-position: -89px -9px;}
+.at_dollar{background-position: -129px -9px;}
+.at_voyage{background-position: -169px -9px;}
+.at_order{background-position: -209px -9px;}
+.at_stick{background-position: -249px -9px;}
+.at_rmb{background-position: -289px -9px;} */
+
+.icon_sy{width:42px;height:42px;background: url(../../images/slider_icon_sprite.png) no-repeat;position:relative;top:15px;margin-left:20px;}
+.i_user{background-position: -20px -22px;}
+.i_search{background-position: -81px -22px;}
+.i_shoppingCart{background-position: -141px -22px;}
+.i_order{background-position: -200px -22px;}
+.i_searchOrder{background-position: -260px -22px;}
+.i_goods{background-position: -320px -22px;}
+.i_dollar{background-position: -13px -260px;}
+.i_stick{background-position: -66px -260px;}
+.i_paySafe{background-position: -119px -260px;}
+.i_voyage{background-position: -172px -260px;}
+.i_rmb{background-position: -225px -260px;}
+.i_partList{background-position: -278px -260px;}
+.i_sumList{background-position: -331px -260px;}
+.i_inventory{background-position: -384px -260px;}
+.i_recordList{background-position: -437px -260px;}
+
+
+.at_user{background-position: -20px -87px;}
+.at_search{background-position: -81px -87px;}
+.at_shoppingCart{background-position: -141px -87px}
+.at_order{background-position: -200px -87px;}
+.at_searchOrder{background-position: -260px -87px}
+.at_goods{background-position: -320px -87px;}
+.at_dollar{background-position: -13px -192px;}
+.at_stick{background-position: -66px -192px;}
+.at_paySafe{background-position: -119px -192px}
+.at_voyage{background-position: -172px -192px;}
+.at_rmb{background-position: -225px -192px;}
+.at_partList{background-position: -278px -192px}
+.at_sumList{background-position: -331px -192px}
+.at_inventory{background-position: -384px -192px}
+.at_recordList{background-position: -437px -192px}
+
+.new_btn{display:inline-block;border: solid 1px #b1191a;color: #b1191a !important;padding: 5px 15px;}
+.edit_btn{display:inline-block;border: solid 1px #e4e4ea;padding:5px 15px;margin-right:10px;cursor: pointer;}
+.edit_btn:hover{border: solid 1px #b1191a;}
+.tree_area{float:left;padding: 5px;margin: 20px 0px;width: 15%;min-height: 565px;border: 1px solid #d2d2d2; min-width: 180px;}
+.h_content_area{padding: 5px;margin: 20px 0px;min-width: 780px;min-height: 565px;border: 1px solid #d2d2d2;margin-left: 19%;width: 81%;}
+
+
+/* 模块维护编辑页面 */
+.return_btn{padding:10px 20px;cursor: pointer;border: solid 1px #ddd;border-radius: 3px;font-size:14px;}
+.return_btn:hover{color:#b1191a;border:solid 1px #b1191a;}
+.ueditor_wrapper{
+	margin:0 auto;
+	overflow:hidden;
+	border:0px;
+	text-align: left;
+}
+.ueditor_iframe{
+	width:100%; 
+	border: none; 
+	min-height: 560px; 
+}

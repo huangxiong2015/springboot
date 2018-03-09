@@ -1,0 +1,162 @@
+package com.yikuyi.party.addres.api.impl;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.framework.springboot.config.ObjectMapperHelper;
+import com.yikuyi.basedata.common.model.Currency;
+import com.yikuyi.party.address.api.impl.AddressResourceV8;
+import com.yikuyi.party.address.bll.AddressManagerV8;
+import com.yikuyi.party.address.vo.AddressVo;
+import com.yikuyi.party.address.vo.BasicAddress;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+public class AddressResourceV8Test {
+
+	private ObjectMapper mapper = ObjectMapperHelper.configeObjectMapper(new ObjectMapper());
+
+	@InjectMocks
+	private AddressResourceV8 addressResourceV8;
+
+	@Mock
+	private AddressManagerV8 mockAddressManagerV8;
+
+	private MockMvc mockMvc;
+
+	public AddressResourceV8Test() {
+		MockitoAnnotations.initMocks(this);
+	}
+
+	@Before
+	public void setUpBefore() throws Exception {
+		mockMvc = MockMvcBuilders.standaloneSetup(addressResourceV8).build();
+	}
+
+	/**
+	 * 查询用户已有的角色信息
+	 * @throws Exception
+	 * @since 2017年8月24日
+	 */
+	@Test
+	public void testGetUserRoleList() throws Exception {
+		// 构造mock返回结构数据
+		List<AddressVo> list = new ArrayList<>();
+		AddressVo addressVo = new AddressVo();
+		addressVo.setAddressId("123456789");
+		list.add(addressVo);
+		
+		when(mockAddressManagerV8.getAddressShipingList(Mockito.anyString(), Mockito.any(Currency.class))).thenReturn(list);
+
+		JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, AddressVo.class);
+		
+		List<AddressVo> mockListRst = mapper.readValue(mockMvc.perform(get("/v8/address/shipping?partyId=9999999901&currency=CNY")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString(),javaType);
+		Assert.assertEquals(mockListRst.get(0).getAddressId(),"123456789");		
+	}
+	
+	/**
+	 * 新增收货地址(移动端)
+	 * @throws Exception
+	 * @since 2018年1月11日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	@Test
+	public void testSave() throws Exception{
+		AddressVo addressVo = new AddressVo();
+		addressVo.setAddressId("12356326");
+		addressVo.setToName("木子");
+		addressVo.setPhoneNumber("15032686498");
+		addressVo.setDefaultFlag(true);
+		addressVo.setCurrency(com.yikuyi.party.address.vo.AddressVo.Currency.CNY);
+		
+		BasicAddress addressInfo = new BasicAddress();
+		addressInfo.setProvince("440000");
+		addressInfo.setProvinceName("广东省");
+		addressInfo.setCity("440300");
+		addressInfo.setCityName("深圳市");
+		addressInfo.setCounty("440305");
+		addressInfo.setCountyName("深南大道");
+		addressInfo.setAddress("深南大道");
+		addressVo.setAddressInfo(addressInfo);
+		
+		when(mockAddressManagerV8.saveAddressVo(Mockito.any(AddressVo.class))).thenReturn(addressVo);
+	    mockMvc.perform(post("/v8/address/shipping").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE).content(mapper.writeValueAsString(addressVo))).andExpect(status().isOk());
+	}
+	
+	/**
+	 * 编辑收货地址(移动端)
+	 * @throws Exception
+	 * @since 2018年1月11日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	@Test
+	public void testUpdate() throws Exception{
+		AddressVo addressVo = new AddressVo();
+		addressVo.setAddressId("12356326");
+		addressVo.setToName("木子");
+		addressVo.setPhoneNumber("15032686498");
+		addressVo.setDefaultFlag(true);
+		addressVo.setCurrency(com.yikuyi.party.address.vo.AddressVo.Currency.CNY);
+		
+		BasicAddress addressInfo = new BasicAddress();
+		addressInfo.setProvince("440000");
+		addressInfo.setProvinceName("广东省");
+		addressInfo.setCity("440300");
+		addressInfo.setCityName("深圳市");
+		addressInfo.setCounty("440305");
+		addressInfo.setCountyName("深南大道");
+		addressInfo.setAddress("深南大道");
+		addressVo.setAddressInfo(addressInfo);
+		
+		when(mockAddressManagerV8.updateAddressVo(Mockito.anyString(), Mockito.any(AddressVo.class))).thenReturn(addressVo);
+		mockMvc.perform(put("/v8/address/shipping/12356326").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+				.content(mapper.writeValueAsString(addressVo))).andExpect(status().isOk());
+	}
+	
+	/**
+	 * 删除收货地址
+	 * @throws Exception
+	 * @since 2018年1月11日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	@Test
+	public void testDelete() throws Exception{
+		Mockito.doNothing().when(mockAddressManagerV8).deleteAddressVo(Mockito.anyString());
+		this.mockMvc.perform(delete("/v8/address/shipping/12356326")).andExpect(status().isOk());  
+	}
+
+	/**
+	 * 
+	 * @throws Exception
+	 * @since 2018年1月11日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	@Test
+	public void testSetDefaultAddressVo() throws Exception{
+		Mockito.doNothing().when(mockAddressManagerV8).setDefaultAddress(Mockito.anyString(),Mockito.any(AddressVo.class));
+		mockMvc.perform(put("/v8/address/shipping/12356326/default")).andExpect(status().isOk());
+	}
+	
+
+}

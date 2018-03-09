@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/aop
+                http://www.springframework.org/schema/aop/spring-aop.xsd
+                http://www.springframework.org/schema/tx
+                http://www.springframework.org/schema/tx/spring-tx.xsd
+                http://www.springframework.org/schema/util 
+                http://www.springframework.org/schema/util/spring-util.xsd">
+	<!-- Entry for Inspektr Audit Logging Functionality -->
+	<aop:aspectj-autoproxy />
+
+	<!-- ***************AUDIT TRAIL MANAGERS*************** -->
+	<bean id="loggingAuditTrailManager"
+		class="org.jasig.inspektr.audit.support.Slf4jLoggingAuditTrailManager" />
+	<bean id="consoleAuditTrailManager"
+		class="org.jasig.inspektr.audit.support.ConsoleAuditTrailManager" />
+	<!-- 审计日志 相关设置 START -->
+	<!-- 参见 http://blog.csdn.net/zhurhyme/article/details/37535091 http://blog.csdn.net/zhurhyme/article/details/37535697 -->
+	<bean id="inspektrTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		p:dataSource-ref="dataSource" />
+
+	<bean id="inspektrTransactionTemplate" class="org.springframework.transaction.support.TransactionTemplate"
+		p:transactionManager-ref="inspektrTransactionManager" p:isolationLevelName="ISOLATION_REPEATABLE_READ"
+		p:propagationBehaviorName="PROPAGATION_REQUIRED" />	
+		
+	<bean id="jdbcAuditTrailManager" class="com.ictrade.inspektr.bll.JdbcAuditTrailManager">
+		<constructor-arg index="0" ref="inspektrTransactionTemplate" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="tableName" value="ADMIN_AUDIT_TRAIL" />
+	</bean>
+	<!-- 审计日志 相关设置 END -->
+	
+	
+	<!-- ***************AUDIT ACTION RESOLVERS*************** -->
+	<bean id="defaultActionResolver"
+		class="org.jasig.inspektr.audit.spi.support.DefaultAuditActionResolver">
+		<constructor-arg index="0" value="_SUCCEEDED" />
+		<constructor-arg index="1" value="_FAILED" />
+	</bean>
+
+	<!-- ***************PRINCIPAL RESOLVERS*************** -->
+	<bean id="userInfoPrincipalResolver" class="com.ictrade.inspektr.bll.UserInfoPrincipalResolver" />
+	<!-- <bean id="springSecurityAuditablePrincipalResolver" class="org.jasig.inspektr.audit.spi.support.SpringSecurityAuditablePrincipalResolver"/> -->
+
+	<!-- ***************MAIN AUDIT ASPECT*************** -->
+	<bean id="auditTrailManagementAspect" class="org.jasig.inspektr.audit.AuditTrailManagementAspect">
+		<!-- String applicationCode -->
+		<constructor-arg index="0" value="trade" />
+		<!-- PrincipalResolver -->
+		<constructor-arg index="1" ref="userInfoPrincipalResolver" />
+		<constructor-arg index="2">
+			<list>
+				<ref bean="jdbcAuditTrailManager" />
+				<!-- <ref bean="consoleAuditTrailManager" /> -->
+				<ref bean="loggingAuditTrailManager" />
+			</list>
+		</constructor-arg>
+		<constructor-arg index="3">
+			<map>
+				<entry key="DEFAULT_ACTION_RESOLVER" value-ref="defaultActionResolver"/>
+			</map>
+		</constructor-arg>
+		<constructor-arg index="4">
+			<map>
+				<entry key="DEFAULT_RESOURCE_RESOLVER"> 
+					<bean class="com.ictrade.inspektr.bll.ParameterAsJsonStringResourceResolver" />
+				</entry>
+			</map>
+		</constructor-arg>
+	</bean>		
+</beans>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/cache
+           http://www.springframework.org/schema/cache/spring-cache.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           ">
+	
+	<!-- 缓存相关配置 -->
+	<!-- redis 相关配置 -->
+
+	<bean id="redis.poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="200" />
+		<property name="minIdle" value="10" />
+		<property name="maxTotal" value="500" />
+		<property name="maxWaitMillis" value="2000" />
+		<property name="testOnBorrow" value="true" />
+	</bean>
+
+	<bean id="redis.abstract.connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" destroy-method="destroy" abstract="true" >
+		<property name="hostName" value="${redis.hostName}" />
+		<property name="port" value="${redis.port}" />
+		<property name="password" value="${redis.password}" />
+		<property name="timeout" value="2000" />
+		<property name="usePool" value="true" />
+		<property name="poolConfig" ref="redis.poolConfig" />
+	</bean>
+	
+	<bean id="redis.connectionFactory" parent="redis.abstract.connectionFactory" >
+		<property name="database" value="${redis.database}" />
+	</bean>
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="redis.connectionFactory"/>
+		<property name="keySerializer">  
+        	<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />  
+    	</property>  
+	    <property name="hashKeySerializer">  
+	        <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />  
+	    </property>
+	</bean>
+	<!-- turn on declarative caching 
+	<cache:annotation-driven cache-manager="redisCacheManager"/>-->
+	
+	<bean id="cacheManagerFactory" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">  
+        <property name="configLocation" value="classpath:common-config/spring/ehcache.xml"/>  
+    </bean>  
+    <bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">  
+        <property name="cacheManager" ref="cacheManagerFactory"/>
+    </bean>
+	
+	<cache:annotation-driven cache-manager="cacheManager"/>
+	
+	<bean id="cacheManager" class="org.springframework.cache.support.CompositeCacheManager">  
+    <property name="cacheManagers">  
+         <list>  
+             <ref bean="redisCacheManager"/>  
+             <ref bean="ehcacheManager"/>
+             <ref bean="GuavaCacheManager"/>
+         </list>  
+	</property>  
+	<property name="fallbackToNoOpCache" value="true"/>  
+	</bean>
+	
+	<!-- 基于jvm的缓存管理器 -->
+	<bean id="GuavaCacheManager" class="org.springframework.cache.guava.GuavaCacheManager">
+	</bean>
+	
+	<!-- redis缓存管理器 -->
+	<bean id="redisCacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
+		<constructor-arg ref="redisTemplate" />
+		<constructor-arg>
+			<list>
+				<value>enterpriseMaterialListCache</value>				
+				<value>validateCodeCache</value>
+				<value>userShiroAuthorityInfoCache</value>
+				<value>recommendNewStocksCache</value>
+				<value>newsCache</value>
+				<value>materialCategoryCache</value>
+				<value>recommendationChoiceListCache</value>
+				<value>recommendWaresCache</value>
+				<value>recommendGoodsCache</value>
+				<value>userChangeCache</value>
+				<value>enterpriseMaterialCache</value>
+				<value>emCountPerStatusCache</value>
+				<value>topTenNewGoodsCache</value>
+				<value>activity</value>
+			</list>
+		</constructor-arg>
+		<property name="defaultExpiration" value="300" />
+		<property name="usePrefix" value="true" />
+		<property name="expires">
+			<map>
+				<entry key="enterpriseMaterialListCache" value="120" />
+				<entry key="validateCodeCache" value="120" />
+				<entry key="userShiroAuthorityInfoCache" value="10" />
+				<entry key="recommendNewStocksCache" value="3600" />
+				<entry key="newsCache" value="3600" />
+				<entry key="materialCategoryCache" value="120" />
+				<entry key="recommendationChoiceListCache" value="1800" />
+				<entry key="recommendWaresCache" value="3600" />
+				<entry key="recommendGoodsCache" value="86400" />
+				<entry key="userChangeCache" value="120" />
+				<entry key="enterpriseMaterialCache" value="3600" />
+				<entry key="emCountPerStatusCache" value="600" />
+				<entry key="topTenNewGoodsCache" value="86400" />
+				<entry key="activity" value="0" />
+			</map>
+		</property>
+		<property name="transactionAware" value="true" />
+	</bean>
+		
+</beans>

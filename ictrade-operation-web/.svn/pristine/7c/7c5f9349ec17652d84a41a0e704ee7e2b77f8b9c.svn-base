@@ -1,0 +1,101 @@
+$(function(){ 
+
+	  var vm = new Vue({
+	        el: '#distributor-detail',
+	        data: { 
+	        	distributorData:{
+	        		newsContent:{}
+	        	},
+	        	distributor:'',	        
+	        	agentName:'',
+	        	applicationName:'',
+	        	advantageName:'',
+	        }
+	   });
+	  var vendorId = getQueryString('id');
+	  if(vendorId){		 
+          getDistributor();
+	  }
+	  
+	  function getDistributor(){
+		  syncData(ykyUrl.info + "/v1/news/"+ vendorId , "get", null, function (data, err) {
+	          if (data) {
+	        	  vm.distributorData = data;   
+	        	  vm.distributor= toJson(vm.distributorData.newsContent.content);
+	        	  vm.agent = vm.distributor.agent;//主要代理线
+	        	  vm.application = vm.distributor.application; //应用领域
+	        	  vm.advantage = vm.distributor.type; //优势产品
+	        	  getBrands(); 
+	        	  getApply();
+	        	  getAdvantage();
+	        	 
+	          }
+	      });   
+	  }
+	  function getBrands(){   //主要代理线
+		  syncData(ykyUrl.product + '/v1/products/brands' , "get", null, function (data, err) {
+	          if (data) {
+	        	  vm.brandIds = data;
+	        	  for(var i =0; i<vm.agent.length; i++){
+	        		  for(var j = 0; j <vm.brandIds.length; j++){
+	        			  if(vm.agent[i] == vm.brandIds[j].id){
+	        				  console.log(vm.brandIds[j].brandName)
+	        				  if(vm.agentName !== ''){
+	        					  vm.agentName += ','+vm.brandIds[j].brandName;
+	        				  }else{
+	        					  vm.agentName = vm.brandIds[j].brandName;
+	        				  }
+	        			  }
+	        		  }
+	        	  }
+	        	  
+	          } 
+	      }); 
+	  }
+	  function getApply(){  //应用领域 
+		  syncData(ykyUrl.database + '/v1/category/companylist' , "get", null, function (data, err) {
+	          if (data) {
+	        	  vm.applyIds = data; 
+	        	  for(var a =0; a<vm.application.length; a++){
+	        		  for(var b=0;b<vm.applyIds.length;b++){
+	        			  if(vm.application[a] == vm.applyIds[b].categoryId){
+	        				  
+	        				  if(vm.applicationName !== ''){
+	        					  vm.applicationName += ','+vm.applyIds[b].categoryName;
+	        				  }else{
+	        					  vm.applicationName = vm.applyIds[b].categoryName;
+	        				  }
+	        				  
+	        			  }
+	        		  }
+	        	  }
+	          }   
+	      }); 
+	  } 
+	 function getAdvantage(){//优势产品
+		  syncData(ykyUrl.database + '/v1/category/companylist' + '?categoryTypeId=ADVANTAGE_CATEGORY', "get", null, function (data, err) {
+	          if (data) {
+	        	  vm.advantageIds = data;
+	        	  for(var x =0; x<vm.advantage.length; x++){
+	        		  for(var y=0;y<vm.advantageIds.length;y++){
+	        			  if(vm.advantage[x] == vm.advantageIds[y].categoryId){	  
+	        				  if(vm.advantageName !== ''){
+	        					  vm.advantageName += ','+vm.advantageIds[y].categoryName;
+	        				  }else{
+	        					  vm.advantageName = vm.advantageIds[y].categoryName;
+	        				  }
+	        				  
+	        			  }
+	        		  }
+	        	  }
+	          } 
+	      });
+	 }
+
+	  
+	  function toJson(data){
+		  var jsonData;
+		  jsonData = JSON.parse(data);
+		  return jsonData;
+	  }
+});

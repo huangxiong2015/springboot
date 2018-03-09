@@ -1,0 +1,718 @@
+var vm;
+var  addData;
+
+var recommendationId = getQueryString("recommendationId");
+var titleLetter = [
+                  {"letter":"A","ishave":"no"},
+                  {"letter":"B","ishave":"no"},
+                  {"letter":"C","ishave":"no"},
+                  {"letter":"D","ishave":"no"},
+                  {"letter":"E","ishave":"no"},
+                  {"letter":"F","ishave":"no"},
+                  {"letter":"G","ishave":"no"},
+                  {"letter":"H","ishave":"no"},
+                  {"letter":"I","ishave":"no"},
+                  {"letter":"J","ishave":"no"},
+                  {"letter":"K","ishave":"no"},
+                  {"letter":"L","ishave":"no"},
+                  {"letter":"M","ishave":"no"},
+                  {"letter":"N","ishave":"no"},
+                  {"letter":"O","ishave":"no"},
+                  {"letter":"P","ishave":"no"},
+                  {"letter":"Q","ishave":"no"},
+                  {"letter":"R","ishave":"no"},
+                  {"letter":"S","ishave":"no"},
+                  {"letter":"T","ishave":"no"},
+                  {"letter":"U","ishave":"no"},
+                  {"letter":"V","ishave":"no"},
+                  {"letter":"W","ishave":"no"},
+                  {"letter":"X","ishave":"no"},
+                  {"letter":"Y","ishave":"no"},
+                  {"letter":"Z","ishave":"no"}
+        ];
+var brandLetter = [
+                   {"letter":"A","ishave":"no"},
+                   {"letter":"B","ishave":"no"},
+                   {"letter":"C","ishave":"no"},
+                   {"letter":"D","ishave":"no"},
+                   {"letter":"E","ishave":"no"},
+                   {"letter":"F","ishave":"no"},
+                   {"letter":"G","ishave":"no"},
+                   {"letter":"H","ishave":"no"},
+                   {"letter":"I","ishave":"no"},
+                   {"letter":"J","ishave":"no"},
+                   {"letter":"K","ishave":"no"},
+                   {"letter":"L","ishave":"no"},
+                   {"letter":"M","ishave":"no"},
+                   {"letter":"N","ishave":"no"},
+                   {"letter":"O","ishave":"no"},
+                   {"letter":"P","ishave":"no"},
+                   {"letter":"Q","ishave":"no"},
+                   {"letter":"R","ishave":"no"},
+                   {"letter":"S","ishave":"no"},
+                   {"letter":"T","ishave":"no"},
+                   {"letter":"U","ishave":"no"},
+                   {"letter":"V","ishave":"no"},
+                   {"letter":"W","ishave":"no"},
+                   {"letter":"X","ishave":"no"},
+                   {"letter":"Y","ishave":"no"},
+                   {"letter":"Z","ishave":"no"}
+         ];
+$(function() {
+	
+	var valid = false;
+	
+	//var newsId = parseUrlParam(false).id;
+	 vm = new Vue({
+			        el: '#extension_edit',
+			        data: {
+						initData : {
+							categoryId : '4001',  //这里定义的，是干嘛的
+							//attachUrl:'',
+							attachUrl1:'',
+							newsContent:'',
+							title:''
+						},
+						recommendationId: getQueryString('recommendationId'),
+						checkModel : {},
+						titleList:{},
+						brandList:{},
+					    query:"",
+					    first:"",
+					    isother:false,
+					    isdistributor:false,
+					    ismanufacturer:false,
+					    titleShowOther:false,
+					    brandShowOther:false,
+					    titleLetter : titleLetter,
+					    brandLetter : brandLetter,
+					    noBrandData:false,
+					    noTitleData:false,
+					    activeVendor:'',//选中的分销商id
+					    activeBrand:'',//选中的制造商id
+					    activeVendorName:'',//选中的分销商名称
+					    activeBrandName:'',//选中的制造商名称
+					    temporaryVendor:'',//临时分销商id
+					    temporaryBrand:'',//临时制造商id
+					    temporaryVendorName:'',//临时分销商名称
+					    temporaryBrandName:'',//临时制造商名称
+					    vendorDetailLink:'',//分销商详情链接
+					    brandDetailLink:'',//制造商详情链接
+					    detailLink:''//详情链接
+					},
+					methods : {
+						init : function(res) {
+							this.initData.title = res.title;
+							this.initData.categoryTypeId = res.categoryTypeId;
+							this.initData.attachUrl = res.newsAttachment && res.newsAttachment.attachUrl; 
+						
+						
+						},
+						saveNews : function(event) {
+							this.initData.newsContent = event.data;
+							$('#create').submit();
+						},
+						fuzzySearch:function(list,q,f){
+						    $.each(list,function(index, ele){
+						      var queryStr = ele.query.toUpperCase();
+						      if(f!=="" && f!=="other"){
+						        ele.ishave = queryStr.indexOf(f.toUpperCase()) == 0 ? true : false;
+						      }
+						      if(f=="other"){
+						        var reg = /[A-Z]/;
+						        var letter = queryStr.slice(0,1);
+						        ele.ishave = !reg.test(letter);
+						      }
+						      if(q!==""){
+						        ele.ishave = queryStr.indexOf(q.toUpperCase()) >= 0 ? true : false;
+						      }
+						      if(q==""&&f==""){
+						        ele.ishave = queryStr.indexOf(q.toUpperCase()) >= 0 ? true : false;
+						      }
+						    })
+						  },
+						  firstSearch:function(list,f,eve){
+						    this.query = "";
+						    this.first = f;
+						    this.fuzzySearch(list,this.query,this.first);
+						    $(".search_criteria a").removeClass("active")
+						    $(eve.target).addClass("active");
+						    $(".search_box").blur();        
+						  },
+						  inputSearch:function(list){
+						    this.first = "";
+						    this.fuzzySearch(list,this.query,this.first);
+						    $(".search_criteria a").removeClass("active")
+						    $(".search_criteria .all").addClass("active");
+						  },
+						  selectSupplier:function(el,eve,type){
+							  if(type=='vendor'){//分销商
+								  if(this.temporaryVendor==''){
+									  $(eve.target).addClass("active");									  
+									  this.temporaryVendor = el.newsId;
+									  this.temporaryVendorName = el.title;									 
+									  return;
+								  }								  
+								  $("#titleList .supplier_list .active").removeClass("active");
+								  $(eve.target).addClass("active");
+								  this.temporaryVendor = el.newsId;
+								  this.temporaryVendorName = el.title;
+							  }
+							  if(type=='brand'){//制造商
+								  if(this.temporaryBrand==''){
+									  $(eve.target).addClass("active");
+									  this.temporaryBrand = el.id;
+									  this.temporaryBrandName = el.brandName;									 
+									  return;
+								  }
+								  $("#brandList .supplier_list .active").removeClass("active");
+								  $(eve.target).addClass("active");
+								  this.temporaryBrand = el.id;
+								  this.temporaryBrandName = el.brandName;
+								  
+							  }
+						  }
+					}
+	 		}); 
+	 
+	 var uploader1 = createUploader({
+			buttonId: "uploadback", 
+			uploadType: "notice.publicRead", 
+			url:  ykyUrl.webres,
+			types: "jpg,png,jpeg,gif",
+			fileSize: "5mb",
+			isImage: true, 
+			init:{
+				FileUploaded : function(up, file, info) { 
+		            layer.close(index);
+					if (info.status == 200 || info.status == 203) {
+						console.log(_fileUrl);
+						console.log(file); 
+						vm.initData.attachUrl1 = _fileUrl;
+					} else {
+						layer.msg("上传文件失败,请重新上传！",{icon:2,offset:120}); 
+					}
+					up.files=[];
+				}
+			}
+	    }); 
+		uploader1.init();
+	
+	//保存按钮传参数
+	var addData={
+			categoryId: "4001", /* 活动 */
+		    recommendationId:'', /* 商品id */
+			desc:'', /* 描述  */
+			orderSeq:'1',   /* 推广位 */	
+			content:' ',
+			categoryTypeId:'extension'
+			
+	}
+
+	//保存新增字段content
+	var content = {	
+			linkDetails: '', /* 详情链接 */
+			imageUrl:'', /* 上传的图片 ,活动背景图*/
+			imageUrlLogo: '', /* 上传的logo小图 */
+			currentId:'',        /* 分销商，制造商id */
+			activityLink:'',    /* 活动链接 */
+			character:'',     /* 图片特征描述 */
+			facturerName:''    /* 分销商，制造商名称 */
+	}
+	 
+    //显示的内容 (4001活动，4002分销商，4003制造商 )
+	$("#distributor").on("click",function(){
+		layer.open({
+			type: 1,
+			title:'请选择分销商',
+		    area: '950px',
+		    offset: '100px',
+		    move:false,
+		    skin:"s_select_data",
+		    content:$("#titleList")
+		    ,btn: ['确认', '取消']
+		    ,yes: function(index, layero){
+		    	vm.activeVendor = vm.temporaryVendor;
+		    	vm.activeVendorName = vm.temporaryVendorName;
+		    	vm.vendorDetailLink = ykyUrl.portal + '/vendor/' + vm.activeVendor + '.htm';
+		    	vm.detailLink = vm.vendorDetailLink;
+		    	if(vm.activeVendor==''){
+		    		layer.msg('请选择一个分销商！');
+		    	}else{
+		    		$("#titleList .supplier_list .a_vendor").removeClass("a_vendor");
+		    		$("#titleList .supplier_list .active").addClass("a_vendor");
+		    		layer.closeAll(); 
+		    	}
+		    	$("#distributor").text("重新选择");
+		   }
+		   ,cancel: function(index, layero){
+			   vm.temporaryVendor = vm.activeVendor?vm.activeVendor:vm.temporaryVendor;
+			   vm.temporaryVendorName = vm.activeVendorName?vm.activeVendorName:vm.temporaryVendorName;
+			   $("#titleList .supplier_list .active").removeClass("active");
+			   if(vm.activeVendor==''){
+				   $("#titleList .supplier_list .a_vendor").removeClass("a_vendor");
+			   }else{
+				   $("#titleList .supplier_list .a_vendor").addClass("active");
+			   }
+		  }
+		})
+	})
+	$("#selectBrand").on("click",function(){
+		layer.open({
+				type: 1,
+			    title:'请选择制造商',
+			    area: '950px',
+			    offset: '100px',
+			    move:false,
+			    skin:"s_select_data",
+			    content:$("#brandList")
+			    ,btn: ['确认', '取消']
+	           ,yes: function(index, layero){
+	        	   vm.activeBrand = vm.temporaryBrand;
+			    	vm.activeBrandName = vm.temporaryBrandName;
+			    	vm.brandDetailLink = ykyUrl.portal + '/brand/' + vm.activeBrand + '.htm';
+			    	vm.detailLink = vm.brandDetailLink;
+			    	if(vm.activeBrand==''){
+			    		layer.msg('请选择一个制造商！');
+			    	}else{
+			    		$("#brandList .supplier_list .a_brand").removeClass("a_brand");
+			    		$("#brandList .supplier_list .active").addClass("a_brand");
+			    		layer.closeAll();
+			    	}
+			    	$("#selectBrand").text("重新选择");
+	   }
+	   ,cancel: function(index, layero){
+		   vm.temporaryBrand = vm.activeBrand?vm.activeBrand:vm.temporaryBrand;
+		   vm.temporaryBrandName = vm.activeBrandName?vm.activeBrandName:vm.temporaryBrandName;
+		   $("#brandList .supplier_list .active").removeClass("active");
+		   if(vm.activeBrand==''){
+			   $("#brandList .supplier_list .a_brand").removeClass("a_brand");
+		   }else{
+			   $("#brandList .supplier_list .a_brand").addClass("active");
+		   }
+	  }
+			  })
+	})
+	$('#categoryTypeId').on("change",function(){
+		addData.categoryId=$('#categoryTypeId').val();
+		showCategory(addData.categoryId);
+		
+	}) 
+	
+	//show or  hide(活动，分销商，制造商必填字段不完全相同)
+	
+	function showCategory(categoryId){
+		if(categoryId =="4002"  ){
+			 vm.isdistributor = true ;
+			 vm.detailLink = vm.vendorDetailLink;
+		}else{
+			vm.isdistributor = false ;
+		}
+		if(categoryId =="4003"  ){
+			 vm.ismanufacturer = true ;
+			 vm.detailLink = vm.brandDetailLink;
+		}else{
+			vm.ismanufacturer = false ;
+		}
+		if(categoryId =="4001" ){
+			 vm.isother = false;
+		}else{
+			vm.isother = true ;
+		}
+		
+		
+		}
+	//保存位置1-5
+	$('#orderSeq').on("change",function(){
+		addData.orderSeq=$('#orderSeq').val();
+		
+	}) 
+	//请求获取初始数据 
+	if(recommendationId){
+		$('.edit_state').text('编辑');
+		$.aAjax({
+			url:ykyUrl.info + '/v1/recommendations/' + recommendationId,
+			type:'GET',
+			success:function(data){	
+				console.log('yaya'+data);
+				showCategory(data.categoryId);
+				if(data.categoryId){
+					$("#categoryTypeId").val(data.categoryId);   //分销商，活动，制造商 
+				}
+				if(data.contentMap.currentId){
+					
+					if(data.categoryId=='4002'){
+						  //分销商
+						showVendorData(data.contentMap.currentId);
+						vm.vendorDetailLink = data.contentMap.linkDetails;
+						
+						
+					}
+					if(data.categoryId=='4003'){
+						  //制造商 
+						showData(data.contentMap.currentId);
+						vm.brandDetailLink = data.contentMap.linkDetails;
+						
+					}
+				}
+			
+				if(data.orderSeq){
+					$("#orderSeq").val(data.orderSeq);   //位置 
+					addData.orderSeq = data.orderSeq;
+				}
+				
+				if(data.desc){
+					$("#desc").val(data.desc);   //搜索描述 
+				}
+				
+				if(data.contentMap.activityLink){
+					$("#activityLink").val(data.contentMap.activityLink);//活动链接
+				}
+				if(data.contentMap.character){
+					$('#character').val(data.contentMap.character);//描述
+				}
+				
+				if(data.contentMap.linkDetails){
+					vm.detailLink = data.contentMap.linkDetails;
+				}
+				if(data.contentMap.imageUrl){
+					$(".background").attr("src",data.contentMap.imageUrl);//图片地址
+				}
+				
+				if(data.contentMap.imageUrlLogo){
+					$(".background").attr("src",data.contentMap.imageUrlLogo);//logo图片地址
+				}
+				content = data.contentMap;
+			
+			},
+			error:function(){
+				console.log("error")
+			}
+		})
+	}else{
+		$('.edit_state').text('添加');
+	}
+	$("#cancel_btn").on("click",function(){
+		history.go(-1);
+	})
+	
+	
+	/* 保存数据 */
+	$("#save_btn").on("click",function(){
+		addData.categoryId=$('#categoryTypeId').val();
+		if(addData.categoryId=='4002'){ //类型为分销商
+			vm.vendorDetailLink = vm.detailLink;
+			if(vm.activeVendor){
+				content.currentId = vm.activeVendor;
+				content.facturerName=vm.activeVendorName;
+				
+			}else{
+				layer.msg("请选择分销商！",{
+					skin:"c_tip"
+				});
+				return;
+			}
+			
+		}
+		if(addData.categoryId=='4003'){//类型为制造商
+			vm.brandDetailLink = vm.detailLink;
+			if(vm.activeBrand){
+				content.currentId = vm.activeBrand;
+				content.facturerName=vm.activeBrandName;
+			}else{
+				layer.msg("请选择制造商！",{
+					skin:"c_tip"
+				});
+				return;
+			}
+			
+		}
+		
+		showCategory(addData.categoryId);
+		if(vm.isother == false){  //类型为活动
+					//活动链接
+					var  activityLink = $.trim($("#activityLink").val());
+					if(activityLink == ""){
+						content.activityLink = "";
+					}else if(activityLink.indexOf("http:")>=0){
+						$("#activityLink").removeClass("b_red");
+						var saveActiveLink = $("#activityLink").val();
+						content.activityLink = saveActiveLink.replace("http:","");
+					}else if(activityLink.indexOf("https:")>=0){
+						$("#activityLink").removeClass("b_red");
+						var saveActiveLink = $("#activityLink").val();
+						content.activityLink = saveActiveLink.replace("https:","");
+					}else{
+						$("#activityLink").removeClass("b_red");
+						var saveActiveLink = $("#activityLink").val();
+						if(saveActiveLink.substring(0,2) === "//"){
+							content.activityLink = saveActiveLink;
+						}else{
+							content.activityLink = "//" + saveActiveLink;
+						}
+						
+					}
+			   }
+			//描述 
+				var desc= $("#desc").val();
+				if(!desc){
+					$("#desc").addClass("b_red");
+					layer.msg("请输入描述！",{
+						skin:"c_tip"
+					});
+					return;
+				}else{
+					$("#desc").removeClass("b_red");
+					addData.desc = $("#desc").val();
+				}
+			//上传图片
+			if($(".background").attr("src") == ykyUrl._this+"/images/static/defaultImg.120.jpg" && content.imageUrl==""){
+				layer.msg("请上传图片！",{
+					skin:"c_tip"
+				});
+			   return;
+		    }else{
+		    	content.imageUrl = $(".background").attr("src");
+		    }
+		
+		//选择制造商或者供应商时验证
+		if(vm.isother == true){
+			
+			//添加图片描述
+			var character = $("#character").val();
+			if(!character){
+				$("#character").addClass("b_red");
+				layer.msg("请添加描述！",{
+					skin:"c_tip"
+				});
+				return;
+			}else{
+				$("#character").removeClass("b_red");
+				content.character = $("#character").val();
+			}
+			
+			
+			//上传图片
+			if($(".background").attr("src") == ykyUrl._this+"/images/static/defaultImg.120.jpg" && content.imageUrlLogo==""){
+				layer.msg("请上传图片！",{
+					skin:"c_tip"
+				});
+			   return;
+		    }else{
+		    	content.imageUrlLogo = $(".background").attr("src");
+		    }
+			
+			//详情链接
+			var linkDetails = $("#linkDetails").val();
+			if(!linkDetails){
+				$("#linkDetails").addClass("b_red");
+				layer.msg("请输入详情链接！",{
+					skin:"c_tip"
+				});
+				return;
+			}else{
+				$("#linkDetails").removeClass("b_red");
+				content.linkDetails = vm.detailLink;
+			}
+			
+		}
+	
+	
+		saveData();
+		function saveData(){
+			
+			addData.recommendationId=recommendationId;
+			addData.content = JSON.stringify(content);
+			console.log('add'+addData.$model);
+			$.aAjax({
+				url:recommendationId ? ykyUrl.info + '/v1/recommendations/' + recommendationId : ykyUrl.info + '/v1/recommendations',
+				type:recommendationId ? 'PUT':'POST',		
+				data:JSON.stringify(addData),
+				success:function(data){
+					layer.msg("保存成功！",{
+						skin:"c_tip"
+					});
+					$("#save_btn").unbind("click");
+					$("#cancel_btn").unbind("click");
+					
+					setTimeout(function(){
+					   location.href = ykyUrl._this + "/extension.htm";
+					},2000)				
+				},
+				error:function(data){
+					console.log("error");
+				}
+			})
+		}
+				
+	})
+	
+ });
+
+//搜索制造商 
+function addbrandquery(list){
+ 	if(list.length==0)
+ 		return false;
+	
+ 	var py,reg = /[A-Z]/; 	
+ 	$.each(list, function(index, ele){
+ 		ele.ishave = true;
+ 		if(ele.brandName){
+ 			 py = ConvertPinyin(ele.brandName)
+ 			 var fl='';
+ 			for(var i = 0;i<py.length;i++){
+ 				
+ 				if (reg.test(py[i])){
+ 					fl+=py[i]
+ 				}
+ 			} 			
+ 			ele.query = py + " " + fl + " "  + ele.brandName
+ 			 			 			
+			var letter = py.slice(0,1);
+			if(!reg.test(letter.toUpperCase())){
+				vm.$data.brandShowOther = true;
+			};
+ 		}
+ 		//过滤首字母列表
+ 		$.each(vm.$data.brandLetter,function(i,e){
+ 			if(e.ishave=="yes"){
+ 				return;
+ 			} 
+ 			e.ishave = ele.query.toUpperCase().indexOf(e.letter.toUpperCase())== 0 ? "yes" : "no";
+ 		})
+	})
+	return list;
+ }
+
+//搜索分销商
+function addquery(list){
+ 	if(list.length==0)
+ 		return false;
+	
+ 	var py,reg = /[A-Z]/; 	
+ 	$.each(list, function(index, ele){
+ 		ele.ishave = true;
+ 		if(ele.title){
+ 			 py = ConvertPinyin(ele.title)
+ 			 var fl='';
+ 			for(var i = 0;i<py.length;i++){
+ 				
+ 				if (reg.test(py[i])){
+ 					fl+=py[i]
+ 				}
+ 			} 			
+ 			ele.query = py + " " + fl + " "  + ele.title
+ 			 			 			
+			var letter = py.slice(0,1);
+			if(!reg.test(letter.toUpperCase())){
+				vm.$data.titleShowOther = true;
+			};
+ 		}
+ 		//过滤首字母列表
+ 		$.each(vm.$data.titleLetter,function(i,e){ 			
+ 			if(e.ishave=="yes"){
+ 				return;
+ 			} 
+ 			e.ishave = ele.query.toUpperCase().indexOf(e.letter.toUpperCase())== 0 ? "yes" : "no";
+ 		})
+	})
+	return list;
+ }
+  showData('');  //新增的时候调这个
+ function showData(BrandName){
+	$.aAjax({
+		//url:ykyUrl.product + '/v1/products/manufacturers', //访问制造商列表接口
+		url:ykyUrl.product + '/v1/products/brands',
+		data:{
+			size:9999
+		},
+		type:'GET',		
+		//data:JSON.stringify(content),
+		success:function(data){
+			//console.log(data[0].brandName);
+
+			//  vm.$data.brandList = addbrandquery(data.list);	
+			 vm.$data.brandList = addbrandquery(data);
+			  if(BrandName){
+				  vm.temporaryBrand = BrandName;
+				  vm.activeBrand = BrandName;
+				  $.each(data,function(i,el){
+					  if( BrandName == el.id){
+						  vm.activeBrandName = el.brandName;
+					  }
+				  });	
+				  
+				  //拿到页面data-id
+				  activeList= $('#brandList .supplier_list a');
+				  $.each(activeList,function(i,ele){
+				
+					  if($(ele).data("id")== BrandName){
+						  $(this).addClass("active");
+						  $(this).addClass("a_brand")
+					  }
+					  
+				  });
+			  }
+		},
+		error:function(data){
+			console.log("error");
+		}
+	})
+	
+	}
+
+   showVendorData('');
+function showVendorData(vendorName){
+		$.aAjax({
+			url : ykyUrl.info + "/v1/news?categoryTypeIdStr=VENDOR", //访问分销商列表接口
+			data:{
+				pageSize:9999
+			},
+			type:'GET',		
+			success:function(data){
+				vm.$data.titleList = addquery(data.list)
+				//newsId  分销商id 
+				  if(vendorName){
+					  vm.temporaryVendor =vendorName;
+					  vm.activeVendor =vendorName;
+					  $.each(data.list,function(i,el){
+						  if( vendorName == el.newsId){
+							  vm.activeVendorName = el.title;
+							 
+						  }
+					  });	
+					  
+					  //拿到页面data-id
+					  activeList= $('#titleList .supplier_list a');
+					  $.each(activeList,function(i,ele){
+					
+						  if($(ele).data("id")== vendorName){
+							  $(this).addClass("active");
+							  $(this).addClass("a_vendor")
+						  }
+						  
+					  });
+				  }
+			},
+			error:function(data){
+				console.log("error");
+			}
+		  })
+	}
+
+function requireSaveData() {
+	//发送指令到iframe请求返回数据
+	window.frames[0].postMessage('save_btn', ykyUrl.ictrade_ueditor);
+}
+$(function(){
+	$("input").blur(function(){
+	if($.trim($(this).val())!==""){
+		$(this).removeClass("b_red");
+	}else{
+		if($(this).attr("name") == "activityLink"){
+			return;
+		}
+		$(this).addClass("b_red");
+	}	
+})
+})

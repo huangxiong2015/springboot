@@ -1,0 +1,50 @@
+var app = new Vue({
+	el: '#supplierDetail',
+	data: {
+		initData:{
+			extend1:'',
+			createdDate:''
+		},
+		content:{
+			contactUserName:'',
+			email:'',
+			imageUrl:'',
+			phone:'',
+			tel:'',
+			receiptFinance:'',
+			orderFinance:'',
+			bankFinance:''
+		},
+		server:'',
+		serverList:['receiptFinance','orderFinance','bankFinance']
+	},
+	created:function(){
+		var that = this;
+		syncData(ykyUrl.info + '/v1/recommendations/' + $('#detailId').val(),'GET',null,function(res,err){
+			if(err == null){
+				that.initData = $.extend({}, that.initData, res);
+				that.content = res.contentMap ? $.extend({}, that.content, res.contentMap) : that.content;
+				var serverArr = [];
+				$.each(that.serverList, function(index,ele){
+					if(that.content[ele] != ''){
+						serverArr.push(that.content[ele]);
+					}
+				})
+				that.server = serverArr.join(',');
+			}
+		})
+	},
+	methods:{
+		showBigImage:function(){
+			layer.open({
+				  type: 1,
+				  title: false,
+				  closeBtn: 0,
+				  area: 'auto',
+				  maxWidth: $(window).width() * 0.9,
+				  shadeClose: true,
+				  content: $('#bigImageWrap')
+				});
+		}
+	}
+});

@@ -1,0 +1,26 @@
+ 	.condition_inquery{background-color:#c11f2e;color:#fff;padding:10px 10px;font-size:14px;border-radius:3px;}
+	.col_bt_time input{width:37%;}
+  	.col_bt label,.col_bt_time label{text-align:right;}
+  	.col_input_2{width:12%;}
+  	.col_input_3{width:15%;}
+  	.mt25{margin-top:25px;}
+  	.table img{width: 32px;height: 32px;}
+  	.ui-selectmenu-button.ui-button {width: 14%;margin: 0px;margin-top: -3px;height: 30px;line-height: 30px;}
+  	#status-button{width: 16%;}
+  	.content-wrapper .content-header .pitch_tab{border-top: 0px;}
+  	.item_page .showpages {height: 120px;margin-bottom: 30px;}
+  	
+  	.up_skin_class .y_prompt_content {width: 330px;margin-top: 25px;}
+  	.operation {margin-bottom: 20px;}
+  	.w340{width: 340px;height: 100px;padding: 5px 10px;resize: none;}
+  	
+  	.table td a{padding-right: 0px;}
+  	.lh25{line-height:25px;}
+  	.titleClass span{display: inline-block;width: 100%;}
+  	
+  	.ms-controller{visibility: hidden;}
+  	.col_bt{height:32px;}
+  	.bred{border-color:#b1191a;}
+  	.ui-widget.ui-widget-content{word-wrap: break-word;}
+  	
+  	.colc11{color:#C11F2E;}

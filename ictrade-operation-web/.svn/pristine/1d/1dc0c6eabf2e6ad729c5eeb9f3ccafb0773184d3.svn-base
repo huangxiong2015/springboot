@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<c:set var="ctx" value="${pageContext.request.contextPath }" scope="request" />
+<!--[if IE 8 ]>    <html class="ie8" lang="zh-CN"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie9" lang="zh-CN"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!-->
+<html lang="zh-CN">
+<!--<![endif]-->
+<head> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<c:import url ="/WEB-INF/jsp/include/main/constants.jsp"/>
+	<title>用户详情</title>
+	<%-- <link rel="stylesheet" href="${ctx}/css/app/account_Manage.css"> --%>
+	<link rel="stylesheet" href="${ctx}/css/common/component.css"/>
+	<link rel="stylesheet" href="${ctx}/css/app/firmAccountDetail.css">
+	<style>
+	.cur{cursor:pointer;}
+	.lh32{line-height:32px;}
+	</style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+	<!---index header  start   ---->
+	<jsp:directive.include file="../include/main/header.jsp" />
+	<!---index header  end   ---->
+	 <!---index nav  start   ---->
+	<jsp:directive.include file="../include/main/menu.jsp" />
+	<!---index nav  end   ---->
+
+	  <!-- 右边内容显示 -->
+	  <div class="content-wrapper">
+		<!-- Content Header (Page header) -->
+		<section class="content-header">
+			<a href="#" class="header_tab pitch_tab">企业信息详情</a>
+		</section>
+	    <!-- Main content -->
+		<section ms-controller="list" class="content container-fluid ms-controller">
+		<input type="hidden" id="id" value="${id }" />
+		<input type="hidden" id="userId" value="${userId }" />
+		<input type="hidden" id="mail" name="mail" :duplex="@toHtml(@list.mail)" />
+		<form action="#" id="infoForm">
+			<h2 class="input-title">基本信息</h2>
+			<div class="row mt20">
+				<div class="col-xs-1 tr">
+					<label>个人编码：</label>
+				</div>
+				<div class="col-xs-11">
+					<span class="lh32">{{@id}}</span>
+				</div>
+			</div>			
+			<div class="row mt20">
+				<div class="col-xs-1 tr">
+					<label>企业编码：</label>
+				</div>
+				<div class="col-xs-11">
+					<span class="lh32">{{@corporationId}}</span>
+				</div>
+			</div>
+			<div class="row mt20">
+				<div class="col-xs-1 tr">
+					<label>公司名称：</label>
+				</div>
+				<div class="col-xs-11">
+				   <input class="col_input_1" type="hidden" id="registeAddr" :duplex="@toHtml(@list.registeAddr)">
+					<input class="col_input_1" type="hidden" id="busiLisType" :duplex="@toHtml(@list.busiLisType)">
+					<span :text="@toHtml(@list.name)" class="lh32"></span>
+				</div>
+			</div>
+			<div class="row mt20">
+				<div class="col-xs-1 tr">
+					<label><span class="cRed">*</span>公司类型：</label>
+				</div>
+				<div class="col-xs-11 c5e">
+					<span class="lh32" :for="(index,ele) in @corCategoryList" :attr="{value:ele.categoryId}" :if="ele.categoryId==@list.map.CORPORATION_CATEGORY_ID">{{ ele.categoryId == 2006 ? ele.categoryName + '('+ @list.map.CORPORATION_CATEGORY_ID_OTHER +')': ele.categoryName }}</span>					
+				</div>
+			</div>
+			<div class="row mt20">
+				<div class="col-xs-1 tr">
+					<label><span class="cRed">*</span>所属行业：</label>
+				</div>
+				<div class="col-xs-11 c5e">
+					<span class="lh32" :text="@showIndustryCategory()"></span>
+					<input id="industryCategory" name="industryCategory" type="hidden" :duplex="@toHtml(@list.industryCategory)" />					
+				</div>
+			</div>
+			<div class="row mt20">
+				<div class="col-xs-1 tr">
+					<label>公司地址：</label>
+				</div>
+				<div class="col-xs-11 c5e">
+					<span class="lh32">{{@list.provinceName}}{{@list.cityName}}{{@list.countryName}}{{@list.address}}</span>					
+				</div>
+			</div>
+			<div class="row mt20">
+				<div class="col-xs-1 tr">
+					<label>邓氏编码：</label>
+				</div>
+				<div class="col-xs-11 c5e">
+					<span class="lh32" :text="@list.map.D_CODE?@toHtml(@list.map.D_CODE):'-'"></span>
+				</div>
+			</div>
+			<div class="row mt20">
+				<div class="col-xs-1 tr">
+					<label>公司官网：</label>
+				</div>
+				<div class="col-xs-11 c5e">					
+					<span class="lh32" :text="@list.map.WEBSITE_URL?@toHtml(@list.map.WEBSITE_URL):'-'"></span>
+				</div>
+			</div>
+			<div class="row mt20">
+				<div class="col-xs-1 tr">
+					<label>YKY客户编码：</label>
+				</div>
+				<div class="col-xs-11 c5e">					
+					<span class="lh32" :text="@list.partyCode?@list.partyCode:'/'"></span>
+				</div>
+			</div>		
+			
+			<div class="area">
+				<div class="status_tlt">
+					<p class="input-title dib">企业资质</p>
+					<ul class="dib">
+						<li :if="@list.activeStatus == 'PARTY_NOT_VERIFIED'" style="background:#ccc;">未认证</li>
+						<li :if="@list.activeStatus == 'WAIT_APPROVE'" style="background:#ff9c7b;">待审核</li>
+						<li :if="@list.activeStatus == 'REJECTED'" style="background:#ccc;">不通过</li>
+						<li :if="@list.activeStatus == 'PARTY_VERIFIED'" style="background:#008000;">通过</li>
+						<li :if="@list.activeStatus == 'INVALID'" style="background:#ccc;">已失效</li>
+					</ul>
+				</div>
+				<!-- 资质开始 -->
+				<div id="qual" class="ui-qual mt20">
+					<div class="input-group">
+						<label class="input-text"><span class="must">*</span>公司注册地：</label>
+						<div class="input-content qual-type"></div>
+					</div>
+					<div class="input-group dalu_type">
+						<label class="input-text"><span class="must">*</span>营业执照类型：</label>
+						<div class="input-content">
+							<label class="radio-item">
+								<input type="radio" name="a">
+								<i class="radio radio-selected" data-name="3-TO-1"></i>三证合一营业执照（自2015年10月1日起登记机关颁发的含统一信用代码的营业执照）
+							</label>
+							<label class="radio-item">
+								<input type="radio" name="a">
+								<i class="radio" data-name="COMMON"></i>普通营业执照
+							</label>
+						</div>
+					</div>
+					<div class="qual-list">						
+					</div>
+				</div>				
+	        	<!-- 资质结束 -->
+			</div>
+			<div id="accountManagement" class="ui-qual mt20 dn">
+				<div class="status_tlt">
+					<p class="input-title dib">子账号管理</p>	
+					<ul class="dib">
+						<li :if="@list.accountStatus == 'ACCOUNT_NOT_VERIFIED'" style="background:#ccc;">未开通</li>
+						<li :if="@list.accountStatus == 'ACCOUNT_WAIT_APPROVE'" style="background:#ff9c7b;">待审核</li>
+						<li :if="@list.accountStatus == 'ACCOUNT_REJECTED'" style="background:#ccc;">不通过</li>
+						<li :if="@list.accountStatus == 'ACCOUNT_VERIFIED'" style="background:#008000;">通过</li>
+					</ul>
+				</div>
+				<div :if="@list.accountStatus !== 'ACCOUNT_NOT_VERIFIED'" class="input-group qual-item">
+					<label class="input-text"><span class="must">*</span>企业认证授权书：</label>
+					<div class="input-content">
+						<div class="uploadImg uploadImgLoa">
+							<img id="img8" class="LOA_PIC" src="" alt="">
+							<!-- <span id="uploadBtnLoa" class="upload-btn tc" style="cursor: pointer;">点此上传</span> -->
+						</div>
+						<div class="uploadCz">
+							<p class="tips">文件格式：.jpg .jpeg .png .bmp .pdf，文件大小：5M以内<br>
+								上传的文件需加盖公司公章或财务章</p>
+							<p><a class="blue dib download" style="color:#3377aa;" href="${ctx}/resources/download/企业授权委托书.doc">下载《企业授权委托书》模版</a></p>
+							<span class="ck-btn">参考样本</span>
+							<span class="dn"><img id="locPicSample" style="width:604px;height:854px;" src="${ctx}/images/sanzheng/dl-loa.jpg" ></span>		
+						</div>
+					</div>
+				</div>			
+	                	<p class="cl"></p>
+                	</div>
+			<div id="contactInfo" class="area contactInfo" style="display:block;">
+				<h2 class="input-title">联系人信息</h2>
+				<div class="row mt20">
+					<div class="col-xs-1 tr">
+						<label><span class="cRed">*</span>联系人姓名：</label>
+					</div>
+					<div class="col-xs-11 c5e">
+						<span class="lh32" :text="@contactInfo.name"></span>
+					</div>
+				</div>
+				<div class="row mt20">
+					<div class="col-xs-1 tr">
+						<label><span class="cRed">*</span>手机号码：</label>
+					</div>
+					<div class="col-xs-11 c5e">
+						<span class="lh32" :text="@contactInfo.telNumber"></span>
+					</div>
+				</div>
+				<div class="row mt20">
+					<div class="col-xs-1 tr">
+						<label><span class="cRed">*</span>邮箱：</label>
+					</div>
+					<div class="col-xs-11 c5e">
+						<span class="lh32" :text="@contactInfo.mail"></span>
+					</div>
+				</div>
+				<div class="row mt20">
+					<div class="col-xs-1 tr">
+						<label>固定电话：</label>
+					</div>
+					<div class="col-xs-11 c5e">
+						<span class="lh32" :text="@contactInfo.fixedTel"></span>
+					</div>
+				</div>
+				<div class="row mt20">
+					<div class="col-xs-1 tr">
+						<label>QQ：</label>
+					</div>
+					<div class="col-xs-11 c5e">
+						<span class="lh32" :text="@contactInfo.qq"></span>
+					</div>
+				</div>
+				<div class="row mt20">
+					<div class="col-xs-1 tr">
+						<label>职位：</label>
+					</div>
+					<div class="col-xs-11 c5e">
+						<span class="lh32" :for="(index,ele) in @positionList" :text="ele.name" :attr="{id:ele.id}" :if="ele.id == @contactInfo.personalTitle"></span>
+					</div>
+				</div>
+				<div class="row mt20">
+					<div class="col-xs-1 tr">
+						<label>联系地址：</label>
+					</div>
+					<div class="col-xs-11 c5e">
+						<span class="lh32">{{@contactInfo.provinceName}}{{@contactInfo.cityName}}{{@contactInfo.countryName}}{{@contactInfo.address}}</span>
+					</div>
+				</div>
+			</div>
+
+
+
+<!-- 操作记录 -->
+			<h2 class="input-title">修改记录</h2>
+			<div class="row mt20" >
+				<div class="col-xs-12">
+					<table class="table mb10">
+						<thead>
+							<tr>
+								<th width="5%">序号</th>
+								<th width="10%">操作人</th>
+								<th width="10%">时间</th>
+								<th width="10%">修改说明</th>
+							</tr>
+						</thead>
+						<tbody >
+							<!--ms-for:(index,el) in @operationlist-->
+							<tr :visible="@auditData(index,'part')" class="Infologomin">
+								<td>{{index+1}}</td>
+								<td ms-attr="{title:el.userName}">{{el.userName}}</td>
+								<td ms-attr="{title:el.date}">{{el.date}}</td>
+								<td ms-attr="{title:el.actionDesc}">{{el.actionDesc}}</td>
+							</tr>
+							<!--ms-for-end:-->
+						</tbody>
+					</table>
+					<div :if="@operationlist.length" class="look-morelog"><span class="look cur" :click="@auditData(@operationlist.length,'all')">查看更多信息&gt;&gt;</span></div>
+				</div>	
+			</div>			
+			
+			
+		
+			<h2 class="input-title">客户信息维护</h2>
+			<div class="row mt20 mb50">
+				<div class="col-xs-1 tr">
+					<label>客服备注：</label>
+				</div>
+				<div class="col-xs-11 c5e">
+					<span class="lh32" :text="@list.comments"></span>
+				</div>
+			</div>
+
+			<div id="infoSuc"  class="infoSuc tc" style="display:none">
+				<p class="g3 f16"><span class="icon-right-c"></span>资料修改成功</p>
+			</div>
+		</section>
+		<!-- /.content -->
+		<!-- <div style="margin-left:10%;padding-bottom:150px;margin-top:35px;">
+			<a href="javascript:void(0);" onclick="save();" style="background: #b1191a;color: #fff;padding: 10px 15px;border-radius: 3px;">保存</a>
+		 	<a href="javascript:void(0);" onclick="refresh();" class="reset_btn">取消</a>
+		 </div> -->
+	 	</form>
+	</div>
+	<script type="text/javascript">
+		//var selectCatid = "286,287";
+		var selectCatid = "225,226";
+	</script>
+	<!---footer  start   ---->
+	<jsp:directive.include file="../include/main/footer.jsp" />
+	<!---footer  end   ---->
+	<script type="text/javascript" src="${ctx}/js/lib/jquery.validate.js"></script>
+	<script type="text/javascript" src="${ctx}/js/common/add.validate.js"></script>
+	<script type="text/javascript" src="${ctx}/js/lib/plupload-2.1.2/js/plupload.full.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/oss/oss_zz.js"></script>
+	<script type="text/javascript" src="${ctx}/js/common/component.js"></script>
+	<script type="text/javascript" src="${ctx}/js/enterprise/firmAccountDetail.js"></script>
+</div>
+<!-- ./wrapper -->
+</body>
+</html>

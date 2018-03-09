@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+   http://www.springframework.org/schema/beans/spring-beans.xsd 
+     http://www.springframework.org/schema/cache 
+     http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<cache:annotation-driven />
+
+	<bean id="accountDAO" class="com.ykyframework.cache.AccountDAOImpl" />
+
+	<!-- generic cache manager -->
+	<bean id="simpleCacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+		<property name="caches">
+			<set>
+				<bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean" p:name="default" />
+				<bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean" p:name="accountCache" />
+			</set>
+		</property>
+	</bean>
+
+<!-- ehcache START -->   	
+   	<bean id="cacheManagerFactory" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">  
+        <property name="configLocation" value="classpath:com/ykyframework/cache/ehcache-config.xml"/>
+        <property name="shared" value="true"/>  
+    </bean>  
+    <bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">  
+        <property name="cacheManager" ref="cacheManagerFactory"/>  
+    </bean>
+   	
+   	 <!-- 定义一个Ehcache -->
+	<bean id="accountCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+	   	<property name="cacheName" value="accountCache"/>
+	   	<property name="cacheManager" ref="cacheManagerFactory"/>
+	</bean>
+<!-- ehcache END -->
+
+
+	<!-- CompositeCacheManager，他利用了前面的 simpleCacheManager 进行查询，如果查询不到，则根据标志位 fallbackToNoOpCache 来判断是否不做任何缓存操作 -->
+	<bean id="cacheManager" class="org.springframework.cache.support.CompositeCacheManager">
+		<property name="cacheManagers">
+			<list>
+				<ref bean="simpleCacheManager" />
+<!-- 				<ref bean="ehcacheManager" /> -->
+			</list>
+		</property>
+		<property name="fallbackToNoOpCache" value="false" />
+	</bean>
+</beans>

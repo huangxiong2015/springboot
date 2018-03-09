@@ -1,0 +1,1124 @@
+//上传图片初始化
+function initAll() {	
+	var  uploader = createUploader('uploadBtnLoa', 5, $('#uploadBtnLoa').parent(), function(imageUrlPreview) {
+		var uploadFileType = imageUrlPreview.indexOf("pdf")<0 ? "img" : "pdf";
+		$("#img8").unbind(".plugin");
+		if(imageUrlPreview) {
+			if(uploadFileType === 'img') {
+				$("#img8").on("click.plugin",function(){
+					showVoucherPic('img8');
+			        reSizeImg($("#img8").get(0));
+				})
+			}else if(uploadFileType === 'pdf') {
+				$('.uploadImgLoa').find('img').attr('src', ykyUrl._this + '/images/pdf_icon.png');
+				$('.uploadImgLoa').find('img').on('click.plugin', function() {
+					$("#img8").unbind(".img");
+					window.open($(this).data('url'));
+				})
+			}
+		}
+	});
+	uploader.init();
+}
+//initAll();	
+function reImg(i) {
+	var picType = '';
+	reSizeImg($('#showImg' + i).get(0));
+	reSizeImg($('#c' + i).get(0));
+
+	//判断上传文件是否是PDF
+	picType = $('#uploadImg' + i).data('type');
+	detailList.picsList[picType] = $('#uploadImg' + i).attr('data-urlPreview');
+	if ($('#uploadImg' + i).attr('data-url').indexOf('.pdf') != -1) {
+		detailList.picsList[picType + 'Pdf_NAME'] = $('#uploadImg' + i).attr(
+			'data-pdfName');
+		detailList.picsList[picType + 'Pdf_NAME'] = $('#uploadImg' + i).attr(
+			'data-pdfName');
+		detailList.picsList[picType + 'Pdf'] = true;
+	} else {
+		detailList.picsList[picType + 'Pdf'] = false;
+	}
+
+	$('#' + picType + 'Save').val($('#uploadImg' + i).attr('data-url'));
+}
+
+//从mogodb获取的数据，私有图片需转换 add by helinmei
+function getImage(imageUrl) {
+
+	var url = imageUrl ? imageUrl : '';
+	//获取图片公共方法
+	$.aAjax({
+		url: ykyUrl.party + "/v1/enterprises/getImgUrl",
+		type: "POST",
+		async: false,
+		data: JSON.stringify({
+			"id": imageUrl
+		}),
+		success: function(data) {
+			if (data !== "") {
+				url = data;
+			}
+		}
+	});
+	return url;
+}
+$("#accountManagement .ck-btn").on("click",function(){
+	showVoucherPic('locPicSample');
+	reSizeImg($("#locPicSample").get(0));
+})
+$("#corCategory").selectmenu({
+		width: 250,
+		change: function() {
+			detailList.list.map.CORPORATION_CATEGORY_ID = this.value;
+			
+			//公司类型-其他
+			if(this.value == 2006) {
+				$('#corCategory').parents('.row').next().show();
+			}else {
+				$('#corCategory').parents('.row').next().hide();
+				$('#corCategoryOther').valid();
+			}
+			$('#corCategoryOther').val('');
+		},
+		close: function() {
+			$(this).trigger("blur");
+		}
+	}).selectmenu("menuWidget")
+	.addClass("overflow");
+
+$("#Entprovince").selectmenu({
+		width: 150,
+		change: function() {
+			//事件
+			detailList.list.city = '';
+			detailList.list.country = '';
+			cityList.list=[];
+			countryList.list=[];		
+			cityList.activeCity='';
+			countryList.activeCountry='';
+			cityListData(this.value);
+			$("#Entprovince").selectmenu("refresh");
+		},
+		close: function() {
+			$(this).trigger("blur");
+		}
+	}).selectmenu("menuWidget")
+	.addClass("overflow");
+
+$("#Entcity").selectmenu({
+		width: 150,
+		change: function() {
+			//事件
+			countryListData(this.value);
+			$("#Entcity").selectmenu("refresh");
+		},
+		close: function() {
+			$(this).trigger("blur");
+		}
+	}).selectmenu("menuWidget")
+	.addClass("overflow");
+
+$("#Entcountry").selectmenu({
+	width: 150,
+	change: function() {
+		//事件
+		//$("#country").selectmenu("refresh");
+	},
+	close: function() {
+		$(this).trigger("blur");
+	}
+}).selectmenu("menuWidget").addClass("overflow");
+
+$("#personalTitle").selectmenu({
+	width: 150,
+	change: function() {
+		//事件
+		//$("#country").selectmenu("refresh");
+	},
+	close: function() {
+		$(this).trigger("blur");
+	}
+}).selectmenu("menuWidget").addClass("overflow");
+
+$(function() {		
+	var validate = false;
+	//查询企业账号及子账号
+	$.aAjax({
+		url: ykyUrl.party + '/v1/enterprises/' + detailList.id + '/accounts',
+		async: false,
+		type: 'GET',
+		//去掉数据模型中的所有函数
+		success: function(data) {
+			detailList.userList = data;
+		}
+	});
+	//操作日志
+	var listAction = [];
+	listAction.push("Enterprise Modify");
+	var listUrl = ykyUrl.party + "/v1/audit?actions=" + listAction +
+		"&actionId=" + GetQueryString("id");
+	$.aAjax({
+		url: listUrl, // +window.location.search,
+		type: 'GET',
+		async: false,
+		success: function(data) {
+			if (data.length === 0)
+				showList.isLoading = "暂无数据";
+			detailList.operationlist = data.list;
+		}
+	});
+
+	//获取公司类型
+	$.aAjax({
+		url: ykyUrl.database + '/v1/category/companytype',
+		type: 'GET',
+		async: false,
+		success: function(data) {
+			detailList.corCategoryList = data;
+		}
+	});
+	/*获取所属行业*/
+	$.aAjax({
+		url: ykyUrl.database + '/v1/category/industry',
+		type: 'GET',
+		async: false,
+		success: function(data) {
+			detailList.industryList = data;
+		}
+	});
+});
+
+function selectIndustryCategory(){
+	/*所属行业*/
+	var selected = $('#industryCategory').val().length?$('#industryCategory').val().split(','):[]; //選中的選項
+	$('#company_genre .company_type').each(function() { //行业
+		var $this = $(this);
+
+		$.each(selected, function(index, item) {
+			if ($this.find('input[type=checkbox]').val() == item) {
+				$this.find('.check-box-white').addClass('check-box-red');
+			}
+		});
+
+		$(this).find('.check-box-white').on('click', function() {
+			var isSelected = $(this).hasClass('check-box-red');
+			var value = $(this).find('input[type=checkbox]').val();
+			if (isSelected) {
+				for (var i = 0; i < selected.length; i++) {
+					if (selected[i] == value) {
+						selected.splice(i, 1);
+						detailList.selected.remove(value);
+						break;
+					}
+				}
+			} else {
+				selected.push(value);
+				detailList.selected.ensure(value);
+			}
+			$(this).toggleClass("check-box-red");
+			$('#industryCategory').val(selected.join(','));
+
+			if (selected.join(',').indexOf("1008") !== -1) {
+				if ($('.company_genre').find('div:last').find("input[type='text']").length ===
+					0) {
+					var othervalue = getOthersValue(detailList.list.otherAttrs,
+						'INDUSTRY_CATEGORY_ID_OTHER');
+					$('.company_genre').find('div:last').append(
+						'<div class="rel"><input class="getother" type="text" id="otherAttr" name="otherAttr" maxlength="10" value="' +
+						othervalue + '"/></div>');
+				}
+
+			} else {
+				if ($('.company_genre').find('div:last').find("input[type='text']").length >
+					0) {
+					otherAttr = $("#otherAttr").val();
+					$('.company_genre').find('div:last').remove();
+					//$(".error").hide();
+					$('.company_genre').find('div:last span').removeClass("mt8");
+				}
+			}
+		});
+	});
+}
+//获取路径中的参数值
+function GetQueryString(name) {
+	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+	var r = window.location.search.substr(1).match(reg);
+	if (r !== null) return unescape(r[2]);
+	return null;
+}
+function getOthersValue(otherValue, key) {
+	var other = "";
+	if (otherValue !== "" && typeof(otherValue) != "undefined") {
+		for (var i = 0; i < otherValue.length; i++) {
+			other = otherValue[i][key];
+			if (other) {
+				break;
+			}
+		}
+	}
+	if (typeof(other) == "undefined") other = "";
+	return other;
+}
+//省
+var provinceList = avalon.define({
+	$id: "provinceList",
+	list: [],
+	activeProvince: '',
+	id: getQueryString("id"),
+	changeProvince: function() {
+		var id = $("#Entprovince").val();
+		cityListData(id);
+	}
+});
+$.aAjax({
+	url: ykyUrl.database + '/v1/geos/100000/BELONG_TO',
+	data: provinceList.id,
+	//去掉数据模型中的所有函数
+	success: function(data) {
+		provinceList.list = data;
+		if (detailList.list.province) {
+			provinceList.activeProvince = detailList.list.province;			
+		} else {
+			provinceList.activeProvince = '';
+		}
+		cityListData(provinceList.activeProvince);
+		$("#Entprovince").selectmenu("refresh");
+	}
+});
+//市
+var cityList = avalon.define({
+	$id: "cityList",
+	list: [],
+	activeCity: '',
+	id: getQueryString("id"),
+	changeCity: function() {
+		var id = $("#Entcity").val();
+		countryListData(id);
+	}
+});
+
+function cityListData(province) {
+	if(province==''){		
+		return;
+	}
+	$.aAjax({
+		url: ykyUrl.database + '/v1/geos/' + province + '/BELONG_TO',
+		data: cityList.id,
+		//去掉数据模型中的所有函数
+		success: function(data) {
+			cityList.list = data;
+			if (cityList.list) {
+				if (detailList.list.city) {
+					cityList.activeCity = detailList.list.city;
+				} else {
+					cityList.activeCity = "";
+				}
+			}
+			countryListData(cityList.activeCity);
+			$("#Entcity").selectmenu("refresh");
+		}
+	});
+}
+//县
+var countryList = avalon.define({
+	$id: "countryList",
+	list: [],
+	activeCountry: '',
+	id: getQueryString("id")
+});
+
+function countryListData(city) {
+	if(city==""){
+		$("#Entcountry").selectmenu("refresh");
+		return;
+	}
+	$.aAjax({
+		url: ykyUrl.database + '/v1/geos/' + city + '/BELONG_TO',
+		data: countryList.id,
+		//去掉数据模型中的所有函数
+		success: function(data) {
+			countryList.list = data;
+			if (countryList.list) {
+				if (detailList.list.city) {
+					countryList.activeCountry = detailList.list.country;
+				} else {
+					countryList.activeCountry = '';
+				}
+			}
+			$("#Entcountry").selectmenu("refresh");
+		}
+	});
+}
+
+var initBackData = [],
+	validate;
+
+var detailList = avalon.define({
+	$id: "list",
+	list: [],
+	userList: [],//企业账号及子账号
+	operationList: [],//操作记录
+	corCategoryList: [],//公司类型
+	corCategoryOther: '', //公司类型-其他
+	industryList: [],//所属行业
+	industryOthre: '', //所属行业-其他
+	contactInfo:[],//联系人信息
+	initData:{
+		BUSI_LIC_PIC: '',
+		TAX_REG_PIC: '',
+		OCC_PIC: '',
+		LOA: '',
+		REG_ADDR:'0',
+		BUSI_LIS_TYPE:'3-TO-1'
+	},
+	fixedTel: '',
+	isAccountManagement:false,//判断子账号是否为可编辑
+	id: getQueryString("id"),
+	corporationId: getQueryString("corporationId"),
+	positionList:[{"id":"buyer","name":"采购员"},{"id":"purchasingManager","name":"采购经理"},{"id":"engineer","name":"工程师"},{"id":"other","name":"其他"}],//职业列表
+	selected: [],
+	status: '',
+	showVoucherPic: function(id) { //查看图片
+		showVoucherPic(id);
+		reSizeImg($('#' + id).get(0));
+	},
+	toHtml: function(data) {
+
+		if (data == 'undefined' || !data) {
+			return "";
+		} else {
+			return data;
+		}
+	},
+	updateStatus: function(id, status) { //确认收货
+		var option = '';
+		if (status == 'PARTY_DISABLED') {
+			option = '冻结';
+		} else {
+			option = '解冻';
+		}
+		var l = layer.confirm("确认是否" + option + "？", {
+			offset: "auto",
+			btn: ['确      认', '取      消'], //按钮
+			title: " ",
+			area: ['360px', '170px'],
+			move: false,
+			skin: "list_skin_class",
+			yes: function() {
+
+				$.aAjax({
+					url: ykyUrl.party + "/v1/enterprises/" + id + "?status=" + status +
+						"&action=updateStatus",
+					type: "PUT",
+					success: function(data) {
+						layer.close(l);
+						location.reload();
+					},
+					error: function(e) {
+						layer.closeAll('loading');
+						console.log("系统错误，审批失败，请联系系统管理员：" + e.responseText);
+					}
+				});
+			}
+		});
+	},
+	auditData: function(index, type) {
+		if (type == 'part') {
+			return index < 4
+		}
+		if (type == 'all') {
+			$('.Infologomin').show();
+			$('.look-morelog .look').hide();
+		}
+	},
+});
+
+detailList.$watch('zztype', function(newVal) {
+	$('.mainland_addr span').removeClass('selected');
+	if (newVal == '1') {
+		$('.mainland_addr').find('[data-val=1]').addClass('selected');
+	} else {
+		$('.mainland_addr').find('[data-val=0]').addClass('selected');
+	}
+});
+
+detailList.$watch('list', function() {
+	setTimeout(function() {
+		$('#corCategory').selectmenu('refresh');
+	});
+});
+
+//公司注册地select
+$('#selectSite').selectmenu({
+	width: 250
+});
+//获取路径中的参数值
+function GetQueryString(name){
+     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+     var r = window.location.search.substr(1).match(reg);
+     if(r!=null)return  unescape(r[2]); return null;
+}
+/*拉取数据*/
+if(GetQueryString("id")){
+$.aAjax({
+	//url: ykyUrl.party + '/v1/enterprises/entDetail/' + detailList.id + '/' + detailList.corporationId + '/PARTY_GROUP',
+	url: ykyUrl.party + '/v1/enterprises/entDetail/' + detailList.id + '/' + detailList.corporationId + '/CORPORATION',
+	type: 'GET',
+	/*async:false, */
+	//去掉数据模型中的所有函数
+	success: function(data) {
+		if(data.map==undefined){
+			data.map = "";
+		}
+		$("#Entname").val(data.name?data.name:'');
+		$("#Entaddress").val(data.address?data.address:'');
+		$("#dCode").val(data.map.D_CODE?data.map.D_CODE:'');
+		$("#webSite").val(data.map.WEBSITE_URL?data.map.WEBSITE_URL:'');
+		$("#comments").val(data.comments?data.comments:'');
+		$('#industryCategory').val(data.map.INDUSTRY_CATEGORY_ID?data.map.INDUSTRY_CATEGORY_ID.split(','):'');
+		detailList.initData = $.extend({}, detailList.initData, data.map);//获取初始资质数据，保存时做对比，没有修改是不请求资质审核服务
+		if(data.map.BUSI_LIC_PIC){
+			detailList.initData.BUSI_LIC_PIC = data.map.BUSI_LIC_PIC;
+		}
+		if(data.map.TAX_REG_PIC){
+			detailList.initData.TAX_REG_PIC = data.map.TAX_REG_PIC;
+		}
+		if(data.map.OCC_PIC){
+			detailList.initData.OCC_PIC = data.map.OCC_PIC;
+		}
+		
+		if(data.map.CORPORATION_CATEGORY_ID && data.map.CORPORATION_CATEGORY_ID === '2006') {
+			detailList.corCategoryOther = data.map.CORPORATION_CATEGORY_ID_OTHER || '';
+			$('#corCategoryOther').parents('.row').show();
+		}
+		
+		//资质审核组件
+		var imgSource = {};
+		if(data.map.REG_ADDR == '0') {
+			if(data.map.BUSI_LIS_TYPE == 'COMMON') {
+				imgSource = {
+					BUSI_LIC_PIC: data.map.BUSI_LIC_PIC?data.map.BUSI_LIC_PIC:'', //营业执照影印件(大陆)  /  注册证书(香港)
+					TAX_REG_PIC: data.map.TAX_REG_PIC?data.map.TAX_REG_PIC:'', //税务登记证影印件(大陆) / 商业登记证(香港)
+					OCC_PIC: data.map.OCC_PIC?data.map.OCC_PIC:'', //组织结构代码影印件(大陆)
+					BUSI_PDF_NAME:data.map.BUSI_PDF_NAME?data.map.BUSI_PDF_NAME:'',
+					TAX_PDF_NAME:data.map.TAX_PDF_NAME?data.map.TAX_PDF_NAME:'',
+					OCC_PDF_NAME:data.map.OCC_PDF_NAME?data.map.OCC_PDF_NAME:''
+				}
+			} else {
+				imgSource = {
+					BUSI_LIC_PIC: data.map.BUSI_LIC_PIC?data.map.BUSI_LIC_PIC:'', //营业执照影印件(大陆)  /  注册证书(香港)
+					TAX_REG_PIC: '', //税务登记证影印件(大陆) / 商业登记证(香港)
+					OCC_PIC: '', //组织结构代码影印件(大陆)
+					BUSI_PDF_NAME:data.map.BUSI_PDF_NAME?data.map.BUSI_PDF_NAME:'',					
+				}
+			}
+		}else{
+			imgSource = {
+					BUSI_LIC_PIC: data.map.BUSI_LIC_PIC?data.map.BUSI_LIC_PIC:'', //营业执照影印件(大陆)  /  注册证书(香港)
+					TAX_REG_PIC: data.map.TAX_REG_PIC?data.map.TAX_REG_PIC:'', //税务登记证影印件(大陆) / 商业登记证(香港)
+					OCC_PIC: '', //组织结构代码影印件(大陆)
+					BUSI_PDF_NAME:data.map.BUSI_PDF_NAME?data.map.BUSI_PDF_NAME:'',
+					TAX_PDF_NAME:data.map.TAX_PDF_NAME?data.map.TAX_PDF_NAME:'',
+				}
+		}
+		zzRenzheng.init('#qual', {
+			type: data.map.REG_ADDR,
+			busilisType: data.map.REG_ADDR == '0'? data.map.BUSI_LIS_TYPE : '' ,
+			imgSrc: imgSource
+		});
+		if(data.map.LOA){
+			detailList.initData.LOA = data.map.LOA
+			var loaurl = getImage(data.map.LOA);
+			var loapdfname = data.map.LOA_PDF_NAME;
+			if(loapdfname){
+				$("#img8").attr("data-pdfname",loapdfname);
+				$("#img8").attr("data-type","pdf");
+				$("#img8").attr("data-url",loaurl);
+				$("#img8").attr("src",ykyUrl._this+'/images/pdf_icon.png');				
+				$('.uploadImgLoa').find('img').attr('src', ykyUrl._this + '/images/pdf_icon.png');
+				$('.uploadImgLoa').find('img').on('click.plugin', function() {					
+					window.open($(this).data('url'));
+				})
+			}else{
+				$("#img8").attr("data-type","img");
+				$("#img8").attr("src",loaurl);
+				$("#img8").on("click.plugin",function(){
+					showVoucherPic('img8');
+			        reSizeImg($("#img8").get(0));
+				})
+			}
+
+			$("#img8").attr("data-src",data.map.LOA);
+		}else {
+			$("#img8").attr("data-src",'');
+		}
+		var mail = GetQueryString("mail");
+		data.corCategory = data.corCategory?data.corCategory:'';
+		detailList.list = data;
+		detailList.list.mail = mail;
+		initBackData = data;
+
+		/*获取省份*/
+		provinceList.activeProvince = data.province?data.province:'';
+		$('#Entprovince').selectmenu('refresh');
+		cityListData(data.province);
+
+		/*获取市区*/
+		cityList.activeCity = data.city?data.city:'';
+		$('#Entcity').selectmenu('refresh');
+		countryListData(data.city);
+
+		/*获取县城*/
+		countryList.activeCountry = data.country?data.city:'';
+		$('#Entcountry').selectmenu('refresh');
+				
+		//选中所属行业
+		var industryCategory = data.map.INDUSTRY_CATEGORY_ID?data.map.INDUSTRY_CATEGORY_ID.split(','):[];
+		if(industryCategory){
+			$.each(industryCategory,function(index,ele){
+				$('.check-box-white').each(function() {
+					var val = $(this).find('input[type=checkbox]').val();
+					if (val == ele) {
+						$(this).addClass('check-box-red');
+					}	
+					if (ele === '1008') {
+						$(this).trigger('click');
+						$(this).trigger('click');
+					}
+					if(val ==ele && val =='1008' && data.map.INDUSTRY_CATEGORY_ID_OTHER){
+						$("#otherAttr").val(data.map.INDUSTRY_CATEGORY_ID_OTHER)
+						$('.company_genre').find('div:last').append(
+						'<div class="rel"><input class="getother" type="text" id="otherAttr" name="otherAttr" maxlength="10" value="' +
+						data.map.INDUSTRY_CATEGORY_ID_OTHER + '"/></div>')
+					}
+				});
+			})
+		}
+		selectIndustryCategory();
+		var isinitAll = false;
+		$.aAjax({
+			url:ykyUrl.party + '/v1/customers/' + detailList.id,
+			type:'GET',
+			success:function(res){
+				$("#name").val(res.name);
+				$("#mobile").val(res.telNumber);
+				$("#mail").val(res.mail);
+				$("#qq").val(res.qq);
+				$("#address").val(res.address);
+				if(!res.personalTitle){
+					res.personalTitle = '';
+				}
+				
+				detailList.fixedTel = res.fixedTel || '';
+				
+				if(res.personalTitle) {
+					$('#personalTitle').val(res.personalTitle);
+					$('#personalTitle').selectmenu('refresh');
+				}
+				detailList.contactInfo = res;
+				
+				
+				
+				//联系人信息省市县三级联动
+				if(res.province && res.city && res.country){					
+					selectArea.init("#ld",{
+						provinceId: res.province?res.province:'', 
+						cityId: res.city?res.city:'', 
+						countyId: res.country?res.country:''
+					});
+				}else{
+					selectArea.init("#ld");
+				}
+				//判断子账号管理是否可编辑
+				if(detailList.list.partyCode && res.personType == "MAIN"){
+					initAll();
+					detailList.isAccountManagement = true;
+					$("#accountManagement").removeClass("dn");
+					if((data.accountStatus == 'ACCOUNT_VERIFIED' || data.accountStatus == 'ACCOUNT_WAIT_APPROVE')){
+						zzRenzheng.onlyRead('#accountManagement');
+					}
+				}else if(detailList.list.partyCode && res.personType == "COMMON"){					
+					$.aAjax({
+						url: ykyUrl.party + '/v1/enterprises/entCertificationList?partyCode=' + detailList.list.partyCode,
+						type:'GET',
+						async: false,
+						success:function(rec){
+							if(rec.list[0].accountStatus == 'ACCOUNT_NOT_VERIFIED'||rec.list[0].accountStatus == 'ACCOUNT_REJECTED'){
+								initAll();
+								detailList.isAccountManagement = true;
+								$("#accountManagement").removeClass("dn");
+								isinitAll = true;
+								if((data.accountStatus == 'ACCOUNT_VERIFIED' || data.accountStatus == 'ACCOUNT_WAIT_APPROVE')){
+									zzRenzheng.onlyRead('#accountManagement');
+								}
+							}						
+						}
+					})
+				}else if(detailList.list.partyCode && res.personType == "SON"){
+					zzRenzheng.onlyRead('#qual');
+				}
+			},
+			error:function(){
+				console.log('error');
+			}
+		})
+	},
+	error:function(){
+		layer.msg("网络异常，请刷新重试！")
+	}
+});
+}
+function save() {
+	//企业信息
+	var entInformation = {
+			"id":detailList.id,//传当前数据的用户id为了兼容老数据
+			"name": $("#Entname").val(),//公司名称
+			"corCategory":$("#corCategory").val(),//公司类型
+			"industryCategory":$("#industryCategory").val(),//所属行业
+			"otherAttrs": [ 
+				{"INDUSTRY_CATEGORY_ID_OTHER":$("#otherAttr").val()},  //所属行业其他
+				{"CORPORATION_CATEGORY_ID_OTHER": detailList.corCategoryOther}
+			 ],
+			"province": $("#Entprovince").val(),//省id
+			"provinceName": $("#Entprovince").val()?$('#Entprovince option:selected').text():'',//省name
+			"city": $("#Entcity").val(),//市id
+			"cityName": $("#Entcity").val()?$('#Entcity option:selected').text():'',//市name
+			"country": $("#Entcountry").val(),//县id
+			"countryName": $("#Entcountry").val()?$('#Entcountry option:selected').text():'',//县name
+			"address": $("#Entaddress").val(),//公司地址
+			"dCode":$("#dCode").val(),//邓氏编码
+			"webSite":$("#webSite").val(),//公司官网
+			"reason":$("#reason").val(),//修改说明
+			"comments": $("#comments").val(),//客服备注
+			"entUserId":GetQueryString("id")
+		}
+	//联系人信息
+	var contactsInformation = {
+			"partyId":GetQueryString("id"),
+			"name":$("#name").val(),//联系人姓名
+			"mobile":$("#mobile").val(),//联系人手机号
+			"mail":$("#mail").val(),//联系人邮箱
+			"qq":$("#qq").val(),//联系人qq
+			"personalTitle":$("#personalTitle").val(),//职位
+			"address":$("#address").val(),//联系人姓名
+			"province": $("#ld .province span").attr("data-id"),//省id
+			"provinceName": $("#ld .province span").attr("data-id")?$("#ld .province span").text():'',//省name
+			"city": $("#ld .city  span").attr("data-id"),//市id
+			"cityName": $("#ld .city  span").attr("data-id")?$("#ld .city  span").text():'',//市name
+			"country": $("#ld .county span").attr("data-id"),//县id
+			"countryName": $("#ld .county span").attr("data-id")?$("#ld .county span").text():'',//县name	
+			'fixedTel': detailList.fixedTel		
+	}
+	//企业资质
+	var entQual = {
+		"REG_ADDR":$(".qual-type span").attr("data-id"),//注册地址
+		"BUSI_LIS_TYPE":$(".dalu_type .radio-item .radio-selected").attr("data-name"),//营业执照类型
+		"BUSI_LIC_PIC":$(".qual-list .qual-item .BUSI_LIC_PIC").attr("data-src") || '',//营业执照
+		"TAX_REG_PIC":$(".qual-list .qual-item .TAX_REG_PIC").attr("data-src") || '',//税务登记
+		"OCC_PIC":$(".qual-list .qual-item .OCC_PIC").attr("data-src") || '',//组织机构
+		"BUSI_PDF_NAME":$(".qual-list .qual-item .BUSI_LIC_PIC").data("pdfname") || '',
+		"TAX_PDF_NAME":$(".qual-list .qual-item .TAX_REG_PIC").data("pdfname") || '',
+		"OCC_PDF_NAME":$(".qual-list .qual-item .OCC_PIC").data("pdfname") || '',
+	}
+	//子账号管理
+	var subAccountManagement = {
+		"LOA": $("#img8").attr("data-src") || '',//授权委托书
+		"LOA_PDF_NAME": $("#img8").attr("data-pdfname") || '',
+	}
+	var entQualMap={};
+	//必填校验
+	$("#infoForm").submit();
+	if (!validate) {
+		return;
+	}
+	if(entInformation.entInformation==''){
+		$('#corCategory').valid()
+		return;
+	}
+	if (entInformation.industryCategory.length < 1) {
+		layer.msg("请选择所属行业！");
+		return;
+	}else{
+		if(!entInformation.otherAttr){
+			delete entInformation.otherAttr
+		}
+	}
+	/*if(!contactsInformation.province || !contactsInformation.city || !contactsInformation.country){
+		layer.msg("请完善联系地址");
+		return;
+	}*/
+	if(entQual.REG_ADDR == '0' && entQual.BUSI_LIS_TYPE == '3-TO-1'){//大陆三证合一
+//		if(!entQual.BUSI_LIC_PIC || entQual.BUSI_LIC_PIC==''){
+//			layer.msg("请上传营业执照影印件!");
+//		}
+		entQualMap.REG_ADDR = entQual.REG_ADDR;
+		entQualMap.BUSI_LIS_TYPE = entQual.BUSI_LIS_TYPE;
+		entQualMap.BUSI_LIC_PIC = entQual.BUSI_LIC_PIC;
+		if($(".qual-list .qual-item .BUSI_LIC_PIC").attr("data-type")=="pdf"){
+			entQualMap.BUSI_PDF_NAME = entQual.BUSI_PDF_NAME;
+		}
+	}else if(entQual.REG_ADDR == '0' && entQual.BUSI_LIS_TYPE == 'COMMON'){//大陆普通营业执照
+//		if(!entQual.BUSI_LIC_PIC || entQual.BUSI_LIC_PIC==''){
+//			layer.msg("请上传营业执照影印件!");
+//			return;
+//		}
+//		if(!entQual.TAX_REG_PIC || entQual.TAX_REG_PIC==''){
+//			layer.msg("请上传税务登记证影印件!");
+//			return;
+//		}
+//		if(!entQual.OCC_PIC || entQual.OCC_PIC==''){
+//			layer.msg("请上传组织机构代码证影印件!");
+//			return;
+//		}
+		entQualMap.REG_ADDR = entQual.REG_ADDR;
+		entQualMap.BUSI_LIS_TYPE = entQual.BUSI_LIS_TYPE;
+		entQualMap.BUSI_LIC_PIC = entQual.BUSI_LIC_PIC;
+		entQualMap.TAX_REG_PIC = entQual.TAX_REG_PIC;
+		entQualMap.OCC_PIC = entQual.OCC_PIC;
+		if($(".qual-list .qual-item .BUSI_LIC_PIC").attr("data-type")=="pdf"){
+			entQualMap.BUSI_PDF_NAME = entQual.BUSI_PDF_NAME;
+		}
+		if($(".qual-list .qual-item .TAX_REG_PIC").attr("data-type")=="pdf"){
+			entQualMap.TAX_PDF_NAME = entQual.TAX_PDF_NAME;
+		}
+		if($(".qual-list .qual-item .OCC_PIC").attr("data-type")=="pdf"){
+			entQualMap.OCC_PDF_NAME = entQual.OCC_PDF_NAME;
+		}
+	}else if(entQual.REG_ADDR == '1'){//香港
+//		if(!entQual.BUSI_LIC_PIC || entQual.BUSI_LIC_PIC==''){
+//			layer.msg("请上传注册证书(CR)!");
+//			return;
+//		}
+//		if(!entQual.TAX_REG_PIC || entQual.TAX_REG_PIC==''){
+//			layer.msg("请上传商业登记证(BR)!");
+//			return;
+//		}
+		entQualMap.REG_ADDR = entQual.REG_ADDR;
+		entQualMap.BUSI_LIS_TYPE = 'HK-CODE';
+		entQualMap.BUSI_LIC_PIC = entQual.BUSI_LIC_PIC;
+		entQualMap.TAX_REG_PIC = entQual.TAX_REG_PIC;
+		if($(".qual-list .qual-item .BUSI_LIC_PIC").attr("data-type")=="pdf"){
+			entQualMap.BUSI_PDF_NAME = entQual.BUSI_PDF_NAME;
+		}
+		if($(".qual-list .qual-item .TAX_REG_PIC").attr("data-type")=="pdf"){
+			entQualMap.TAX_PDF_NAME = entQual.TAX_PDF_NAME;
+		}
+	}else if(entQual.REG_ADDR == '2'){//台湾
+//		if(!entQual.BUSI_LIC_PIC || entQual.BUSI_LIC_PIC==''){
+//			layer.msg("请上传盈利事業登記證!");
+//			return;
+//		}
+//		if(!entQual.TAX_REG_PIC || entQual.TAX_REG_PIC==''){
+//			layer.msg("请上传稅籍登記證!");
+//			return;
+//		}
+		entQualMap.REG_ADDR = entQual.REG_ADDR;
+		entQualMap.BUSI_LIS_TYPE = 'TW-CODE';
+		entQualMap.BUSI_LIC_PIC = entQual.BUSI_LIC_PIC;
+		entQualMap.TAX_REG_PIC = entQual.TAX_REG_PIC;
+		if($(".qual-list .qual-item .BUSI_LIC_PIC").attr("data-type")=="pdf"){
+			entQualMap.BUSI_PDF_NAME = entQual.BUSI_PDF_NAME;
+		}
+		if($(".qual-list .qual-item .TAX_REG_PIC").attr("data-type")=="pdf"){
+			entQualMap.TAX_PDF_NAME = entQual.TAX_PDF_NAME;
+		}
+	}else if(entQual.REG_ADDR == '3'){//境外
+//		if(!entQual.BUSI_LIC_PIC || entQual.BUSI_LIC_PIC==''){
+//			layer.msg("请上传CERTIFICATE OF INCORPORATION!");
+//			return;
+//		}
+		entQualMap.REG_ADDR = entQual.REG_ADDR;
+		entQualMap.BUSI_LIS_TYPE = 'ABROAD-CODE';
+		entQualMap.BUSI_LIC_PIC = entQual.BUSI_LIC_PIC;
+		if($(".qual-list .qual-item .BUSI_LIC_PIC").attr("data-type")=="pdf"){
+			entQualMap.BUSI_PDF_NAME = entQual.BUSI_PDF_NAME;
+		}
+	}
+	if($("#img8").attr("data-type")!=="pdf"){
+		delete subAccountManagement.LOA_PDF_NAME
+	}
+	var s_entInformation = false,s_contactsInformation = false, s_entQualMap = false, s_subAccountManagement = false;
+	var isSaveEntQualMap = false, isSaveSubAccount = false;
+	$.aAjax({//保存企业信息
+		url:ykyUrl.party + "/v1/enterprises/editCompany",
+		type: "POST",
+		async: false,
+		data:JSON.stringify(entInformation),
+		success:function(data){
+			s_entInformation = true;
+		},
+		error:function(){
+			console.log("error");
+		}
+	})
+	$.aAjax({//保存联系人信息
+		url:ykyUrl.party + "/v1/customers",
+		type: "POST",
+		async: false,
+		data:JSON.stringify(contactsInformation),
+		success:function(data){
+			s_contactsInformation = true;
+		},
+		error:function(){
+			console.log("error");
+		}
+	})
+  var userMail="";
+	//查询当前登录用户名和邮箱
+  $.aAjax({
+		url:ykyUrl.party + "/v1/customers/"+$("#userId").val()+"/username",
+		type: "GET",
+		async: false,
+		success:function(data){
+			if(data){
+				userMail = data.mail;	
+			} 
+		},
+		error:function(){
+			console.log("error");
+		}
+	})
+	
+	var content = {
+			"id" : GetQueryString("corporationId"),
+			"map": entQualMap,
+			"isVipCenter":"0",//用来区分是从customer提交的审核还是从operation提交的
+			"entUserId":GetQueryString("id"),
+			"name": $("#Entname").val(),//公司名称
+			"contactUserName":$("#userName").val(),//申请人
+			"mail":$("#mail").val(),//邮箱
+			"applyUser":$("#name").val(),//联系人
+			"applyMail":$("#mail").val(),//联系人邮箱
+			"applyInformation":$("#mobile").val(),//联系方式
+	};
+	var jsonVal = {
+			"applyContent":JSON.stringify(content),
+			"applyUserId":$('#applyUserId').val(),
+			"processId":"ORG_DATA_REVIEW",//资质审核流程
+			"applyOrgId": GetQueryString("corporationId"),
+			"reason":"",
+			"applyPageUrl":"",
+			"callBackUrl":"",
+		};
+	var subContent = {
+			"id" : GetQueryString("corporationId"),
+			"map":subAccountManagement,
+			"entUserId":GetQueryString("id"),
+			"name": $("#Entname").val(),//公司名称
+			"contactUserName":$("#userName").val(),//申请人
+			"mail":userMail,//邮箱
+			
+	}
+	var subjsonVal = {
+			"applyContent":JSON.stringify(subContent),
+			"applyUserId":$('#applyUserId').val(),
+			"processId":"ORG_PROXY_REVIEW",//授权委托书流程
+			"applyOrgId": GetQueryString("corporationId"),
+			"reason":"",
+			"applyPageUrl":"",
+			"callBackUrl":"",
+		};
+	if((entQual.BUSI_LIC_PIC !== undefined && entQual.BUSI_LIC_PIC !== detailList.initData.BUSI_LIC_PIC) || 
+		(entQual.TAX_REG_PIC !== undefined && entQual.TAX_REG_PIC !== detailList.initData.TAX_REG_PIC) || 
+		(entQual.OCC_PIC !== undefined && entQual.OCC_PIC !== detailList.initData.OCC_PIC) || 
+		detailList.initData.REG_ADDR !== entQual.REG_ADDR || 
+		detailList.initData.BUSI_LIS_TYPE !== entQualMap.BUSI_LIS_TYPE ){
+		isSaveEntQualMap = true;
+		$.aAjax({//保存企业资质
+			url:ykyUrl.party + "/v1/enterprises/editEntApply",
+			type: "POST",
+			async: false,
+			data:JSON.stringify(jsonVal),
+			success:function(data){
+				s_entQualMap = true;
+			},
+			error:function(){
+				console.log("error");
+			}
+		})
+	}
+	if(detailList.isAccountManagement && subAccountManagement.LOA !== detailList.initData.LOA){
+		isSaveSubAccount = true;
+		$.aAjax({//保存子账号管理
+			url:ykyUrl.party + "/v1/enterprises/entApplyAuthorize",
+			type: "POST",
+			async: false,
+			data:JSON.stringify(subjsonVal),
+			success:function(data){
+				s_subAccountManagement = true;
+			},
+			error:function(){
+				console.log("error");
+			}
+		})
+	}
+	if(!s_entInformation){
+		layer.msg("企业信息保存失败，请重新保存");
+		return;
+	}
+	if(!s_contactsInformation){
+		layer.msg("联系人信息保存失败，请重新保存");
+		return;
+	}
+	if(isSaveEntQualMap && !s_entQualMap){
+		layer.msg("企业资质信息保存失败，请重新保存");
+		return;
+	}
+	if(isSaveSubAccount && !s_subAccountManagement){
+		layer.msg("企业资质信息保存失败，请重新保存");
+		return;
+	}
+	layer.msg("保存成功");
+	setTimeout(function(){
+		location.href = ykyUrl._this + '/enterprise.htm?action=detail&id=' + detailList.id + '&corporationId=' + detailList.corporationId;
+	},2000)	
+}
+//验证
+$("#infoForm").validate({
+	rules: {
+		Entname: {//公司名称
+			required: true,
+			//rangelength: [4, 50]
+		},
+		/*Entaddress: {//公司地址
+			required: true,			
+		},*/
+		name: {//联系人姓名
+			required: true,
+			username: [""]
+		},
+		mobile:{//联系人手机号
+			required: true,
+			addrMobileCheck:['']
+		},
+		mail:{//联系人邮箱
+			required: true,
+			addrMailCheck:[''],
+			existAcount2:['']
+		},
+		/*address: {//联系人地址
+			required: true
+		},*/
+		webSite: {//公司官网
+			validWebSite: [""]
+		},
+		fax: {//传真
+			isFax: [""]
+		},
+		qq: {
+			isqq: [""]
+		},
+		otherAttr: {
+			required: true
+		},
+		reason: {
+			required: true
+		},		
+		corCategory:{
+			required: true
+		},
+		fixedTel: {
+			required: false,
+			maxlength: 17,
+			isPhone: [""]
+		},
+		corCategoryOther:{ //公司类型-其他
+			required: function() {
+				return $('#corCategory').val() == 2006;
+			},
+			corCategoryOther: [""]
+		} 
+	},
+	messages: {
+		Entname: {//公司名称
+			required: '公司名称不能为空',
+			//rangelength:'公司名称长度只能在4-50位字符之间'
+		},
+		Entaddress: {//公司地址
+			required: '公司地址不能为空',			
+		},
+		name: {//联系人姓名
+			required: '联系人姓名不能为空',
+		},
+		mobile:{//联系人手机号
+			required: '联系人手机号码不能为空',
+		},
+		mail:{//联系人邮箱
+			required: '联系人邮箱不能为空',
+		},
+		address: {//联系人地址
+			required: '联系人地址不能为空'
+		},				
+		otherAttr: {
+			required: "不能为空"
+		},
+		reason: {
+			required: "修改原因不能为空"
+		},
+		corCategory:{
+			required: "请选择公司类型"
+		},
+		corCategoryOther: {
+			required: '公司类型不能为空'
+		},
+		fixedTel: {
+			maxlength: '固定电话最多为17位'
+		}
+	},
+	errorElement: "em",
+	success: function(label) {
+		$(label).removeClass("error icon-triangle-leftmin");
+		$(label).addClass("icon-confirm");
+		if ($(label).parent().find('input').val() === '') {
+			$(label).removeClass("icon-confirm");
+		}
+	},
+	errorPlacement: function(error, element) {
+		var f = error[0].getAttribute("for");
+		var ele = $("em[for=" + f + "]");
+		if (ele.length > 0) {
+			ele[0].remove();
+		}
+		error.appendTo(element.parent());
+		$(error).addClass("error icon-triangle-leftmin");
+	},
+	submitHandler: function() {
+		validate = true;
+	}
+});
+
+//联系人去掉收尾空格
+$('#contactUserName').on('blur', function() {
+	var name = $.trim($(this).val());
+	$(this).val(name);
+});
+//邮箱是否存在校验
+jQuery.validator.addMethod("existAcount2", function(value, element, param) {
+	if(value.trim() == detailList.contactInfo.mail){		
+		returnValue = true;		
+	}else{
+		var mobile = /^[1][34578][0-9]{9}$/;
+	    var mail = /^[A-Za-z0-9d]+([-_.]+[A-Za-z0-9d]+)*@([A-Za-z0-9d]+[-.])+[A-Za-zd]{1,5}$/;
+	    var returnValue = false;
+	    if (mobile.test(value)) {
+	        param[0] = "手机号码已存在";
+	    } else {
+	        if (mail.test(value)) {
+	            param[0] = "邮箱地址已存在";
+	        }
+	    }
+	    $.ajax({
+	        url: ykyUrl.party + "/v1/account/" + $.base64.encode(value.trim()),
+	        type: "GET",
+	        async: false,
+	        success: function(data) {
+	            returnValue = !data;
+	        },
+	        error: function() {
+	            console.error("判断用户名是否存在接口错误");
+	        }
+	    });
+	}   
+    return this.optional(element) || returnValue;
+}, "{0}");

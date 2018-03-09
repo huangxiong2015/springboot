@@ -1,0 +1,78 @@
+
+#mq\u7684group
+#not in use
+mq.consumergroup.leadInStockMsgRecvGroup=CID_YKY_LeadInStockMsg
+mq.consumergroup.syncStockMsgRecvGroup=CID_YKY_SyncStockMsg
+mq.consumergroup.syncStockSubMsgRecvGroup=CID_YKY_SyncStockSubMsg
+mq.consumergroup.leadInMaterialItemMsgRecvGroup=CID_YKY_LeadInMaterialItemMsg
+mq.consumergroup.createYkycodeMsgRecvGroup=CID_CreateYkycodeMsg
+mq.consumergroup.syncStockFromItemRecvGroup=CID_YKY_SyncStockFromItemMsg
+mq.consumergroup.syncRequireFromItemRecvGroup=CID_YKY_SyncRequireFromItemMsg
+
+
+#in use
+mq.consumergroup.mailMsgRecvGroup=CID_YKY_MailMsg
+mq.consumergroup.pushMsgRecvGroup=CID_YKY_PushMsg
+mq.consumergroup.recommendNewStocksRecvGroup=CID_YKY_RecommendNewStocksMsg
+mq.consumergroup.recommendWaresCacheMsgRecvGroup=CID_YKY_RecommendWaresCacheMsg
+mq.consumergroup.ehCacheMsgRecvGroup=CID_YKY_EhCacheMsg
+mq.consumergroup.recommendGoodsCacheMsgRecvGroup=CID_YKY_RecommendGoodsCacheMsg
+mq.consumergroup.topTenNewGoodsCacheMsgRecvGroup=CID_YKY_TopTenGoodsCacheMsg
+mq.consumergroup.inquireDistributionMsgRecvGroup=CID_YKY_InquireDistributionMsg
+
+
+#topic\u540d\u79f0,\u53d1\u9001\u65f6\u6307\u5b9atopic\u540d\uff0c\u4f46\u5b9e\u9645\u53d1\u5f80\u7684topic\u8981\u770b\u53d1\u9001\u5668\u4e2d\u7ed1\u5b9a\u7684\u6620\u5c04\u8bbe\u7f6e
+#Not in use
+mq.topic.leadInStrockTopic=TOPIC_LEAD_IN_STOCK
+mq.topic.syncStockTopic=TOPIC_SYNC_STOCK
+mq.topic.syncStockSubTopic=TOPIC_SYNC_STOCK_SUB
+mq.topic.leadInMaterialItemTopic=TOPIC_LEAD_IN_MATERIAL_ITEM
+mq.topic.createYkycodeTopic=TOPIC_CREATE_YKYCODE
+mq.topic.syncStockFromItemTopic=TOPIC_SYNC_STOCK_FROM_ITEM
+mq.topic.syncRequireFromItemTopic=TOPIC_SYNC_REQUIRE_FROM_ITEM
+
+#in use
+mq.topic.simleMailTopic=TOPIC_SIMPLE_MAIL
+mq.topic.pushMsgTopic=TOPIC_PUSHMSG
+mq.topic.ehCacheTopic=TOPIC_EH_CACHE
+mq.topic.recommendWaresCacheTopic=TOPIC_RECOMMEND_WARES_CACHE
+mq.topic.recommendNewStocksTopic=TOPIC_RECOMMEND_NEW_STOCKS
+mq.topic.recommendGoodsCacheTopic=TOPIC_RECOMMEND_GOODS_CACHE
+mq.topic.topTenNewGoodsCacheTopicName=TOPIC_TOP_TEN_NEW_GOODS_CACHE
+mq.topic.inquireDistributionTopic=TOPIC_INQUIRE_DISTRIBUTION
+
+#\u7269\u7406topic\u540d\uff0c\u53ef\u5728\u6620\u5c04\u4e2d\u914d\u7f6e\u4f5c\u4e3a\u4e0a\u8fb9topic\u7684\u5b9e\u9645\u53d1\u9001\u5230\u7684topic
+#messages & email & in_mail, notifies for application ...
+mq.topic.target.original.MESSAGES=TOPIC_ORIGINAL_MESSAGES
+#product & stock
+mq.topic.target.original.PRODUCTS=TOPIC_ORIGINAL_PRODUCTS
+#order & payment
+mq.topic.target.original.ORDER_PAY=TOPIC_ORIGINAL_ORDER_PAY
+#discard
+#system
+mq.topic.target.original.SYSTEM=TOPIC_ORIGINAL_SYSTEM
+
+#\u7f51\u5173\u76f8\u5173
+gateway.api.transaction.serverUrlPrefix=/services-transaction
+gateway.api.product.serverUrlPrefix=/services-product
+gateway.api.basedata.serverUrlPrefix=/services-basedata
+gateway.api.party.serverUrlPrefix=/services-party
+gateway.api.pay.serverUrlPrefix=/services-pay
+gateway.api.shipment.serverUrlPrefix=/services-shipment
+gateway.api.quotation.serverUrlPrefix=/services-quotation
+gateway.api.message.serverUrlPrefix=/services-message
+gateway.api.workflow.serverUrlPrefix=/services-workflow
+gateway.api.crawler.serverUrlPrefix=/services-crawler
+
+#GA\u76f8\u5173
+ga.id=UA-73342110-1
+#\u767e\u5ea6\u7edf\u8ba1
+baidu.statistics=1
+
+#CDN
+webstatic.webres=//misc.ykystatic.com/webres
+webstatic.webres.lemon.verson=1.0.0
+#\u56FD\u5185\u53D1\u8D27\u7701\u4EFDid
+address.cny=440000
+#\u9999\u6E2F\u53D1\u8D27id
+address.usd=810000

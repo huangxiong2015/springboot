@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+	default-lazy-init="false">
+	
+	<bean id="simpleMailMessageReceiveListener" class="com.ictrade.utils.SimpleMailMessageReceiveListener" />
+	<bean id="pushMsgReceiveListener" class="com.ictrade.utils.PushMsgReceiveListener"/>
+	<bean id="inquireDistributionReceiveListener" class="com.ictrade.utils.InquireDistributionReceiveListener"/>
+	<bean id="recommendNewStocksReceiveListener" class="com.ictrade.utils.RecommendNewStocksReceiveListener"/>
+	<bean id="recommendWaresCacheReceiveListener" class="com.ictrade.utils.RecommendWaresCacheReceiveListener"/>
+	<bean id="recommendGoodsReceiveListener" class="com.ictrade.utils.RecommendGoodsReceiveListener"/>
+	<bean id="topTenNewGoodsReceiveListener" class="com.ictrade.utils.TopTenNewGoodsReceiveListener"/>
+	
+	<!-- 配置MQ订阅 -->	
+	<!-- 发送邮件 -->
+	<bean id="basicsub" abstract="true">
+		<!-- 是否是需要顺序消费的消息 ，默认为false-->
+		<property name="orderly"><value type="boolean">false</value></property>
+		<!-- 是否是集群消费的消息，默认为true -->
+		<property name="clustering"><value type="boolean">true</value></property>
+	</bean>
+	<!-- 针对某一队列的订阅方式 -->
+	<!-- 发送邮件 -->
+	<bean name="simpleMailSub" parent="basicsub" class="com.ykyframework.mqservice.receiver.SimpleMQSubscription">
+		<property name="topicName" value="${mq.topic.simleMailTopic}" />
+		<property name="consumerGroup" value="${mq.consumergroup.mailMsgRecvGroup}" />
+		<!-- 并行消费的实例数，默认为1 -->
+		<property name="concurrency" value="1"/>
+		<property name="msgReceiveListener" ref="simpleMailMessageReceiveListener" />
+	</bean>
+	<!-- 询价分配客服 -->
+	<bean name="inquireDistributionSub" parent="basicsub" class="com.ykyframework.mqservice.receiver.SimpleMQSubscription">
+		<property name="topicName" value="${mq.topic.inquireDistributionTopic}" />
+		<property name="consumerGroup" value="${mq.consumergroup.inquireDistributionMsgRecvGroup}" />
+		<!-- 并行消费的实例数，默认为1 -->
+		<property name="concurrency" value="1"/>
+		<property name="msgReceiveListener" ref="inquireDistributionReceiveListener" />
+	</bean>
+	<!-- 推送消息 -->
+	<bean name="pushMsgSub" parent="basicsub" class="com.ykyframework.mqservice.receiver.SimpleMQSubscription">
+		<property name="topicName" value="${mq.topic.pushMsgTopic}" />
+		<property name="consumerGroup" value="${mq.consumergroup.pushMsgRecvGroup}" />
+		<!-- 并行消费的实例数，默认为1 -->
+		<property name="concurrency" value="1"/>
+		<property name="msgReceiveListener" ref="pushMsgReceiveListener" />
+	</bean>
+	<!-- 最新库存推荐 -->
+	<bean name="recommendNewStocksSub" parent="basicsub" class="com.ykyframework.mqservice.receiver.SimpleMQSubscription">
+		<property name="topicName" value="${mq.topic.recommendNewStocksTopic}" />
+		<property name="consumerGroup" value="${mq.consumergroup.recommendNewStocksRecvGroup}" />
+		<!-- 并行消费的实例数，默认为1 -->
+		<property name="concurrency" value="1"/>
+		<property name="msgReceiveListener" ref="recommendNewStocksReceiveListener" />
+	</bean>	
+
+	<!-- portal工程商品推荐cache更新mq -->
+	<bean name="recommendWaresCacheSub" parent="basicsub" class="com.ykyframework.mqservice.receiver.SimpleMQSubscription">
+		<property name="topicName" value="${mq.topic.recommendWaresCacheTopic}" />
+		<property name="consumerGroup" value="${mq.consumergroup.recommendWaresCacheMsgRecvGroup}" />
+		<!-- 并行消费的实例数，默认为1 -->
+		<property name="concurrency" value="1"/>
+		<property name="msgReceiveListener" ref="recommendWaresCacheReceiveListener" />
+	</bean>
+	
+	<!-- portal工程常用工具商品推荐cache更新mq -->
+	<bean name="recommendGoodsCacheSub" parent="basicsub" class="com.ykyframework.mqservice.receiver.SimpleMQSubscription">
+		<property name="topicName" value="${mq.topic.recommendGoodsCacheTopic}" />
+		<property name="consumerGroup" value="${mq.consumergroup.recommendGoodsCacheMsgRecvGroup}" />
+		<!-- 并行消费的实例数，默认为1 -->
+		<property name="concurrency" value="1"/>
+		<property name="msgReceiveListener" ref="recommendGoodsReceiveListener" />
+	</bean>
+	
+	<!-- portal工程常用工具商品推荐cache更新mq -->
+	<bean name="topTenNewGoodsCacheSub" parent="basicsub" class="com.ykyframework.mqservice.receiver.SimpleMQSubscription">
+		<property name="topicName" value="${mq.topic.topTenNewGoodsCacheTopicName}" />
+		<property name="consumerGroup" value="${mq.consumergroup.topTenNewGoodsCacheMsgRecvGroup}" />
+		<!-- 并行消费的实例数，默认为1 -->
+		<property name="concurrency" value="1"/>
+		<property name="msgReceiveListener" ref="topTenNewGoodsReceiveListener" />
+	</bean>
+	
+	<util:list id="subsListMain">
+		<ref bean="simpleMailSub"/>
+		<ref bean="pushMsgSub"/>
+		<ref bean="inquireDistributionSub"/>
+		<ref bean="recommendNewStocksSub"/>
+		<ref bean="recommendWaresCacheSub"/>
+		<ref bean="recommendGoodsCacheSub"/>
+		<ref bean="topTenNewGoodsCacheSub"/>
+	</util:list>
+		
+	<bean abstract="true" id="mappedMQReceiver">
+		<property name="topicMapping" ref="mqTopicMappings" />
+	</bean>
+	
+	<beans profile="dev">
+		<bean id="rocketMQReceiver" parent="mappedMQReceiver" class="com.ykyframework.mqservice.receiver.ZeroMQReceiver" init-method="init" destroy-method="destroy">
+			<property name="subscriptions" ref="subsListMain" />
+		</bean>
+	</beans>	
+	
+	<beans profile="sit1,sit,uat">
+		<bean id="rocketMQReceiver" parent="mappedMQReceiver" class="com.ykyframework.mqservice.receiver.RocketMQReceiver" init-method="init" destroy-method="destroy">
+			<property name="namesrvAddr" value="${mq.namesrvAddr}" />
+			<property name="subscriptions" ref="subsListMain" />
+		</bean>
+	</beans>	
+	<beans profile="hz-uat">
+		<bean id="aliyunMQReceiver" parent="mappedMQReceiver" class="com.ykyframework.mqservice.receiver.AliyunMQReceiver" init-method="init" destroy-method="destroy">
+			<property name="accessKey" value="wiPMJzbY8uCw5f5K" />
+			<property name="secretKey" value="l0DLG6da2sTyv4K86EYKPWD3cZCK38" />
+			<property name="subscriptions" ref="subsListMain" />
+		</bean>
+	</beans>
+	<beans profile="prod">
+		<bean id="aliyunMQReceiver" parent="mappedMQReceiver" class="com.ykyframework.mqservice.receiver.AliyunMQReceiver" init-method="init" destroy-method="destroy">
+			<property name="accessKey" value="LTAIpr3XzuahR8b4" />
+			<property name="secretKey" value="iqsxAMEwCol9xkhb8s1uzVgbJ8o6DA" />
+			<property name="subscriptions" ref="subsListMain" />
+		</bean>
+	</beans>
+</beans>

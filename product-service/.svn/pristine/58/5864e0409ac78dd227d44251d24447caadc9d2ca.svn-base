@@ -1,0 +1,149 @@
+spring.profiles.active=dev
+#server.context-path=/order
+server.port=27083
+
+logging.config=classpath:config/logback.xml
+
+spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+
+#spring.datasource.maximum-pool-size=100
+spring.datasource.maxActive=60
+#spring.datasource.max-idle=10
+spring.datasource.max-wait=10000
+spring.datasource.min-idle=15
+spring.datasource.initial-size=5
+spring.datasource.validation-query=SELECT 1
+spring.datasource.test-on-borrow=false
+spring.datasource.test-while-idle=true
+spring.datasource.time-between-eviction-runs-millis=18800
+# \u6253\u5F00PSCache\uFF0C\u5E76\u4E14\u6307\u5B9A\u6BCF\u4E2A\u8FDE\u63A5\u4E0APSCache\u7684\u5927\u5C0F 
+spring.datasource.poolPreparedStatements=true
+spring.datasource.maxPoolPreparedStatementPerConnectionSize=20
+# \u914D\u7F6E\u76D1\u63A7\u7EDF\u8BA1\u62E6\u622A\u7684filters\uFF0C\u53BB\u6389\u540E\u76D1\u63A7\u754C\u9762sql\u65E0\u6CD5\u7EDF\u8BA1\uFF0C'wall'\u7528\u4E8E\u9632\u706B\u5899 
+spring.datasource.filters=stat,wall,slf4j
+# \u901A\u8FC7connectProperties\u5C5E\u6027\u6765\u6253\u5F00mergeSql\u529F\u80FD\uFF1B\u6162SQL\u8BB0\u5F55
+#spring.datasource.connectionProperties=druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+spring.datasource.connectionProperties=druid.stat.mergeSql=true;druid.stat.logSlowSql=true;druid.stat.slowSqlMillis=5000
+# \u5408\u5E76\u591A\u4E2ADruidDataSource\u7684\u76D1\u63A7\u6570\u636E
+#spring.datasource.useGlobalDataSourceStat=true
+# \u76D1\u63A7\u7684\u72B6\u6001\u4FE1\u606F\u65E5\u5FD7\u8BB0\u5F55\u95F4\u9694\u65F6\u95F4
+spring.datasource.timeBetweenLogStatsMillis=600000
+# \u81EA\u5B9A\u4E49\u914D\u7F6E\uFF0C\u662F\u5426\u6253\u5F00druid\u7684\u76D1\u89C6\u754C\u9762
+spring.datasource.druid.statwatch=true
+
+#spring.jackson.default-property-inclusion=non_null
+spring.jackson.serialization.indent_output=true
+spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
+spring.jackson.time-zone=Asia/Shanghai
+
+#mybatis config
+mybatis.config-location=classpath:config/mybatis/mybatis-config.xml
+mybatis.mapper-locations=classpath*:/dao/*Dao.xml
+
+#aliyun.OSS
+aliyun.OSS.accessKeyId=OTRxkGCUJ8Rh8xFu
+aliyun.OSS.accessKeySecret=ljykU9VjebI9DrTUoVK9mjTDO8UFwb
+aliyun.OSS.role=acs:ram::1058949072375933:role/uat-ossaccess-role
+
+#redisCache keyName
+#\u4EA4\u671F\u89C4\u5219
+cache.config.redis.cacheNames.leadTimeRule=0
+#\u8FD0\u8D39\u89C4\u5219
+cache.config.redis.cacheNames.logisticsRule=0
+#\u522B\u540D\u96C6\u5408
+cache.config.redis.cacheNames.aliasMap=600
+#\u5546\u54C1\u4EF7\u683C
+cache.config.redis.cacheNames.productPriceCache=300
+#\u4EF7\u683C\u7B56\u7565
+cache.config.redis.cacheNames.priceRuleTemplateCache=0
+#MOV\u7B56\u7565
+cache.config.redis.cacheNames.movRuleTemplateCache=0
+#\u7269\u6599\u5BFC\u5165
+cache.config.redis.cacheNames.materialImportCache=86400
+#\u6C47\u7387
+cache.config.redis.cacheNames.exchangeRateCache=0
+#\u9996\u9875\u5206\u7C7B
+cache.config.redis.cacheNames.category=300
+#\u641C\u7D22\u5206\u7C7B
+cache.config.redis.cacheNames.allCategoryInfoCache=0
+#\u641C\u7D22\u54C1\u724C
+cache.config.redis.cacheNames.allBrandsInfoCache=0
+#\u5E7F\u544A\u4F4D
+cache.config.redis.cacheNames.advertisementInfoCache=0
+#\u6587\u4EF6\u4E0A\u4F20\u4EA7\u54C1\u7EBF\u6821\u9A8C
+cache.config.redis.cacheNames.suppllierProductLineCachename=300
+
+#\u6587\u4EF6\u4E0A\u4F20\u4F9B\u5E94\u5546\u6821\u9A8C
+cache.config.redis.cacheNames.suppllierIdsCachename=300
+
+cache.config.redis.txExcludes = materialImportCache,activity,aliasMap,vendorWeightCacheName
+#\u6D3B\u52A8\u76F8\u5173\u7F13\u5B58
+cache.config.redis.cacheNames.activity=0
+#\u5546\u54C1\u53D1\u9001mq\u7F13\u5B58
+cache.config.redis.cacheNames.crawlerSyncProduct=86400
+#\u9500\u552E\u4EA7\u54C1\u5BFC\u51FA\u67E5\u8BE2\u6761\u4EF6
+cache.config.redis.cacheNames.saleProductExport=900
+#\u7269\u6599\u5BFC\u51FA\u67E5\u8BE2\u6761\u4EF6
+cache.config.redis.cacheNames.materialExport=900
+#\u4F9B\u5E94\u5546\u6743\u91CD\u7F13\u5B58\u540D
+cache.config.redis.cacheNames.vendorWeightCacheName=300
+
+
+#mq topicName config
+#\u5546\u54C1\u4E0A\u4F20\u6587\u4EF6\u540E,\u89E3\u6790\u6587\u4EF6MQ
+mqProduceConfig.parseImportFileSub.topicName = TOPIC_PARSE_IMPORT_FILE
+mqProduceConfig.createProductSub.topicName = TOPIC_CREATE_PRODUCT
+mqProduceConfig.syncElasticsearchProduct.topicName = TOPIC_SYNC_ELASTICSEARCH_PRODUCT
+#\u6D3B\u52A8\u7EDF\u8BA1\u65E5\u5FD7topic\u540D
+mqProduceConfig.statisticsActivityLog.topicName = TOPIC_STATISTICS_ACTIVITY_LOG
+#\u722C\u866B\u6570\u636E\u540C\u6B65topic\u540D
+mqConsumeConfig.crawlerSyncProduct.topicName = TOPIC_CRAWLER_SYNC_PRODUCT
+#\u5269\u4F59\u5E93\u5B58\u6570\u540C\u6B65\u901A\u77E5topic\u540D
+mqConsumeConfig.updateActivityProductQty.topicName = TOPIC_UPDATE_ACTIVITY_PRODUCT_QTY
+#\u6279\u91CF\u5C06\u5E93\u5B58\u7F6E\u4E3A\u5931\u6548
+mqConsumeConfig.invalidProduct.topicName = TOPIC_INVALID_PRODUCT
+#\u4E0A\u4F20\u65E5\u5FD7\u6587\u4EF6\u5230\u963F\u91CC\u4E91\u901A\u77E5topic\u540D
+mqConsumeConfig.uploadFileProduct.topicName = TOPIC_UPLOAD_FILE_PRODUCT
+#\u6279\u91CF\u66F4\u65B0\u5546\u54C1\u5E93\u5B58\u548C\u4EF7\u683C
+mqConsumeConfig.updateProduct.topicName = TOPIC_UPDATE_PRODUCT
+#\u53D1\u9001\u90AE\u4EF6topic\u540D
+mqConsumeConfig.sendMsgAndEmail.topicName=TOPIC_MSG_EMAIL
+#\u6E05\u9664Ehcache\u7F13\u5B58
+mq.topic.ehCacheTopic=TOPIC_EH_CACHE
+
+#\u7269\u7406topic\u540D\uFF0C\u53EF\u5728\u6620\u5C04\u4E2D\u914D\u7F6E\u4F5C\u4E3A\u4E0A\u8FB9topic\u7684\u5B9E\u9645\u53D1\u9001\u5230\u7684topic\uFF0C\u505A\u8BBE\u7F6E\u4F7F\u7528\uFF0C\u4E0D\u80FD\u5728\u4EE3\u7801\u4E2D\u4F7F\u7528
+#messages & email & in_mail, notifies for application ...
+mq.topic.target.original.MESSAGES=TOPIC_ORIGINAL_MESSAGES
+#product & stock
+mq.topic.target.original.PRODUCTS=TOPIC_ORIGINAL_PRODUCTS
+#order & payment
+mq.topic.target.original.ORDER_PAY=TOPIC_ORIGINAL_ORDER_PAY
+#discard
+#system
+mq.topic.target.original.SYSTEM=TOPIC_ORIGINAL_SYSTEM
+
+mq.config.mqTopicMappingConfig = {"TOPIC_EH_CACHE":"${mq.topic.target.original.MESSAGES}","TOPIC_MSG_EMAIL":"${mq.topic.target.original.MESSAGES}","TOPIC_MSG_AUDIT":"${mq.topic.target.original.SYSTEM}","TOPIC_PARSE_IMPORT_FILE":"${mq.topic.target.original.PRODUCTS}","TOPIC_CANCEL_ORDER":"${mq.topic.target.original.ORDER_PAY}","TOPIC_CREATE_PRODUCT":"${mq.topic.target.original.PRODUCTS}","TOPIC_SYNC_ELASTICSEARCH_PRODUCT":"${mq.topic.target.original.PRODUCTS}","TOPIC_UPDATE_ACTIVITY_PRODUCT_QTY":"${mq.topic.target.original.PRODUCTS}","TOPIC_INVALID_PRODUCT":"${mq.topic.target.original.PRODUCTS}","TOPIC_CRAWLER_SYNC_PRODUCT":"${mq.topic.target.original.PRODUCTS}","TOPIC_STATISTICS_ACTIVITY_LOG":"${mq.topic.target.original.SYSTEM}","TOPIC_PaymentSent_Notify":"${mq.topic.target.original.ORDER_PAY}","TOPIC_PaymentResult_Notify":"${mq.topic.target.original.ORDER_PAY}","TOPIC_UpdateOrderPaymethod_Notify":"${mq.topic.target.original.ORDER_PAY}","TOPIC_UPLOAD_FILE_PRODUCT":"${mq.topic.target.original.PRODUCTS}","TOPIC_UPDATE_PRODUCT":"${mq.topic.target.original.PRODUCTS}"}
+
+mq.producer.groupid=PID_ICTRADE_PRODUCER
+mqConsumeConfig.sendAudit.topicName=TOPIC_MSG_AUDIT
+#file upload patch
+leadMaterialFilePath = /appdata/yikuyi/upload/files
+
+leadManufactureTransferFilePath = /appdata/yikuyi/upload/manufacture/transfer/files
+
+#dns-prefetchs
+dns-prefetchs =  //img0.ykystatic.com,//img1.ykystatic.com,//img2.ykystatic.com
+
+#\u9700\u8981\u4F7F\u7528\u4EA4\u671F\u7B56\u7565\u7684\u4F9B\u5E94\u5546
+config.leadTime.vendorId = digikey,future,mouser,893022121125478400
+
+#\u53EF\u4FE1\u5EA6\u9AD8\u7684\u4F9B\u5E94\u5546\uFF08\u722C\u866B/\u7269\u6599\u5BFC\u5165\u521B\u5EFA\u7269\u6599\u6216\u66F4\u65B0\u7269\u6599\u7684\u5224\u65AD\uFF09digikey\u3001mouser\u3001rs
+credit.high.vendorId = digikey,mouser,rs
+
+#\u76EE\u524D\u652F\u6301\u7684\u722C\u866B\u7684\u4F9B\u5E94\u5546ID
+crawler.support.vendorId = digikey,mouser,element14
+#gzip\u538B\u7F29
+server.compression.enabled=true
+server.compression.min-response-size=1024
+server.compression.mime-types=application/json,application/xml,text/html,text/xml,text/plain

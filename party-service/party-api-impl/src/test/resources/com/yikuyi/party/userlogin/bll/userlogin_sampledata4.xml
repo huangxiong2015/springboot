@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<USER_LOGIN USER_LOGIN_ID="123456@yikuyi.com" PARTY_ID="9999999901"   ENABLED="Y" USER_LOGIN_METHOD ="EMAIL"/><!--密码原文： 123456 -->
+</dataset> 

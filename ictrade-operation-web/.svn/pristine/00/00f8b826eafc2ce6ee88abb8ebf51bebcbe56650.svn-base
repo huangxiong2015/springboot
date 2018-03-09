@@ -1,0 +1,116 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+   pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring" %>  
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>  
+<c:set var="ctx" value="${pageContext.request.contextPath }" scope="request" />
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>松下电阻8折特惠活动 - 易库易</title>
+<meta name="keywords" content="松下电阻,电子元器件采购,电子元器件优惠活动,易库易"/>
+<meta name="description" content="易库易联合新蕾电子（SUNRAY）独家提供松下（Panasonic）电阻8折特惠活动，下单再送闪购券，价格优惠，品质保障，易库易电子元器件全透明交易平台，一站式超级采购!"/> 
+<link rel="shortcut icon" href="${ctx}/favicon.ico"/>
+<link href="${ctx}/css/common/activitytemplet/common.css" rel="stylesheet" type="text/css"/>
+<link href="${ctx}/css/common/activitytemplet/kkpager_red.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="${webres}/lib/layer/2.2/skin/layer.css">
+<link href="${ctx}/css/common/activitytemplet/loginActive.css" rel="stylesheet" type="text/css"/>
+</head>
+<c:import url ="/WEB-INF/jsp/include/lemon/constants.jsp"/>
+<body class="panasonic-active">
+	<div class="top_bg">
+		<div class="floatlayer"></div>
+		<div id="bannerUpload" class="btn-upload">更换banner</div>
+	</div>
+	<img id="img" src="" alt="" />
+	<div class="w mw12">
+		<!-- 精选ADI产品 -->
+		<div id="adText" class="active-sale-title" contenteditable="true">
+			<p class="">没有什么能够“阻”挡</p>
+			<p class="">你对八折的向往</p>
+			<p class="">易库易携手知名授权分销商新蕾电子</p>
+			<p class="">甄选松下优质电阻</p>
+			<div class="editTips">编辑</div>
+		</div>
+		<div class="active_search">
+			<div class="goods_search rel">
+				<input type="text" class="go_search" id="go_condition" maxlength="50" placeholder="搜索更多新蕾松下产品" />
+				<span class="search_btn">搜索</span>
+				
+				<!-- 关联词显示 -->
+				<div class="predictive_box" style="display:none;">
+					<i class="show_up"></i>
+				</div>
+			</div>
+		</div>
+		
+		<div class="product-list">
+			<div class="list-title-img"></div>
+			<div class="product-list-title">
+				<ul>
+					<li>型号</li>
+					<li>制造商</li>
+					<li>分销商</li>
+					<li>库存</li>
+					<li>原价</li>
+					<li>现价</li>
+					<li>操作</li>
+				</ul>
+			</div>
+			<div class="product-list-box">
+				<ul>
+					占个位
+				</ul>
+			</div>
+		</div>
+		
+		<div class="give-coupon">
+			<div class="give-coupon-img"></div>
+			<ul class="get-coupon-step">
+				<li class="coupon-step-one"><span>1.下单活动商品</span></li>
+				<li class="left-show"></li>
+				<li class="coupon-step-two"><span>2.免费获得闪购优惠券</span></li>
+				<li class="left-show"></li>
+				<li class="coupon-step-three"><a href="${ctx }/topic/miaosha.htm"><span>3.进入闪购活动页使用</span></a></li>
+			</ul>
+			<div class="show-coupon-list">
+				<div class="coupon-num">
+					<span>当前已有</span>
+					<span class="num-box"><i>000000</i></span>
+					<span>参与活动</span>
+				</div>
+				<div class="coupon-list-box">
+					<div class="zhanwei">占个位</div>
+					<ul class="">
+						
+					</ul>
+				</div>	
+			</div>	
+		</div>
+		
+		<div class="activity-description">
+			<div class="description-title-img"></div>
+			<div class="activity-description-list">
+				<div class="activity-description-box">
+					<p>1、松下电阻8折特惠期间下单，每成单一次可得到一张3M口罩闪购优惠券。</p>
+					<p>2、每张闪购（3M口罩）订单只能使用一张3M口罩闪购优惠券。</p>
+					<p>3、本场活动获取的3M口罩闪购优惠券将在第一时间发送至您的易库易账户中，可在易库易用户中心>资产中心><a class="active-voucher" target="_blank" href="<spring:eval expression="@appProps.getProperty('portal.cas.login.successUrl')" />/assetcenter/myCoupon.htm">我的代金券</a>中查看。</p>
+					<p>4、参与本次活动获得的闪购券仅限“限时闪购”活动中3M口罩订单商品（不限口罩型号）使用， 闪购券有限期为2017年8月1日-2017年11月1日。</p>
+					<p>5、本次松下电阻8折活动时间：2017年8月1日-2017年9月1日。</p>
+					<p>6、活动最终解释权归易库易所有，活动请咨询在线客服或致电客服热线：400-930-0083。</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="${ctx }/js/lib/jquery-1.11.3.min.js"></script>
+	<script src="${ctx}/js/common/request.js"></script>
+	<script type="text/javascript" src="${ctx}/js/lib/layer/layer.js"></script>
+	<script type="text/javascript" src="${ctx}/js/lib/plupload-2.1.2/js/plupload.full.min.js"></script>
+	<script type="text/javascript" src="${ctx}/js/oss/oss_uploader.js"></script>
+	<script type="text/javascript" src="${ctx }/js/app/sunrayActive.js"></script>
+</body>
+</html>

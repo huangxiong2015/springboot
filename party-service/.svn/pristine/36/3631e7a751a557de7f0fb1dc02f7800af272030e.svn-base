@@ -1,0 +1,220 @@
+package com.yikuyi.party.user.bll;
+
+import java.io.IOException;
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import com.yikuyi.party.contact.model.ContactMech;
+import com.yikuyi.party.contact.model.PostalAddress;
+import com.yikuyi.party.contact.model.TelecomNumber;
+import com.yikuyi.party.contact.model.ContactMech.MechType;
+import com.yikuyi.party.contact.model.TelecomNumber.QqTelecomNumber;
+import com.yikuyi.party.contact.vo.User;
+import com.yikuyi.party.customer.dao.PersonDao;
+import com.yikuyi.party.login.model.UserLogin;
+import com.yikuyi.party.model.Party;
+import com.yikuyi.party.model.PartyContactMech;
+import com.yikuyi.party.model.PartyContactMech.PurposeType;
+import com.yikuyi.party.person.model.Person;
+import com.yikuyi.party.shipAddress.bll.PartyContactMechManager;
+import com.yikuyi.party.userLogin.dao.UserLoginDao;
+import com.yikuyi.party.v8.message.vo.AddressInfoVo;
+import com.yikuyi.party.v8.message.vo.MessageCodeVo;
+import com.yikuyi.party.v8.message.vo.PartyVo;
+import com.ykyframework.exception.SystemException;
+
+@Service
+@Transactional
+public class UserManager {
+	private static final Logger logger = LoggerFactory.getLogger(UserManager.class);
+	
+	@Autowired
+	private CacheManager cacheManager;
+	
+	@Autowired
+	private UserLoginDao userLoginDao;
+	
+	@Autowired
+	private PersonDao personDao;
+	@Autowired
+	private PartyContactMechManager partyContactMechManager;
+	private static final String CHINA = "china";
+	/**
+	 * 根据用户名称获取用户id
+	 * @param username
+	 * @return
+	 */
+	public String getUserByAccount(String username){ 
+		Cache cache = null;
+		String userId = null;
+		try {
+			cache = cacheManager.getCache("usernameCache");
+			userId = cache.get("username_"+username,String.class);
+		} catch (Exception e) {
+			logger.error("根据用户名称获取用户Id:{}",e);
+			cache = null;
+			userId = null;
+		}
+        if(!StringUtils.isEmpty(userId)){
+        	return userId;
+        }
+		logger.info("用户登录检验开始..........begin..........,username:{}",username);
+		 try {
+			UserLogin userLogin = userLoginDao.findEntityById(username);
+			userId = null == userLogin ? null : userLogin.getParty().getId();
+			if(StringUtils.isEmpty(userId)){
+				logger.error("Failed to find user username: {}",username);
+				throw new SystemException("User [" + username + "] does not exist.");
+			}
+			if(null != cache){
+				cache.put("username_"+username, userId);
+			}
+		} catch (Exception e) {
+			throw new UsernameNotFoundException(e.getMessage(),e);
+		}
+		logger.info("用户登录检验开始..........ned..........,username:{},userid:{}",username,userId);
+		return userId;
+	}
+	
+	/**
+	 * 根据用户id获取企业信息
+	 * @param username
+	 * @return
+	 */
+	public User getUserInfo(String userId){
+		User user = userLoginDao.findUserInfo(userId);
+		if(user == null){
+			logger.error("Failed to find enterpriseInfo userId:{}",userId);
+		}
+		return user;
+	}
+	/**
+	 * 根据id查找用户基本信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	public PartyVo  getUserByUserId(String userId){
+		PartyVo partyVo = userLoginDao.findUserInfoById(userId);
+		//如果是个人用户设置mobile值
+		if(null != partyVo && StringUtils.isEmpty(partyVo.getCorporationId())){
+			partyVo.setMobile(partyVo.getUserLoginId());
+			partyVo.setMail(null);
+			partyVo.setUserLoginId(null);
+			partyVo.setAccountType("INDIVIDUAL_CUST");
+			partyVo.setCorporationId(null);
+		}else if(null != partyVo && !StringUtils.isEmpty(partyVo.getCorporationId())){
+			partyVo.setMail(partyVo.getUserLoginId());
+			partyVo.setAccountType("ENTERPRISE_CUST");
+			partyVo.setUserLoginId(null);
+			partyVo.setCorporationId(null);
+		}
+		return partyVo;
+	}
+	
+	/**
+	 * 根据id查找用户基本信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	public PartyVo getAllUserByUserId(String userId){
+		PartyVo partyVo = userLoginDao.findAllUserInfoById(userId);
+		if(null !=partyVo){
+			partyVo.setCompanyInfo(null);
+			partyVo.setAccountType(null);
+		}
+		return partyVo;
+	}
+	
+	/**
+	 * 根据id查找用户基本信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	public MessageCodeVo editUserInfo(PartyVo partyVo){
+		MessageCodeVo msgVo = new MessageCodeVo();
+		try{
+			if(null !=partyVo){
+				//修改个人信息
+				Party party = new Party();
+				party.setId(partyVo.getPartyId());
+				Person person = new Person();
+				person.setTel(partyVo.getMobile());
+				person.setMail(partyVo.getMail());
+				person.setPersonalTitle(partyVo.getTitle());
+				person.setGender(Integer.parseInt(partyVo.getGender()));
+				person.setLastNameLocal(partyVo.getName());
+				person.setLogoImageUrl(partyVo.getAvatar());
+				person.setLastUpdateDate(new Date());
+				party.setPerson(person);
+				personDao.editPerson(party);
+				//修改qq,地址
+				saveAddress(partyVo.getAddressInfo(),partyVo.getQq());
+				msgVo.setStatus(true);
+			}
+		}catch(Exception e){
+			msgVo.setStatus(false);
+			logger.error("手机端保存用户信息失败:{}",e.getMessage());
+		}
+		return msgVo;
+	}
+	/**
+	 * 保存个人基本信息
+	 * @param UserExtendVo
+	 * @return UserExtendVo
+	 * @since 2016年1月12日
+	 * @author zr.helinmei@yikuyi.com
+	 * @throws IOException
+	 */
+	public void saveAddress(AddressInfoVo addressInfoVo,String qq) {
+	    if(null !=addressInfoVo){
+			PartyContactMech partyContactMech = new PartyContactMech();
+			partyContactMech.setPurposeType(PurposeType.REGISTER_LOCATION);
+			ContactMech contactMech = new ContactMech();
+			PostalAddress postalAddress = new PostalAddress();
+			postalAddress.setAddress1(addressInfoVo.getAddress());
+			postalAddress.setCountryGeoName("中国");
+			postalAddress.setCountryGeoId(CHINA);
+			
+			postalAddress.setProvinceGeoName(addressInfoVo.getProvinceName());
+			postalAddress.setProvinceGeoId(addressInfoVo.getProvinceId());
+			
+			postalAddress.setCountyGeoName(addressInfoVo.getCountyName());
+			postalAddress.setCountyGeoId(addressInfoVo.getCountyId());
+			
+			postalAddress.setCityGeoName(addressInfoVo.getCityName());
+			postalAddress.setCityGeoId(addressInfoVo.getCityId());
+			
+			contactMech.setPostalAddress(postalAddress);
+			
+		
+			//电话信息
+			TelecomNumber telecomNumber = new TelecomNumber();
+			//qq
+			QqTelecomNumber qqTelecomNumber = new QqTelecomNumber();
+			qqTelecomNumber.setContactNumber(qq);
+			qqTelecomNumber.setMechType(MechType.QQ);
+			telecomNumber.setQqTelecomNumber(qqTelecomNumber);
+			contactMech.setTelecomNumber(telecomNumber);
+		
+			partyContactMech.setContactMech(contactMech);
+			partyContactMechManager.insert(partyContactMech);
+			
+	    }
+	}
+
+}

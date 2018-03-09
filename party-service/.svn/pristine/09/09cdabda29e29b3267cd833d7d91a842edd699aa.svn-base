@@ -1,0 +1,98 @@
+/*
+ * Created: 2016年11月28日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2016 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+package com.yikuyi.party.partycode.bll;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.framewrok.springboot.web.RequestHelper;
+import com.yikuyi.party.model.Party;
+import com.yikuyi.party.model.PartyRelationship;
+import com.yikuyi.party.model.PartyRelationship.PartyRelationshipType;
+import com.yikuyi.party.party.dao.PartyDao;
+import com.yikuyi.party.partycode.dao.PartyCodeDao;
+import com.yikuyi.party.partycode.model.PartyCode;
+import com.yikuyi.party.partycode.vo.PartyCodeVo;
+import com.yikuyi.party.partygroup.dao.PartyRelationshipDao;
+import com.yikuyi.party.role.model.RoleTypeEnum;
+import com.ykyframework.exception.BusinessException;
+
+@Service
+@Transactional
+public class PartyCodeManager {
+	
+	@Autowired
+	private PartyCodeDao partyCodeDao;
+	
+	@Autowired
+	private PartyDao partyDao;
+	
+	@Autowired
+	private PartyRelationshipDao partyRelationshipDao;
+	
+	/**
+	 * 生成PARTY_CODE
+	 * @param vo
+	 * @return
+	 * @throws BusinessException
+	 * @since 2017年5月9日
+	 * @author zr.shuzuo@yikuyi.com
+	 */
+	public String savePatyCode(PartyCodeVo vo) throws BusinessException {
+		if(null == vo || StringUtils.isBlank(vo.getCodePrefix()) || StringUtils.isBlank(vo.getPartyId())){
+			throw new BusinessException("PARAMETER_ERROR");
+		}
+		String codeNum = partyCodeDao.getNumByPrefix(vo.getCodePrefix());
+		if(StringUtils.isEmpty(codeNum)){
+			codeNum = "001";
+			PartyCode entity = new PartyCode();
+			entity.setCodePrefix(vo.getCodePrefix());
+			entity.setCodeNum(codeNum);
+			entity.setCreator(RequestHelper.getLoginUserId());
+			entity.setLastUpdateUser(RequestHelper.getLoginUserId());
+			partyCodeDao.insertPartyCode(entity);
+		}else{
+			PartyCode entity = new PartyCode();
+			entity.setCodePrefix(vo.getCodePrefix());
+			entity.setCreator(RequestHelper.getLoginUserId());
+			entity.setLastUpdateUser(RequestHelper.getLoginUserId());
+			partyCodeDao.updatePartyCode(entity);
+		}
+		
+		Party party = new Party();
+		party.setId(vo.getPartyId());
+		party.setPartyCode(vo.getCodePrefix()+codeNum);
+		party.setLastUpdateUser(RequestHelper.getLoginUserId());
+		party.setLastUpdateDate(new Date());
+		partyDao.updateParty(party);
+		
+		//同时修改认证企业的认证状态
+		PartyRelationship relationShip = new PartyRelationship();
+		relationShip.setPartyIdTo(vo.getPartyId());// 企业partyId
+		relationShip.setRoleTypeIdFrom(RoleTypeEnum.CORPORATION.toString());
+		relationShip.setRoleTypeIdTo(RoleTypeEnum.VIP_CORPORATION.toString());
+		relationShip.setPartyRelationshipTypeId(PartyRelationshipType.ENTERPRISE_CERTIFIED);
+		List<PartyRelationship> relationList = partyRelationshipDao.getPartyRelationship(relationShip);
+		for(PartyRelationship tempEntity : relationList){
+			party.setId(tempEntity.getPartyIdFrom());
+			party.setPartyCode(vo.getCodePrefix()+codeNum);
+			party.setLastUpdateUser(RequestHelper.getLoginUserId());
+			party.setLastUpdateDate(new Date());
+			partyDao.updateParty(party);
+		}
+		return vo.getCodePrefix()+codeNum;
+	}
+}

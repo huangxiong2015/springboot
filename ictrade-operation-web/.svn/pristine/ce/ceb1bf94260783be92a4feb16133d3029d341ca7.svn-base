@@ -1,0 +1,468 @@
+@charset "utf-8";
+@import url(skins/skin-lemon.min.css);@import url(lemon-AdminLTE.css);@import url(custom.css);
+
+/*模态窗组件*/
+
+.modal-mask {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    display: table;
+    -webkit-transition: opacity .3s ease;
+    transition: opacity .3s ease;
+}
+
+.modal-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.modal-container {
+    margin: 0px auto;
+    padding: 20px 30px;
+    background-color: #fff;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+    -webkit-transition: all .3s ease;
+    transition: all .3s ease;
+    font-family: Helvetica, Arial, sans-serif;
+    width: 300px;
+}
+
+.modal-header h3 {
+    margin-top: 0;
+    color: #42b983;
+}
+
+.modal-body {
+    margin: 20px 0;
+}
+
+.modal-default-button {
+    float: right;
+}
+
+.close {
+    float: right;
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    filter: alpha(opacity=20);
+    opacity: .2;
+}
+
+.close:hover, .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    filter: alpha(opacity=50);
+    opacity: .5;
+}
+
+button.close {
+    -webkit-appearance: none;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+}
+
+.modal-footer {
+    text-align: right;
+}
+
+
+/*grid表格组件*/
+.table, .table * {margin: 0 auto; padding: 0;}
+.table {display: table; width: 100%; border-collapse: collapse; table-layout: fixed;}
+.table.mb20{ margin-bottom: 20px;}
+.table-thead {display: table-header-group;}
+.table-tbody {display: table-caption;}
+.table-tr {display: table-row;  line-height: 30px;}
+.table-hover>.table-tr:hover {background-color: #f5f5f5;}
+.table  tr  th {display: table-cell;font-weight: bold;height: 100%;border: 1px solid #eee;text-align: center;vertical-align: middle; padding: 10px; background: #f9f9f9;}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{display: table-cell; height: 45px;  vertical-align: middle;}
+.table>tr .left{ text-align: left;}
+.table>tr .center{ text-align: center;}
+.table>tr .right{ text-align: right;}
+.table tr td .cont,.table tr th .cont{ padding: 5px; display: block;}
+.bor-bottom{ border-bottom: 1px solid #eee;}
+.table .table tr td{border: none;border-bottom: 1px solid #eee;}
+.table .table tr:last-child td{border-bottom: none;}
+.table tr td img{ width:80%;}
+.table tr  td .table{ background:transparent;table-layout: fixed;}
+.fixed-width .overflow{ overflow-x: scroll;}
+.table>tbody>tr>td{ padding: 0;}
+.table>tbody>tr>td .tabcon{ padding: 8px; position: relative;}
+.table>tbody>tr>td .table{ background:transparent;  table-layout: fixed;}
+.table>tbody>tr>td .table tr:first-child td{ border-top: none;}
+
+
+
+
+.wid5 {
+    width: 5%;
+}
+
+.wid10 {
+    width: 10%;
+}
+
+.wid20 {
+    width: 20%;
+}
+
+.wid30 {
+    width: 30%;
+}
+
+.minlogo img {
+    width: 50px;
+}
+
+
+/*分页*/
+
+.page-turn {
+    margin-left: 10px;
+}
+
+.page-turn span {
+    display: inline-block;
+    line-height: 25px;
+}
+
+.page-turn i {
+    font-style: normal;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+
+
+.page-turn .page-input {
+    width: 50px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.page-turn .page-btn {
+    margin-left: 10px;
+    margin-top: -3px;
+    line-height: 18px;
+}
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover {
+    background-color: #ccc;
+    border-color: #ccc;
+}
+
+.pagination {
+    margin: 0;
+}
+
+.pagination>li>.page-input {
+    float: left;
+    width: 60px;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+}
+
+.pagination>li>span, .pagination>li>span:focus, .pagination>li>span:hover {
+    background-color: #fafafa;
+    color: #999;
+}
+
+
+/*非中断提示*/
+
+.slide-transition {
+    -webkit-transition: all .3s ease;
+    transition: all .3s ease;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+.slide-enter, .slide-leave {
+    -webkit-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
+}
+
+.delete {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: rgba(51, 51, 51, .2);
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    vertical-align: top;
+    width: 24px;
+    float: right;
+}
+
+.delete:after, .delete:before {
+    background: #fff;
+    content: "";
+    display: block;
+    height: 2px;
+    left: 50%;
+    margin-left: -25%;
+    margin-top: -1px;
+    position: absolute;
+    top: 50%;
+    width: 50%;
+}
+
+.delete:before {
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.delete:after {
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+.delete:hover {
+    background: rgba(51, 51, 51, .5);
+}
+
+.notification {
+    width: 100%;
+    line-height: 2;
+    z-index: 3;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.notification .content {
+    padding: .75rem 2rem;
+}
+
+.countdown {
+    width: 100%;
+    height: 4px;
+    background: #000;
+    z-index: 3;
+    position: fixed;
+    top: 0;
+    left: 0;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+.count-leave {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+}
+
+
+/**
+ * 左侧菜单
+ */
+
+.main-sidebar {
+    background-color: #222d32;
+}
+
+.left-menu ul li {
+    list-style: none;
+}
+
+.tree-menu {
+    margin: 0;
+    padding: 0;
+}
+
+.tree>.tree-menu {
+    margin: 0 1px;
+    background: #2c3b41;
+}
+
+.sidebar-menu a {
+    color: #b8c7ce;
+}
+
+.sidebar-menu .tree-menu {
+    display: none;
+}
+
+.sidebar-menu>li>a {
+    border-left: 3px solid transparent;
+}
+
+.sidebar-menu>li.active>a, .sidebar-menu>li:hover>a {
+    color: #fff;
+    background: #1e282c;
+
+}
+
+.sidebar-menu li.active > ul{
+    display: block;
+}
+
+.tree > .tree-menu>li>a:hover, .tree >.tree-menu>li.active>a {
+    color: #fff;
+}
+
+.tree-menu .tree-menu {
+    padding-left: 20px;
+}
+
+.tree>.tree-menu>li>a {
+    color: #8aa4af;
+    padding: 5px 5px 5px 15px;
+    display: block;
+    font-size: 14px;
+}
+.tree>.tree-menu>li>a >.fa{
+    width: 20px;
+}
+
+.cutstring{
+    display: block;
+    width: 100%;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+}
+
+.tabcon-label{
+    position: absolute;
+    left: 8px;
+}
+/*form*/
+.manu_logo{
+	float:left; 
+	 margin-right: 10px; 
+	 height: 80px;  
+	 overflow:hidden;
+}
+.manu_logo .file-btn{
+	width: 120px;
+}
+.manu_logo .pos-abs{
+	position: absolute; 
+	top:45px; 
+	left:0;
+}
+.manu_logo img.d-logo{ 
+	float:left; 
+	width: 120px; 
+	max-height: 80px; 
+} 
+.del_logo,.re-change,.manu_text{ 
+	float:left; 
+	margin-top:35px; 
+} 
+.del_logo{
+	margin-left:5px;
+}
+.has-error .help-block{
+	clear: both;
+}
+/* autocomplete*/
+.search-autocomplete{
+    margin: 0;
+}
+
+.autocomplete-wrapper{
+    float: left;
+    width: 300px;
+    margin-right: 10px;
+    position: relative;
+}
+
+.autocomplete-input{
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    font-size: 18px;
+    color: #333;
+}
+
+.search-autocomplete button{
+    height: 35px;
+    font-size: 16px;
+}
+
+.autocomplete ul{
+  font-family: sans-serif;
+  position: absolute;
+  list-style: none;
+  background: #f8f8f8;
+  padding: 10px 0;
+  margin: 0;
+  display: inline-block;
+  min-width: 15%;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.autocomplete ul:before{
+  content: "";
+  display: block;
+  position: absolute;
+  height: 0;
+  width: 0;
+  border: 10px solid transparent;
+  border-bottom: 10px solid #f8f8f8;
+  left: 46%;
+  top: -20px
+}
+
+.autocomplete ul li a{
+  text-decoration: none;
+  display: block;
+  background: #f8f8f8;
+  color: #2b2b2b;
+  padding: 5px;
+  padding-left: 10px;
+}
+
+.autocomplete ul li a:hover, .autocomplete ul li.focus-list a{
+  color: white;
+  background: #2F9AF7;
+}
+
+.autocomplete ul li a span{
+  display: block;
+  margin-top: 3px;
+  color: grey;
+  font-size: 13px;
+}
+
+.autocomplete ul li a:hover span, .autocomplete ul li.focus-list a span{
+  color: white;
+}
+
+.showAll-transition{
+  opacity: 1;
+  height: 50px;
+  overflow: hidden;
+}
+
+.showAll-enter{
+  opacity: 0.3;
+  height: 0;
+}
+
+.showAll-leave{
+  display: none;
+}
+
+.transition, .autocomplete, .showAll-transition, .autocomplete ul, .autocomplete ul li a{
+  transition:all 0.3s ease-out;
+  -moz-transition:all 0.3s ease-out;
+  -webkit-transition:all 0.3s ease-out;
+  -o-transition:all 0.3s ease-out;
+}

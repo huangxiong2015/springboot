@@ -1,0 +1,177 @@
+package com.yikuyi.party.register.api.impl;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.druid.util.StringUtils;
+import com.framework.springboot.utils.AuthorizationUtil;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.register.api.IRegisterResource;
+import com.yikuyi.party.register.bll.RegisterManager;
+import com.yikuyi.pay.PayClientBuilder;
+import com.yikuyi.quotationtool.inquiry.vo.InquiryCustomerMqVo;
+import com.ykyframework.exception.BusinessException;
+import com.ykyframework.mqservice.sender.MsgSender;
+
+/**
+ * 定义收货地址的相关接口
+ * 
+ * @author zr.aoxianbing@yikuyi.com
+ *
+ */
+
+
+
+@RestController
+@RequestMapping("v1/customer")
+public class RegisterResource implements IRegisterResource {
+	private static final Logger logger = LoggerFactory.getLogger(RegisterResource.class);
+	@Autowired
+	private RegisterManager registerManager;
+	
+	@Autowired
+	private MsgSender msgSender;
+	
+	@Value("${mqConsumeConfig.inquiryCustomerUpdate.topicName}")
+	private String inquiryUpdateTopicName;
+	@Autowired
+	private PayClientBuilder payClientbuilder;
+	
+	@Autowired
+	private AuthorizationUtil authorizationUtil;
+	
+	public static final String PERSON_REG = "PERSON_REG";
+	public static final String COMPANY_REG = "COMPANY_REG";
+	
+	/**
+	 * 个人注册
+	 * @param userVo
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/person",method=RequestMethod.POST)
+	public UserVo save(@RequestBody UserVo userVo) throws BusinessException {
+		String userId = registerManager.save(userVo);
+		userVo.setId(userId);
+		//发送优惠卷
+		try{
+			payClientbuilder.couponResource().regOrUpSendCoupon(PERSON_REG, userId, authorizationUtil.getMockAuthorization());
+		}catch(Exception e){
+			logger.error("发送个人注册优惠卷失败PERSON_REG：{}, userId ：{},Authorization ：{}",e,userId,authorizationUtil.getMockAuthorization());
+		}
+		//发送mq
+		if(!StringUtils.isEmpty(userId)){
+			try{
+				logger.info("mq调用询报价服务参数----userId ：{},Mobile：{}",userId,userVo.getMobile());
+				InquiryCustomerMqVo vo = new InquiryCustomerMqVo();
+				vo.setMobileOrEmail(userVo.getMobile());
+				vo.setUserId(userId);
+				msgSender.sendMsg(inquiryUpdateTopicName, vo, null);
+			}catch(Exception e){
+				logger.error("调用TOPIC_ORIGINAL_MESSAGES_PROD失败:{}",e);
+			}
+			
+		}
+		return userVo;
+	}
+	/**
+	 * 企业注册
+	 * @param userVo
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/enterprise",method=RequestMethod.POST)
+	public UserVo saveEnt(@RequestBody UserVo userVo) throws BusinessException {
+		String userId = registerManager.saveEnt(userVo);
+		userVo.setId(userId);
+		//发送优惠卷
+		try{
+			payClientbuilder.couponResource().regOrUpSendCoupon(COMPANY_REG, userId, authorizationUtil.getMockAuthorization());
+		}catch(Exception e){
+			logger.error("发送企业注册优惠卷失败COMPANY_REG参数 ：{} ,userId ：{},Authorization ：{}", e,userId,authorizationUtil.getMockAuthorization());
+		}
+		//发送mq
+		if(!StringUtils.isEmpty(userId)){
+			try{
+				logger.info("mq调用询报价服务参数----userId ：{}, Mail：{}",userId,userVo.getMail());
+				InquiryCustomerMqVo vo = new InquiryCustomerMqVo();
+				vo.setMobileOrEmail(userVo.getMail());
+				vo.setUserId(userId);
+				msgSender.sendMsg(inquiryUpdateTopicName, vo, null);
+			}catch(Exception e){
+				logger.error("调用TOPIC_ORIGINAL_MESSAGES_PROD失败:{}",e);
+			}
+		}
+
+		return userVo;
+	}
+	/**
+	 * 重新发送注册邮件
+	 * @param userVo
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/reSend",method=RequestMethod.POST)
+	public String reSend(@RequestBody UserVo userVo) {
+		return registerManager.reSend(userVo);
+	}
+	
+	/**
+	 * 加入主账号
+	 * @param entId
+	 * @param account
+	 * @return
+	 * @since 2017年5月5日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/join",method=RequestMethod.POST,produces = "application/json; charset=utf-8")
+	public String joinMainAccount(@RequestParam(value="entId",required=true)String entId, 
+			@RequestParam(value="account",required=true)String account,
+			@RequestParam(value="applyId",required=true)String applyId) {
+		return registerManager.joinMainAccount(entId,account,applyId);
+	}
+	
+	/**
+	 * 生成登陆账号（根据账号）
+	 * @param partyId
+	 * @param account
+	 * @return
+	 * @since 2017年7月28日
+	 * @author zr.aoxianbing@yikuyi.com
+	 * @throws BusinessException 
+	 */
+	@Override
+	@RequestMapping(value="/upgrade",method=RequestMethod.POST,produces = "application/json; charset=utf-8")
+	public void upgrade(@RequestParam(value="partyId",required=true)String partyId, 
+			@RequestParam(value="account",required=true)String account) throws BusinessException {
+		registerManager.upgrade(partyId,account);
+	}
+	
+	/**
+	 * 根据账号创建子账号(子账号设置密码)
+	 * @param account
+	 * @param entId
+	 * @return
+	 * @since 2017年5月5日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value="/saveAccout",method=RequestMethod.POST)
+	public String saveAccout(@RequestBody UserVo userVo) {
+		return registerManager.saveAccout(userVo);
+	}
+	
+}

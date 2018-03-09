@@ -1,0 +1,25 @@
+var app = new Vue({
+	el: '#supplierDetail',
+	data: {
+		entName: '',
+		agent: '',
+		contactUserName: '',
+		phone: '',
+		createdDate: ''
+	}
+});
+
+$.ajax({
+	url: ykyUrl.info + '/v1/recommendations/' + $('#detailId').val(),
+	typ: 'GET',
+	success: function(data) {
+		if(data) {
+			app.entName = data.extend1;
+			app.agent = data.contentMap.agent;
+			app.contactUserName = data.contentMap.contactUserName;
+			app.phone = data.contentMap.phone;
+			app.createdDate = data.createdDate;
+		}
+	}
+})
+

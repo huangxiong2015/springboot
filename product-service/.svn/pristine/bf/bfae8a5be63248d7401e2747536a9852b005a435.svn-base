@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.product.document.dao.DocumentDao">
+
+	<resultMap id="BaseResultMap" type="com.yikuyi.document.model.Document">
+		<id column="DOCUMENT_ID" property="id" />
+		<result column="DOCUMENT_TYPE_ID" property="typeId" />
+		<result column="DOCUMENT_LOCATION" property="documentLocation" />
+		<result column="DOCUMENT_NAME" property="documentName" />
+		<result column="STATUS_ID" property="statusId" />
+		<result column="COMMENTS" property="comments" />
+		<result column="IS_CANCEL" property="isCancel" />
+		<result column="CREATOR" property="creator" />
+		<result column="CREATED_DATE" property="createdDate" />
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate" />
+		<result column="PARTY_ID" property="partyId"/>
+		<result column="FACILITY_ID" property="facilityId"/>
+		<result column="LOG_LOCATION" property="logLocation"/>
+	</resultMap>
+	
+	<resultMap id="VoBaseResultMap" type="com.yikuyi.document.vo.DocumentVo">
+		<id column="DOCUMENT_ID" property="id" />
+		<result column="DOCUMENT_TYPE_ID" property="typeId" />
+		<result column="DOCUMENT_LOCATION" property="documentLocation" />
+		<result column="DOCUMENT_NAME" property="documentName" />
+		<result column="STATUS_ID" property="statusId" />
+		<result column="COMMENTS" property="comments" />
+		<result column="IS_CANCEL" property="isCancel" />
+		<result column="IS_CANCEL_VAL" property="isCancelVal" />
+		<result column="CREATOR" property="creator" />
+		<result column="CREATED_DATE" property="createdDate" />
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate" />
+		<result column="PARTY_ID" property="partyId"/>
+		<result column="FACILITY_ID" property="facilityId"/>
+		<result column="LOG_LOCATION" property="logLocation"/>
+	</resultMap>
+	
+	<sql id="ResultField">
+		DOCUMENT_ID , DOCUMENT_TYPE_ID , DOCUMENT_LOCATION , DOCUMENT_NAME , 
+		STATUS_ID , COMMENTS , CREATOR , CREATED_DATE , LAST_UPDATE_USER ,LAST_UPDATE_DATE , PARTY_ID,FACILITY_ID,LOG_LOCATION
+	</sql>
+	
+	<select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT <include refid="ResultField"/> FROM DOCUMENT WHERE DOCUMENT_ID = #{id}
+	</select>
+	
+	<insert id="insertDoc" parameterType="com.yikuyi.document.model.Document">
+		INSERT INTO DOCUMENT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				DOCUMENT_ID,
+			</if>
+			<if test="typeId != null">
+				DOCUMENT_TYPE_ID,
+			</if>
+			<if test="documentLocation != null">
+				DOCUMENT_LOCATION,
+			</if>
+			<if test="documentName != null">
+				DOCUMENT_NAME,
+			</if>
+			<if test="statusId != null">
+				STATUS_ID,
+			</if>
+			<if test="comments != null">
+				COMMENTS,
+			</if>
+			<if test="creator != null">
+				CREATOR,
+			</if>
+			<if test="partyId != null">
+				PARTY_ID,
+			</if>
+			<if test="facilityId != null">
+				FACILITY_ID,
+			</if>
+			<if test="lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			CREATED_DATE,
+			LAST_UPDATE_DATE,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="typeId != null">
+				#{typeId},
+			</if>
+			<if test="documentLocation != null">
+				#{documentLocation},
+			</if>
+			<if test="documentName != null">
+				#{documentName},
+			</if>
+			<if test="statusId != null">
+				#{statusId},
+			</if>
+			<if test="comments != null">
+				#{comments},
+			</if>
+			<if test="creator != null">
+				#{creator},
+			</if>
+			<if test="partyId != null">
+				#{partyId},
+			</if>
+			<if test="facilityId != null">
+				#{facilityId},
+			</if>
+			<if test="lastUpdateUser != null">
+				#{lastUpdateUser},
+			</if>
+			NOW(),NOW(),
+		</trim>
+	</insert>
+	
+	<update id="updateDoc" parameterType="com.yikuyi.document.model.Document">
+		UPDATE DOCUMENT
+		<set>
+			<if test="statusId != null">
+				STATUS_ID = #{statusId},
+			</if>
+			<if test="comments != null">
+				COMMENTS = #{comments},
+			</if>
+			<if test="isCancel != null">
+				IS_CANCEL = #{isCancel.value},
+			</if>
+			<if test="dataCount != null">
+				DATA_COUNT = #{dataCount},
+			</if>
+			<if test="partyId != null">
+				PARTY_ID = #{partyId},
+			</if>
+			<if test="facilityId != null">
+				FACILITY_ID = #{facilityId},
+			</if>			
+			<if test="logLocation != null">
+				LOG_LOCATION = #{logLocation},
+			</if>			
+			<if test="lastUpdateUser != null">
+				LAST_UPDATE_USER = #{lastUpdateUser},
+			</if>
+			LAST_UPDATE_DATE = NOW(),
+		</set>
+		WHERE DOCUMENT_ID = #{id}
+	</update>
+	<select id="findByType" resultMap="VoBaseResultMap" parameterType="java.lang.String">
+		SELECT d.DOCUMENT_ID , d.DOCUMENT_TYPE_ID , d.DOCUMENT_LOCATION , d.DOCUMENT_NAME , d.STATUS_ID ,d.COMMENTS, d.IS_CANCEL,
+		d.CREATOR , d.CREATED_DATE , d.LAST_UPDATE_USER ,d.LAST_UPDATE_DATE,d.PARTY_ID,d.FACILITY_ID,d.LOG_LOCATION FROM `DOCUMENT` d,`PRODUCT_DOCUMENT` pd 
+		WHERE d.`DOCUMENT_ID` = pd.`DOCUMENT_ID` and  d.DOCUMENT_TYPE_ID =#{documentTypeId} 	
+		order by d.CREATED_DATE desc				 
+	</select>
+	
+	<select id="findLatestAutoUploadDoc"  resultMap="VoBaseResultMap">
+	    SELECT d.DOCUMENT_ID , d.DOCUMENT_TYPE_ID , d.DOCUMENT_LOCATION , d.DOCUMENT_NAME , d.STATUS_ID ,d.COMMENTS, d.IS_CANCEL,
+		d.CREATOR , d.CREATED_DATE , d.LAST_UPDATE_USER ,d.LAST_UPDATE_DATE,d.PARTY_ID,d.FACILITY_ID FROM `DOCUMENT` d 
+		WHERE 1=1 
+		<if test="typeId != null">
+			and d.DOCUMENT_TYPE_ID =#{typeId}
+		</if>  
+		<if test="vendorId != null">
+				and PARTY_ID = #{vendorId}
+		</if>
+		<if test="storeId != null">
+			and FACILITY_ID = #{storeId}
+		</if>	
+		<if test="creator != null">
+			and CREATOR = #{creator}
+		</if>
+		and  d.STATUS_ID in ('DOC_PRO_SUCCESS','DOC_PRO_PART_SUCCESS')
+		order by d.CREATED_DATE desc limit 2
+	</select>
+	
+</mapper>

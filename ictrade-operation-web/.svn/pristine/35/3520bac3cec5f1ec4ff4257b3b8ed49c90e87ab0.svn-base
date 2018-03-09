@@ -1,0 +1,377 @@
+$(function() {
+	var valid = false;
+	var operationWebUrl = ykyUrl._this;  //rootUrl
+	var newsUrl = ykyUrl.info + '/v1/news/';
+	var vendorId = getQueryString('id');
+	vm = new Vue({
+		el : "#distributor-edit",
+		data : {
+			initData : {
+				categoryTypeId : 'VENDOR',
+				attachUrl:'', //logo
+				name: '', //分销商名字 
+				orderSeq: '', //排序位置
+				abstracts: '', //分销商简介
+				details: '', //分销商详情
+				extend: ''//分销商商品链接
+			},
+			industryList:'',
+			newsId : '',
+			requeryId : getQueryString('id'),
+			newsHome: operationWebUrl + "/distributor.htm",
+			checkModel : {}, 
+			isShow: true,
+			isEdit: true, 
+			isReadonly: true,
+			inNum : 0,	
+			/*主要代理线*/
+			agenturl : ykyUrl.product + '/v1/products/brands',    //数据接口，必须
+			agentid : 'agent',        //设置控件ID ，必须
+            agentname : 'cont[agent][]',      //设置控件name ，必须
+            agents: [], 
+            "agentoptionId":"id",    //必填 ，设置数据接口对应字段 ，必须
+            "agentoptionName":"brandName", //必填 ，设置数据接口对应字段 ，必须
+			/*应用领域*/			
+			checkUrl : ykyUrl.database + '/v1/category/companylist'+'?categoryTypeId=APPLICATION_CATEGORY',    //数据接口，必须
+			checkId: 'application',          //设置提交对应控件ID ，必须
+			checkName: 'cont[application][]',          //设置提交对应控件Name ，必须 
+            optionId : 'categoryId',          //设置数据接口value对应字段 ，必须
+            optionName: 'categoryName',       //设置数据接口text对应字段 ，必须
+            inputClass:'inputClass',
+            validate:{ //主要代理线校验	
+                required: true,
+                addmaxitermlength: 8
+            },
+            applyadvalidate:{ //应用领域校验
+                required: true,
+                addmaxitermlength: 15
+            },
+            advalidate:{ //优势产品
+                required: true, //必填
+                addmaxitermlength: 10
+            },
+            applications:[], 
+			/*优势产品*/				
+			adcheckUrl : ykyUrl.database + '/v1/category/companylist' + '?categoryTypeId=ADVANTAGE_CATEGORY',  
+			adcheckId: 'type',          //设置控件ID ，必须
+			adcheckName: 'cont[type][]',          //设置控件Name ，必须 
+            adoptionId : 'categoryId',          //设置value对应字段 ，必须
+            adoptionName: 'categoryName',       //设置text对应字段 ，必须
+            types:[], 	
+            content : {}
+		},
+		created(){
+			var that= this;
+			this.newsId = vendorId;
+			if(this.newsId){ 
+				this.isShow = !this.isShow;
+				this.isEdit = !this.isEdit;
+				this.isReadonly = false; 
+				this.initData.extend = ykyUrl.portal + '/search/inventory/vendor/'+ vendorId+'.htm';
+				syncData(
+						newsUrl + this.newsId, 
+						'GET', 
+						null, 
+						function(res, msg) {
+							that.initData = $.extend({}, that.initData, res); 
+							if(res.newsAttachment && res.newsAttachment.attachUrl){
+								that.initData.attachUrl= res.newsAttachment.attachUrl;
+							}
+							setTimeout(function() {
+								if (res.newsContent && res.newsContent.content) {
+										that.content = JSON.parse(res.newsContent.content);  
+										var agents= that.content.agent;
+										if(agents){
+											that.agents=agents.map(function (numberString ) { 
+												 return parseInt (numberString ); 
+											 }) 
+										}
+										that.applications= that.content.application?that.content.application:[];
+										that.types= that.content.type?that.content.type:[];   
+									var content = 'loadContent' + that.content.detail;
+									window.frames[0].postMessage(content, ykyUrl.ictrade_ueditor);
+								}
+
+							}, 500);
+						});
+			}
+			
+			//多选交互
+		},
+		watch:{
+			newsId:function(val){
+				//this.initData.extend = ykyUrl.portal + '/search/inventory.htm?vendorId=' + val;
+				this.initData.extend = ykyUrl.portal + '/search/inventory/vendor/'+ val+'.htm';
+				
+			},
+			"initData.abstracts" : function(val){
+        		this.inNum = val.length;
+        	}
+		}, 
+		methods : { 
+			//保存数据
+			saveData : function(event) {
+				this.initData.details = event.data;
+				$('#create').submit();
+			},
+			 copyCont : function(event) {
+				this.initData.details = event.data;  
+			}, 
+			//删除logo
+			delLogo: function() {
+				vm.initData.attachUrl ='';
+			},
+			//返回列表页面
+			returnListPage: function() {
+				LS.set("bulletinEditCancel","Y");
+			    window.location.href = this.newsHome;
+			} 
+		}
+	});
+	
+	if(!vendorId){
+		//获取列表数目
+		syncData(
+			ykyUrl.info + "/v1/news?categoryTypeIdStr=VENDOR",
+			"GET",
+			null,
+			function(data, err) {
+				if (null != data) {
+					vm.initData.orderSeq = data.total + 1;
+				}
+			}); 
+	}
+	//提交表单
+	formValidate('#create', {}, function(){ 
+		var dataList = $('#create').serializeObject(); 
+		dataList.cont.detail =  vm.initData.details; 
+		dataList.content=JSON.stringify(dataList.cont);
+		delete dataList.cont;
+		if(vendorId){
+			syncData(
+				ykyUrl.info + "/v1/news/"+ vendorId,
+				"PUT",
+				dataList,
+				function(data, err) {
+					if (null != data) {
+						layer.msg('更新成功！');  
+	              	  	history.go(-1);
+					}
+				}); 
+		}else{
+			syncData(
+					ykyUrl.info + "/v1/news",
+					"POST",
+					dataList,
+					function(data, err) {
+						if (null != data) {
+							document.location.href = vm.newsHome;
+						}
+					});
+		}
+	}); 
+	
+	//logo上传
+	(function() {
+		var uploader = createUploader({
+			buttonId: "uploadBtn", 
+			uploadType: "notice.publicRead", 
+			url:  ykyUrl.webres,
+			types: "jpg,png,jpeg,gif",
+			fileSize: "5mb",
+			isImage: true, 
+			init:{
+				FileUploaded : function(up, file, info) { 
+		            layer.close(index);
+					if (info.status == 200 || info.status == 203) {
+						console.log(_fileUrl);
+						console.log(file); 
+						vm.initData.attachUrl = _fileUrl;
+					} else {
+						layer.msg("上传文件失败,请重新上传！",{icon:2,offset:120}); 
+					}
+					up.files=[];
+				}
+			}
+	    }); 
+		uploader.init();
+	})();
+	
+	setTimeout(function() { 
+		if (window.addEventListener) {
+			window.addEventListener('message', vm.saveData, false);
+		} else if (window.attachEvent) {
+			window.attachEvent('message', vm.saveData, false);
+		}
+	}, 1000);
+}); 
+
+$(document).ready(function() {
+
+	
+	setTimeout(function() {
+		if (window.addEventListener) {
+			window.addEventListener('message', vm.saveData, false);
+		} else if (window.attachEvent) {
+			window.attachEvent('message', vm.saveData, false);
+		}
+	}, 1000);
+})
+var letterList = [
+              {"letter":"A","ishave":"no"},
+              {"letter":"B","ishave":"no"},
+              {"letter":"C","ishave":"no"},
+              {"letter":"D","ishave":"no"},
+              {"letter":"E","ishave":"no"},
+              {"letter":"F","ishave":"no"},
+              {"letter":"G","ishave":"no"},
+              {"letter":"H","ishave":"no"},
+              {"letter":"I","ishave":"no"},
+              {"letter":"J","ishave":"no"},
+              {"letter":"K","ishave":"no"},
+              {"letter":"L","ishave":"no"},
+              {"letter":"M","ishave":"no"},
+              {"letter":"N","ishave":"no"},
+              {"letter":"O","ishave":"no"},
+              {"letter":"P","ishave":"no"},
+              {"letter":"Q","ishave":"no"},
+              {"letter":"R","ishave":"no"},
+              {"letter":"S","ishave":"no"},
+              {"letter":"T","ishave":"no"},
+              {"letter":"U","ishave":"no"},
+              {"letter":"V","ishave":"no"},
+              {"letter":"W","ishave":"no"},
+              {"letter":"X","ishave":"no"},
+              {"letter":"Y","ishave":"no"},
+              {"letter":"Z","ishave":"no"}
+             ];
+var extension = new Vue({
+  el:'#extension',
+  data:{
+    list:{},
+    query:"",
+    first:"",
+    showOther:false,
+    letterList:letterList
+  },
+  methods:{
+	    fuzzySearch:function(list,q,f){
+		    $.each(list,function(index,el){
+		      var queryStr = el.query.toUpperCase();
+		      if(f!=="" && f!=="other"){
+		        el.ishave = queryStr.indexOf(f.toUpperCase()) == 0 ? true : false;
+		      }
+		      if(f=="other"){
+		        var reg = /[A-Z]/;
+		        var letter = queryStr.slice(0,1);
+		        el.ishave = !reg.test(letter);
+		      }
+		      if(q!==""){
+		        el.ishave = queryStr.indexOf(q.toUpperCase()) >= 0 ? true : false;
+		      }
+		      if(q==""&&f==""){
+		        el.ishave = queryStr.indexOf(q.toUpperCase()) >= 0 ? true : false;
+		      }
+		    })
+	  },
+	  firstSearch:function(f,eve){
+	    this.query = "";
+	    this.first = f;
+	    this.fuzzySearch(this.list,this.query,this.first);
+	    $(".search_criteria a").removeClass("active")
+	    $(eve.target).addClass("active");
+	    $(".search_box").blur();        
+	  },
+	  inputSearch:function(){
+	    this.first = "";
+	    this.fuzzySearch(this.list,this.query,this.first);
+	    $(".search_criteria a").removeClass("active")
+	    $(".search_criteria .all").addClass("active");
+	  },
+	  selectSupplier:function(el, eve){
+	    $(".supplier_list a").removeClass("active");
+	    $(eve.target).addClass("active");
+	    layer.close(index); 
+	    vm.$data.newsId = el.id;
+	    vm.$data.initData.title = el.partyGroup.groupName;
+	    vm.$data.initData.attachUrl = el.partyGroup.logoImageUrlSmall ? el.partyGroup.logoImageUrlSmall : el.partyGroup.logoImageUrl ? el.partyGroup.logoImageUrl : '' ; 
+		$('#extension').hide();
+		
+		vm.$data.isShow = false;
+		vm.$data.isReadonly = false;  
+	  } 
+	}
+})
+
+
+function addquery(list){
+ 	if(list.length==0)
+ 		return false;
+	
+ 	var py,reg = /[A-Z]/;
+ 	$.each(list, function(index, el){
+ 		el.ishave = true;
+ 		if(el.partyGroup.groupName){
+ 			 py = ConvertPinyin(el.partyGroup.groupName)
+ 			 var fl='';
+ 			for(var i = 0;i<py.length;i++){
+ 				
+ 				if (reg.test(py[i])){
+ 					fl+=py[i]
+ 				}
+ 			} 			
+ 			el.query = py + " " + fl + " "  + el.partyGroup.groupName
+ 			 			 			
+			var letter = py.slice(0,1);
+			if(!reg.test(letter.toUpperCase())){
+				extension.$data.showOther = true;
+			};
+ 		}
+ 		//过滤首字母列表
+ 		$.each(extension.$data.letterList,function(i,e){
+ 			if(e.ishave=="yes"){
+ 				return;
+ 			} 
+ 			e.ishave = el.query.toUpperCase().indexOf(e.letter.toUpperCase())== 0 ? "yes" : "no";
+ 		})
+	})
+	return list;
+ }
+
+function showData(){
+	$('#extension').show();
+	//获取列表数目
+	
+	syncData(
+		ykyUrl.party + "/v1/party/allparty",
+		"PUT",
+		{
+			status : 'PARTY_ENABLED',
+			roleType : 'SUPPLIER'
+		},
+		function(data, err) {
+			if (null != data) { 
+				 //extension.$data.query="111";
+				 extension.$data.list = addquery(data); 
+				 index = layer.open({
+					    type:1,
+					    title:'请选择分销商',
+					    area: '950px',
+					    offset: '100px',
+					    move:false,
+					    skin:"s_select_data",
+					    content:$("#extension")
+					  })
+			}
+		});
+}
+
+
+function requireSaveData() {
+	//发送指令到iframe请求返回数据
+	window.frames[0].postMessage('save_btn', ykyUrl.ictrade_ueditor);
+}
+
+
+ 
+ 

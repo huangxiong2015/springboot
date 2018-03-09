@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<COM_AUDIT_TRAIL AUD_USER="888888999999" AUD_CLIENT_IP="127.0.0.1"
+	AUD_SERVER_IP="192.168.1.253"
+	AUD_RESOURCE="[{&quot;id&quot;:&quot;9999999901&quot;,&quot;partyStatus&quot;:&quot;PARTY_DISABLED&quot;}]"
+	AUD_ACTION="User Modify" APPLIC_CD="PARTY" AUD_ACTION_DESC="修改9999999901账号状态为PARTY_DISABLED" AUD_ACTION_RST="SUCCEEDED" />
+    <PERSON PARTY_ID="888888999999" LAST_NAME_LOCAL="哪吒" MAIL="123456@qq.com"/>
+
+</dataset> 

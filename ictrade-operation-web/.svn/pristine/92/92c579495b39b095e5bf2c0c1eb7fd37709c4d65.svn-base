@@ -1,0 +1,74 @@
+var app = new Vue({
+	el: '#freeShipping',
+	data: {
+		id:$("#detailId").val(),
+		columns:[
+		         	{key :'index', name: '序号', align:'center', width: '50px',textColor:{
+		    	    	condition: "'{status}'=='UNABLE'",
+		    	    	color: 'red'
+		    	    		}
+		         	},
+		         	{key :'mpn', name: '型号', align:'center',
+		    	    		render:function(h,params){
+		    	    			var data = params.row,
+	    							id = data.productId,
+		    	    				mpn = data.mpn ? data.mpn : '-';
+		    	    			return h('a', {
+		    	    				'class':{
+		    	    					cutstring:true
+		    	    				},
+		    	    				attrs:{
+		    	    					title:mpn,
+		    	    					href:ykyUrl.portal + '/product/' + id + '.htm',
+		    	    					target:'_blank'
+		    	    				}
+		    	    			}, mpn)
+		    	    		}
+		         	},
+		         	{key :'brandName', name: '原厂', align:'center',cutstring: true,'default' : '-',textColor:{
+		    	    	condition: "'{status}'=='UNABLE'",
+		    	    	color: 'red'
+		    	    		}
+		         	},
+		         	{key :'vendorName', name: '分销商', align:'center',cutstring: true,'default' : '-',textColor:{
+		    	    	condition: "'{status}'=='UNABLE'",
+		    	    	color: 'red'
+		    	    		}
+		         	},
+		         	{key :'sourceName', name: '仓库', align:'center',cutstring: true,'default' : '-',textColor:{
+		    	    	condition: "'{status}'=='UNABLE'",
+		    	    	color: 'red'
+		    	    		}
+		         	}
+		         ],
+        pageflag:true,
+		prdListApi:ykyUrl.product + '/v1/strategyProduct',
+		queryParams:{
+			strategyId:'',
+			page:1,
+			pageSize:10,
+			defaultStatus:true
+		},
+		defaultTip:'暂无数据',
+		initData:{
+			title:'', //名称
+			strategyType:'FREE_DERIVERY', //类型（包邮），方便后续拓展
+			startDate:'', //包邮开始时间
+			endDate:'', //包邮结束时间
+		}
+	},
+	created:function(){
+		var that = this;
+		this.queryParams.strategyId = this.id;
+		syncData(ykyUrl.product + '/v1/strategy/' + this.id, 'GET', null, function(res, err){
+			if(err == null){
+				that.initData = res;
+			}
+		})
+	},
+	methods:{
+		cancel:function(){
+			location.href = ykyUrl._this + "/freeShipping.htm";
+		}
+	}
+});

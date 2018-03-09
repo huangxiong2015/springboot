@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.audit.dao.AuditDao">
+	<resultMap id="BaseResultMap" type="com.yikuyi.party.audit.model.Audit">
+		<id column="AUD_USER" property="userId" />
+		<result column="AUD_CLIENT_IP" property="clientIp" />
+		<result column="AUD_SERVER_IP" property="serverIp" />
+		<result column="AUD_RESOURCE" property="resource" />
+		<result column="AUD_ACTION" property="action" />
+		<result column="APPLIC_CD" property="applicationCode" />
+		<result column="AUD_DATE" property="date" />
+		<result column="AUD_ID" property="actionId" />
+		<result column="AUD_ACTION_DESC" property="actionDesc" />
+		<result column="AUD_ACTION_RST" property="actionRst" />
+	</resultMap>
+
+	<resultMap id="BaseVoResultMap" type="com.yikuyi.party.audit.vo.AuditVo">
+		<id column="AUD_USER" property="userId" />
+		<result column="AUD_CLIENT_IP" property="clientIp" />
+		<result column="AUD_SERVER_IP" property="serverIp" />
+		<result column="AUD_RESOURCE" property="resource" />
+		<result column="AUD_ACTION" property="action" />
+		<result column="APPLIC_CD" property="applicationCode" />
+		<result column="AUD_DATE" property="date" />
+		<result column="AUD_ID" property="actionId" />
+		<result column="AUD_ACTION_DESC" property="actionDesc" />
+		<result column="AUD_ACTION_RST" property="actionRst" />
+		<result column="MAIL" property="mail" />
+		<result column="LAST_NAME_LOCAL" property="userName" />
+	</resultMap>
+
+	<insert id="insert" parameterType="com.yikuyi.party.audit.model.Audit">
+		insert into COM_AUDIT_TRAIL
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				AUD_USER,
+			</if>
+			<if test="clientIp != null">
+				AUD_CLIENT_IP,
+			</if>
+			<if test="serverIp != null">
+				AUD_SERVER_IP,
+			</if>
+			<if test="resource != null">
+				AUD_RESOURCE,
+			</if>
+			<if test="action != null">
+				AUD_ACTION,
+			</if>
+			<if test="applicationCode != null">
+				APPLIC_CD,
+			</if>
+			<if test="date != null">
+				AUD_DATE,
+			</if>
+			<if test="actionId != null">
+				AUD_ID,
+			</if>
+			<if test="actionDesc != null">
+				AUD_ACTION_DESC,
+			</if>
+			<if test="actionRst != null">
+				AUD_ACTION_RST,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="clientIp != null">
+				#{clientIp},
+			</if>
+			<if test="serverIp != null">
+				#{serverIp},
+			</if>
+			<if test="resource != null">
+				#{resource},
+			</if>
+			<if test="action != null">
+				#{action},
+			</if>
+			<if test="applicationCode != null">
+				#{applicationCode},
+			</if>
+			<if test="date != null">
+				#{date},
+			</if>
+			<if test="actionId != null">
+				#{actionId},
+			</if>
+			<if test="actionDesc != null">
+				#{actionDesc},
+			</if>
+			<if test="actionRst != null">
+				#{actionRst},
+			</if>
+		</trim>
+	</insert>
+
+	<select id="getAuditListByEntity" resultMap="BaseVoResultMap"
+		parameterType="com.yikuyi.party.audit.vo.AuditVo">
+		SELECT
+		t1.AUD_USER,t1.AUD_CLIENT_IP,t1.AUD_SERVER_IP,t1.AUD_RESOURCE,t1.AUD_ACTION,t1.APPLIC_CD,t1.AUD_DATE,t1.AUD_ID,t1.AUD_ACTION_DESC,t2.MAIL,t2.LAST_NAME_LOCAL
+		FROM COM_AUDIT_TRAIL t1 LEFT JOIN PERSON t2 ON t1.AUD_USER = t2.PARTY_ID
+		<where>
+		<if test="userId != null ">
+			AND t1.AUD_USER = #{userId}
+			<!-- AND t1.AUD_USER LIKE CONCAT(#{userId}, '%') -->
+		</if>
+		<if test="action != null ">
+			AND t1.AUD_ACTION = #{action}
+		</if>
+		<if test="actions != null and actions.size() !=0">
+			 AND t1.`AUD_ACTION` IN 
+	        <foreach collection="actions" item="id" index="index" open="(" close=")" separator=",">
+	            #{id}
+	        </foreach>
+        </if>
+		<if test="actionId != null ">
+			AND t1.AUD_ID = #{actionId}
+		</if>
+		<if test="actionRst != null ">
+			AND t1.AUD_ACTION_RST = #{actionRst}
+		</if>
+		<if test="searchValue != null ">
+			AND (t2.MAIL LIKE CONCAT(#{searchValue}, '%') OR t2.LAST_NAME_LOCAL LIKE
+			CONCAT(#{searchValue}, '%'))
+		</if>
+		<if test="applicationCode != null ">
+			AND t1.APPLIC_CD = #{applicationCode}
+		</if>
+		<if test="applicationCodes != null and applicationCodes.size() !=0">
+			 AND t1.`APPLIC_CD` IN 
+	        <foreach collection="applicationCodes" item="id" index="index" open="(" close=")" separator=",">
+	            #{id}
+	        </foreach>
+        </if>
+		<if test="createdateStard != null and createdateStard !=''">
+			AND t1.`AUD_DATE` <![CDATA[ >= ]]>
+			STR_TO_DATE(concat(#{createdateStard},' 00:00:00'),'%Y-%m-%d
+			%H:%i:%S')
+		</if>
+		<if test="createdateEnd != null and createdateEnd !=''">
+			AND t1.`AUD_DATE` <![CDATA[ <= ]]>
+			STR_TO_DATE(concat(#{createdateEnd},' 23:59:59'),'%Y-%m-%d %H:%i:%S')
+		</if>
+		</where>
+		ORDER BY t1.AUD_DATE DESC
+	</select>
+	
+	
+	<!-- 查询当前时间前一天的数据 -->
+	<select id="getLastDayAuditList" resultMap="BaseResultMap">
+		SELECT t.AUD_CLIENT_IP FROM (
+		(SELECT a.`AUD_CLIENT_IP`  AS AUD_CLIENT_IP FROM COM_AUDIT_TRAIL a 
+		WHERE a.`APPLIC_CD` = 'CAS' AND a.`AUD_DATE` <![CDATA[ >= ]]> DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND a.`AUD_DATE` <![CDATA[ < ]]> CURDATE() GROUP BY a.`AUD_CLIENT_IP`) t
+		) WHERE 
+		t.AUD_CLIENT_IP NOT IN (
+		SELECT b.`AUD_CLIENT_IP` FROM COM_AUDIT_TRAIL b 
+		  WHERE b.`APPLIC_CD` = 'CAS' AND b.`AUD_DATE` <![CDATA[ < ]]> DATE_SUB(CURDATE(), INTERVAL 1 DAY) GROUP BY b.`AUD_CLIENT_IP`)
+	</select>
+	
+	<!-- 查询某个时间点到当前系统时间的数据 -->
+	<select id="getAuditListByAudDate" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT a.`AUD_CLIENT_IP`,a.`AUD_DATE` FROM COM_AUDIT_TRAIL a WHERE a.`APPLIC_CD`='CAS'  
+		AND DATE_FORMAT(a.`AUD_DATE`, '%Y-%m-%d %H:%i:%s')  <![CDATA[ >= ]]>  DATE_FORMAT(#{auditTime}, '%Y-%m-%d %H:%i:%s')
+		AND DATE_FORMAT(a.`AUD_DATE`, '%Y-%m-%d %H:%i:%s')  <![CDATA[ <= ]]>  DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s')
+		GROUP BY a.`AUD_CLIENT_IP` ORDER BY a.`AUD_DATE` DESC
+	</select>
+</mapper>

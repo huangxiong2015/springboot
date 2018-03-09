@@ -1,0 +1,25 @@
+package com.yikuyi.party.vo;
+
+import com.yikuyi.party.model.Party;
+
+public class PartyVo extends Party{
+
+	private static final long serialVersionUID = -2496585627722976259L;
+	
+	private String displayName;
+
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	@Override
+	public String toString() {
+		return "PartyVo [displayName=" + displayName + "]";
+	}
+
+}

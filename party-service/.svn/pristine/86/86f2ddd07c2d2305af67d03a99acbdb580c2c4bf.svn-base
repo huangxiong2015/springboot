@@ -1,0 +1,59 @@
+package com.yikuyi.party.userLogin.api;
+
+
+
+import com.yikuyi.party.contact.vo.AccountVo;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.login.model.UserLogin;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+/**
+ * 定义地址的相关接口
+ * @author zr.aoxianbing@yikuyi.com
+ *
+ */
+public interface IUserLoginResource {
+	
+
+	@ApiOperation(value = "根据手机或者邮箱判断用户是否存在(账号base64加密)", notes = "根据手机或者邮箱判断用户是否存在(账号base64加密)", response = Boolean.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Boolean.class) 
+			})
+	
+	public Boolean isExist(@ApiParam(value = "account", required = true) String account);
+	
+	@ApiOperation(value = "更改账号", notes = "更改账号", response = AccountVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = AccountVo.class) 
+			})
+	public String updateAccount(@ApiParam(value = "accountVo", required = true) AccountVo accountVo);
+	
+	
+	@ApiOperation(value = "根据手机或者邮箱判断用户是否存在", notes = "根据手机或者邮箱判断用户是否存在", response = Boolean.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Boolean.class) 
+			})
+	
+	public Boolean getAccount(@ApiParam(value = "account", required = true) String account);
+	@ApiOperation(value = "初始化密码", notes = "初始化密码", response = UserVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = UserVo.class) 
+			})
+	
+	public UserVo initPassWord(@ApiParam(value = "userVo", required = true) UserVo userVo);
+	@ApiOperation(value = "根据账号id查询用户", notes = "根据账号id查询用户", response = UserLogin.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = void.class) 
+			})	
+	public UserLogin getAccountById(@ApiParam(value = "account", required = true) String account);
+	@ApiOperation(value = "根据partyid和类型查询用户", notes = "根据partyid和类型查询用户", response = String.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = void.class) 
+			})	
+	public String getAccountByIdAndType(@ApiParam(value = "id", required = true) String id ,@ApiParam(value = "id", required = true) String type );
+	
+}

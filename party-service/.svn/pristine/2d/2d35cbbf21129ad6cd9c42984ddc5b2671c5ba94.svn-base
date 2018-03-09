@@ -1,0 +1,18 @@
+package com.yikuyi.party.contactMech;
+
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.yikuyi.party.config.BaseTest;
+import com.yikuyi.party.contact.model.ContactMech;
+
+public class ContactMechResourceTest extends BaseTest {
+
+	@Test
+	public void getContactMechListTest() {
+		List<ContactMech> contactMechList = super.partyClient.contactMechResource().getContactMechList("10002","YWRtaW46OTk5OTk5OTkwMQ==");
+		Assert.assertTrue(contactMechList.size() > 0);
+	}
+}

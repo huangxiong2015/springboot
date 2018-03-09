@@ -1,0 +1,94 @@
+# \u6b64\u6587\u4ef6\u5b9a\u4e49\u7cfb\u7edf\u5e38\u7528\u7684\u53d8\u91cf
+msa.gateway.domain=http://localhost
+
+#web\u9875\u9762\u8df3\u8f6c\u7684cas\u7684\u5730\u5740\uff0c\u662f\u5916\u90e8url\u5730\u5740
+cas.serverUrlPrefix=https://passport.yky-sit.com
+login.cas.serverUrlPrefix=https://login.yky-sit.com
+
+#tomcat\u6240\u5728\u670d\u52a1\u5668\u8fdb\u884cticket\u8ba4\u8bc1\u7684\u5730\u5740\uff0c\u5185\u7f51\u5730\u5740
+cas.serverUrlPrefix.internal=http://passport.yky-sit.com
+login.cas.serverUrlPrefix.internal=http://login.yky-sit.com
+
+
+#\u7ed9\u524d\u7aef\u4f7f\u7528\u7684\u5404\u4e2a\u5de5\u7a0b\u7684URL\u524d\u7f00
+quotation.api.serverUrlPrefix=http://192.168.1.253:9092
+portal.serverUrlPrefix=http://localhost:8080/ictrade-portal-web
+admin.serverUrlPrefix=http://localhost:8080/ictrade-admin-web
+main.serverUrlPrefix=http://localhost:8080/ictrade-main-web
+ueditor.iframeUrl = http://192.168.1.253:8080/ictrade-ueditor-web/
+operation.serverUrlPrefix=http://localhost:8080/ictrade-operation-web
+quotation.serverUrlPrefix=http://localhost:8080/ictrade-quotation-web
+pay.serverUrlPrefix=http://localhost:8080/pay-web
+customer.serverUrlPrefix=http://localhost:8080/customer-web
+vendor.serverUrlPrefix=http://localhost:8080/vendor-web
+
+## cas \u5ba2\u6237\u7aef\u6821\u9a8cticket\u7684URL\uff0c\u540e\u7eed\u6539
+main.cas.client.validation.url=http://localhost:8080/ictrade-main-web/login.htm
+admin.cas.client.validation.url=http://localhost:8080/ictrade-admin-web/login.htm
+portal.cas.client.validation.url=http://localhost:8080/ictrade-portal-web/login.htm
+operation.cas.client.validation.url=http://localhost:8080/ictrade-operation-web/login.htm
+quotation.cas.client.validation.url=http://localhost:8080/ictrade-quotation-web/login.htm
+pay.cas.client.validation.url=http://localhost:8080/pay-web/login.htm
+customer.cas.client.validation.url=http://localhost:8080/customer-web/login.htm
+vendor.cas.client.validation.url=http://localhost:8080/vendor-web/login.htm
+
+#\u5fae\u670d\u52a1\u76f8\u5173\u7684\u524d\u7f00
+api.transaction.serverUrlPrefix=http://192.168.1.101:9023
+api.product.serverUrlPrefix=http://192.168.1.101:9043
+api.basedata.serverUrlPrefix=http://192.168.1.101:9063
+api.party.serverUrlPrefix=http://192.168.1.101:9053
+
+#pay-api https
+pay.api.gateway.url=https://sslpay-sit1.ic-trade.com:7443/payments
+pay.api.unionpayb2b.syncnotify.url=https://sslpay-sit1.ic-trade.com:7443/payments/response/unionpayb2b
+pay.api.alipay.syncnotify.url=https://sslpay-sit1.ic-trade.com:7443/payments/response/alipay
+
+#\u767b\u5f55\u6210\u529f\u9875\u9762
+portal.cas.login.successUrl=http://localhost:8080/customer-web
+
+#GA\u76f8\u5173
+ga.id=UA-73342110-1
+
+#mq\u670d\u52a1\u5668\u5730\u5740
+mq.namesrvAddr=192.168.1.254:9876
+
+#redis
+redis.hostName=192.168.1.254
+redis.port=6379
+redis.password=Yky@123456
+redis.database=1
+
+#aliyun.OSS
+aliyun.OSS.bucket.publicread=ictrade-biz-public-hz-uat
+aliyun.OSS.bucket.privateread=ictrade-private-hz-uat
+aliyun.OSS.bucket.material=ictrade-public-hz-uat
+aliyun.OSS.endpoint=OSS_CN_HANGZHOU
+aliyun.OSS.accessKeyId=OTRxkGCUJ8Rh8xFu
+aliyun.OSS.accessKeySecret=ljykU9VjebI9DrTUoVK9mjTDO8UFwb
+aliyun.OSS.role=acs:ram::1058949072375933:role/uat-ossaccess-role
+aliyun.OSS.bucket.root=dev/
+
+#elasticSearch
+search.hostName=192.168.1.253
+search.port=9083
+
+#search.hostName=localhost
+#search.port=9083
+
+#mongoDb
+mongodb.hostName=192.168.1.253
+mongodb.port=10000
+
+#dns-prefetchs
+dns-prefetchs =  //img0.ykystatic.com,//img1.ykystatic.com
+
+#\u7269\u6599\u56fe\u7247\u8def\u5f84
+item.FileUrl = //file-uat.ykystatic.com/material/
+item.ImgUrl  = //img0-uat.ykystatic.com/material/
+
+#\u5bcc\u6587\u672c\u7f16\u8f91\u5668URL
+ueditor.iframeUrl = http://192.168.1.253:8080/ictrade-ueditor-web/
+
+#shiro\u5fae\u670d\u52a1
+service.auth.role=http://192.168.1.253:9091/acl/roles?userId=
+service.auth.permission=http://192.168.1.253:9091/acl/permissions?userId=

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.customerssync.dao.CustomersSyncDao">
+	
+	<resultMap id="BaseResultMap" type="com.yikuyi.party.integration.CustomersVo">
+      <id column="CUSTOMERID" property="customerId" jdbcType="VARCHAR"/>
+        <result column="REGISTERTIME" property="registerTime" jdbcType="TIMESTAMP"/>
+        <result column="CUSTOMERNAME" property="customerName" jdbcType="VARCHAR"/>
+        <result column="APPROVESTATUS" property="approveStatus" jdbcType="VARCHAR"/>
+        <result column="APPROVEDTIME" property="approvedTime" jdbcType="TIMESTAMP"/>
+        <result column="CUSTOMERTYPE" property="customerType" jdbcType="VARCHAR"/>
+        <result column="CUSTOMERTYPEOTHER" property="customerTypeOther" jdbcType="VARCHAR"/>
+        <result column="INDUSTRY" property="industry" jdbcType="VARCHAR"/>
+        <result column="INDUSTRYOTHER" property="industryOther" jdbcType="VARCHAR"/>
+        <result column="OFFICIALWEBSITE" property="officialWebsite" jdbcType="VARCHAR"/>
+        <result column="DUNSNUMBER" property="dunsNUmber" jdbcType="VARCHAR"/>
+        <result column="ADDRESS" property="address" jdbcType="VARCHAR"/>
+        <result column="ISENTERPRISE" property="isEnterprise" jdbcType="VARCHAR"/>
+	</resultMap>
+	<resultMap id="BaseResultUserMap" type="com.yikuyi.party.integration.ContactsVo">
+		<id column="CONTACTID" property="contactId" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="POSITION" property="position" jdbcType="VARCHAR"/>
+        <result column="SEX" property="sex" jdbcType="VARCHAR"/>
+        <result column="EXTENSION" property="extension" jdbcType="VARCHAR"/>
+        <result column="TEL" property="tel" jdbcType="VARCHAR"/>
+        <result column="MAIL" property="mail" jdbcType="VARCHAR"/>
+        <result column="STATUS" property="status" jdbcType="VARCHAR"/>
+        <result column="DEFAULTADDRESS" property="defaultAddress" jdbcType="VARCHAR"/>
+        <result column="LASTMODIFYUSER " property="lastModifyUser" jdbcType="VARCHAR"/>
+        <result column="LASTLOGINTIME" property="lastLoginTime" jdbcType="TIMESTAMP"/>
+        <result column="QQ" property="qq" jdbcType="VARCHAR"/>
+        
+	</resultMap>
+
+	 <select id="getAllEntList" resultMap="BaseResultMap" parameterType="com.yikuyi.party.contact.vo.CustomerSyncVo">
+		SELECT 
+		  t.`PARTY_ID` AS CUSTOMERID,
+		  t.`CREATED_DATE` AS REGISTERTIME,
+		  t2.`GROUP_NAME` AS CUSTOMERNAME,
+		  t2.`VERIFY_STATUS_ID` AS APPROVESTATUS,
+		  t2.`APPROVED_DATE` AS APPROVEDTIME,
+		  a.`ATTR_VALUE` AS CUSTOMERTYPE,
+		  aa.`ATTR_VALUE` AS CUSTOMERTYPEOTHER,
+		  b.`ATTR_VALUE` AS INDUSTRY,
+		  c.`ATTR_VALUE` AS INDUSTRYOTHER,
+		  d.`ATTR_VALUE` AS OFFICIALWEBSITE,
+		  e.`ATTR_VALUE` AS DUNSNUMBER,
+		  'Y' AS ISENTERPRISE,
+		  CONCAT(
+		    addr.`PROVINCE_GEO_NAME`,
+		    addr.`CITY_GEO_NAME`,
+		    addr.`COUNTY_GEO_NAME`
+		  ) AS ADDRESS
+		FROM
+		  `PARTY` t 
+		  LEFT JOIN PARTY_GROUP t2 
+		    ON t.PARTY_ID = t2.PARTY_ID 
+		  LEFT JOIN PARTY_ATTRIBUTE a 
+		    ON t.`PARTY_ID` = a.`PARTY_ID` 
+		    AND a.`ATTR_NAME` = 'CORPORATION_CATEGORY_ID' 
+		  LEFT JOIN PARTY_ATTRIBUTE aa 
+		    ON t.`PARTY_ID` = aa.`PARTY_ID` 
+		    AND aa.`ATTR_NAME` = 'CORPORATION_CATEGORY_ID_OTHER' 
+		  LEFT JOIN PARTY_ATTRIBUTE b 
+		    ON t.`PARTY_ID` = b.`PARTY_ID` 
+		    AND b.`ATTR_NAME` = 'INDUSTRY_CATEGORY_ID' 
+		  LEFT JOIN PARTY_ATTRIBUTE c 
+		    ON t.`PARTY_ID` = c.`PARTY_ID` 
+		    AND c.`ATTR_NAME` = 'INDUSTRY_CATEGORY_ID_OTHER' 
+		  LEFT JOIN PARTY_ATTRIBUTE d 
+		    ON t.`PARTY_ID` = d.`PARTY_ID` 
+		    AND d.`ATTR_NAME` = 'WEBSITE_URL' 
+		  LEFT JOIN PARTY_ATTRIBUTE e
+		    ON t.`PARTY_ID` = e.`PARTY_ID` 
+		    AND e.`ATTR_NAME` = 'D_CODE' 
+		  LEFT JOIN PARTY_CONTACT_MECH m 
+		    ON t.`PARTY_ID` = m.`PARTY_ID` 
+		    AND m.`CONTACT_MECH_PURPOSE_TYPE_ID` = 'REGISTER_LOCATION' 
+		    AND (
+		      m.`THRU_DATE` > NOW() 
+		      OR m.THRU_DATE IS NULL
+		    ) 
+		  LEFT JOIN POSTAL_ADDRESS addr 
+		    ON m.`CONTACT_MECH_ID` = addr.`CONTACT_MECH_ID` 
+		
+		WHERE t.`PARTY_TYPE_ID` = 'CORPORATION' 
+		  AND t.`PARTY_ID` != '99999999'
+		 <if test="flag != null and flag == 'INCREMENT_FLAG'">
+		     AND (
+			    DATE(t.`CREATED_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
+			    OR (
+			      DATE(t.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
+			      OR DATE(t2.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
+			      OR DATE(addr.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
+			      OR DATE(e.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
+			      OR DATE(d.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
+			      OR DATE(a.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
+			      OR DATE(aa.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
+			      OR DATE(b.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
+			      OR DATE(c.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+			    ) 
+			    OR 
+			    (SELECT tr.`PARTY_ID_FROM` FROM PARTY_RELATIONSHIP tr 
+			      LEFT JOIN `PERSON` tp ON tr.`PARTY_ID_FROM` = tp.`PARTY_ID` 
+			      WHERE tr.`PARTY_ID_TO` = t.`PARTY_ID` 
+			      AND tr.`ROLE_TYPE_ID_FROM` = 'EMPLOYEE' 
+			      AND tr.`THRU_DATE` IS NULL 
+			      AND DATE(tp.`LAST_UPDATE_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY))
+			  )
+		</if>
+		<if test="createStart != null and createStart !=''" >
+		   And DATE(t.`CREATED_DATE`) >= DATE_FORMAT(#{createStart},'%Y-%m-%d')
+		</if>
+		<if test="createEnd != null and createEnd !=''" >
+		   <![CDATA[ And DATE(t.`CREATED_DATE`) <= DATE_FORMAT(#{createEnd},'%Y-%m-%d')]]> 
+		</if>
+		   
+		ORDER BY t.`CREATED_DATE` ASC 
+	</select>
+  	 <select id="getUserByIdList"  resultMap="BaseResultUserMap">
+  		SELECT 
+		  t.`PARTY_ID` AS CONTACTID,
+		  t.`LAST_NAME_LOCAL` AS NAME,
+		  CASE
+		    WHEN t.`PERSONAL_TITLE` = 'buyer' 
+		    THEN '采购员' 
+		    WHEN t.`PERSONAL_TITLE` = 'purchasingManager' 
+		    THEN '采购经理' 
+		    WHEN t.`PERSONAL_TITLE` = 'engineer' 
+		    THEN '工程师' 
+		    WHEN t.`PERSONAL_TITLE` = 'other' 
+		    THEN '其他' 
+		    ELSE '' 
+		  END AS POSITION,
+		  CASE
+		    WHEN t.`GENDER` = '0' 
+		    THEN '男' 
+		    WHEN t.`GENDER` = '1' 
+		    THEN '女' 
+		      ELSE '' 
+		  END AS SEX,
+		  t.`FIXEDTEL` AS EXTENSION,
+		  t.TEL AS TEL,
+		  t.MAIL AS MAIL,
+		  (SELECT 
+		    tt.STATUS_ID 
+		  FROM
+		    PARTY tt 
+		  WHERE tt.PARTY_ID = t.PARTY_ID) AS STATUS,
+		  (SELECT 
+		    tt1.LAST_NAME_LOCAL 
+		  FROM
+		    PERSON tt1 
+		  WHERE t.`LAST_UPDATE_USER` = tt1.PARTY_ID) AS LASTMODIFYUSER,
+		  (SELECT 
+		    MAX(LAST_UPDATE_DATE) 
+		  FROM
+		    USER_LOGIN tt2 
+		  WHERE tt2.PARTY_ID = t.`PARTY_ID`) AS LASTLOGINTIME,
+		  CONCAT(
+		    addr.`PROVINCE_GEO_NAME`,
+		    addr.`CITY_GEO_NAME`,
+		    addr.`COUNTY_GEO_NAME`
+		  ) AS DEFAULTADDRESS,
+		  tel.`CONTACT_NUMBER` AS QQ 
+		FROM
+		  `PERSON` t 
+		  LEFT JOIN PARTY_CONTACT_MECH m 
+		    ON t.`PARTY_ID` = m.`PARTY_ID` 
+		    AND m.`CONTACT_MECH_PURPOSE_TYPE_ID` = 'REGISTER_LOCATION' 
+		    AND (
+		      m.`THRU_DATE` > NOW() 
+		      OR m.THRU_DATE IS NULL
+		    ) 
+		  LEFT JOIN POSTAL_ADDRESS addr 
+		    ON m.`CONTACT_MECH_ID` = addr.`CONTACT_MECH_ID` 
+		  LEFT JOIN `TELECOM_NUMBER` tel 
+		    ON m.`CONTACT_MECH_ID` = tel.`CONTACT_MECH_ID` 
+		    AND tel.CONTACT_MECH_TYPE_ID = 'QQ' 
+		WHERE  t.`PARTY_ID` IN 
+		  (SELECT 
+		    tr.`PARTY_ID_FROM` 
+		  FROM
+		    PARTY_RELATIONSHIP tr 
+		  WHERE tr.`PARTY_ID_TO` = #{id}
+		    AND tr.`ROLE_TYPE_ID_FROM` = 'EMPLOYEE' 
+		    AND tr.`THRU_DATE` IS NULL) 
+		
+		
+  	 </select>
+	
+	  <select id="getAllUserList"  resultMap="BaseResultUserMap" parameterType="com.yikuyi.party.contact.vo.CustomerSyncVo">
+  		SELECT 
+		  t.`PARTY_ID` AS CONTACTID,
+		  t.`LAST_NAME_LOCAL` AS NAME,
+		  CASE
+		    WHEN t.`PERSONAL_TITLE` = 'buyer' 
+		    THEN '采购员' 
+		    WHEN t.`PERSONAL_TITLE` = 'purchasingManager' 
+		    THEN '采购经理' 
+		    WHEN t.`PERSONAL_TITLE` = 'engineer' 
+		    THEN '工程师' 
+		    WHEN t.`PERSONAL_TITLE` = 'other' 
+		    THEN '其他' 
+		    ELSE '' 
+		  END AS POSITION,
+		  CASE
+		    WHEN t.`GENDER` = '0' 
+		    THEN '男' 
+		    WHEN t.`GENDER` = '1' 
+		    THEN '女' 
+		      ELSE '' 
+		  END AS SEX,
+		  t.`FIXEDTEL` AS EXTENSION,
+		  t.TEL AS TEL,
+		  t.MAIL AS MAIL,
+		  (SELECT 
+		    tt.STATUS_ID 
+		  FROM
+		    PARTY tt 
+		  WHERE tt.PARTY_ID = t.PARTY_ID) AS STATUS,
+		  (SELECT 
+		    tt1.LAST_NAME_LOCAL 
+		  FROM
+		    PERSON tt1 
+		  WHERE t.`LAST_UPDATE_USER` = tt1.PARTY_ID) AS LASTMODIFYUSER,
+		  (SELECT 
+		    MAX(LAST_UPDATE_DATE) 
+		  FROM
+		    USER_LOGIN tt2 
+		  WHERE tt2.PARTY_ID = t.`PARTY_ID`) AS LASTLOGINTIME,
+		  CONCAT(
+		    addr.`PROVINCE_GEO_NAME`,
+		    addr.`CITY_GEO_NAME`,
+		    addr.`COUNTY_GEO_NAME`
+		  ) AS DEFAULTADDRESS,
+		  tel.`CONTACT_NUMBER` AS QQ
+		FROM
+		  `PERSON` t 
+		  LEFT JOIN PARTY_CONTACT_MECH m 
+		    ON t.`PARTY_ID` = m.`PARTY_ID` 
+		    AND m.`CONTACT_MECH_PURPOSE_TYPE_ID` = 'REGISTER_LOCATION' 
+		    AND (
+		      m.`THRU_DATE` > NOW() 
+		      OR m.THRU_DATE IS NULL
+		    ) 
+		  LEFT JOIN POSTAL_ADDRESS addr 
+		    ON m.`CONTACT_MECH_ID` = addr.`CONTACT_MECH_ID` 
+		  LEFT JOIN `TELECOM_NUMBER` tel 
+		    ON m.`CONTACT_MECH_ID` = tel.`CONTACT_MECH_ID` 
+		    AND tel.CONTACT_MECH_TYPE_ID = 'QQ'
+		  LEFT JOIN PARTY_ROLE t2 
+			    ON t.`PARTY_ID` = t2.`PARTY_ID` 
+		WHERE t2.`ROLE_TYPE_ID` = 'INDIVIDUAL_CUST' 
+		<if test="flag != null and flag == 'INCREMENT_FLAG'">
+		 AND ( DATE(t.CREATED_DATE) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) OR   DATE(t.LAST_UPDATE_DATE) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+		    OR DATE(m.LAST_UPDATE_DATE) = DATE_SUB(CURDATE(), INTERVAL 1 DAY))
+		</if>
+		<if test="createStart != null and createStart !=''" >
+		   And DATE(t.`CREATED_DATE`) >= DATE_FORMAT(#{createStart},'%Y-%m-%d')
+		</if>
+		<if test="createEnd != null and createEnd !=''" >
+		   <![CDATA[ And DATE(t.`CREATED_DATE`) <= DATE_FORMAT(#{createEnd},'%Y-%m-%d')]]> 
+		</if>
+		ORDER BY  t.CREATED_DATE ASC
+  	 </select>
+	 
+</mapper>

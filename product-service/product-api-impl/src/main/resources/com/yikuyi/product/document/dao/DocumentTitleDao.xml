@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.product.document.dao.DocumentTitleDao">
+
+	<resultMap id="BaseResultMap" type="com.yikuyi.document.model.DocumentTitle">
+		<id column="DOCUMENT_ID" property="id" />
+		<result column="SHEET_INDEX" property="sheetIndex" />
+		<result column="SHEET_NAME" property="sheetName" />
+		<result column="ORIGINAL_TITLE" property="originalTitle" />
+	</resultMap>
+	
+	<select id="getById" resultMap="BaseResultMap">
+		SELECT DOCUMENT_ID ,SHEET_INDEX, SHEET_NAME, ORIGINAL_TITLE FROM DOCUMENT_TITLE WHERE DOCUMENT_ID = #{docId} ORDER BY SHEET_INDEX
+	</select>
+	
+	<insert id="insertDocTitles" parameterType="java.util.List">
+		INSERT INTO DOCUMENT_TITLE (DOCUMENT_ID , SHEET_INDEX , SHEET_NAME , ORIGINAL_TITLE, CREATED_DATE , LAST_UPDATE_DATE)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id}, #{item.sheetIndex}, #{item.sheetName}, #{item.originalTitle}, NOW(), NOW())
+		</foreach>
+	</insert>
+	
+	<insert id="insertDocTitle" parameterType="com.yikuyi.document.model.DocumentTitle">
+		INSERT INTO DOCUMENT_TITLE (DOCUMENT_ID , SHEET_INDEX , SHEET_NAME , ORIGINAL_TITLE , CREATED_DATE , LAST_UPDATE_DATE)
+		VALUES
+		(#{item.id}, #{item.sheetIndex}, #{item.sheetName}, #{item.originalTitle}, NOW(), NOW())
+	</insert>
+	
+</mapper>

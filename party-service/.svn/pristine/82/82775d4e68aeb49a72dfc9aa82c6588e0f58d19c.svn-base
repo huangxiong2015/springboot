@@ -1,0 +1,135 @@
+package com.yikuyi.party.partygroup.bll;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.yikuyi.party.group.vo.PartyGroupVo;
+import com.yikuyi.party.model.Party.PartyStatus;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+		TransactionDbUnitTestExecutionListener.class })
+@Transactional
+@Rollback
+public class PartyGroupManagerTest {
+
+	@Autowired
+	private PartyGroupManager partyGroupManager;
+	/**
+	 * 测试插入
+	 * 
+	 * @since 2016年10月18日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	// @Test
+	// @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+	// "party_partygroup_sample.xml" })
+	// public void testGetPartyGroupList() {
+	//
+	// List<Party> list = partyGroupManager.getPartyGroupList("1");
+	//
+	// Party party = list.get(0);
+	//
+	// assertEquals("1", party.getId());
+	// assertEquals("1", party.getPartyGroup().getComments());
+	// assertEquals("1", party.getPartyGroup().getDescription());
+	// assertEquals("深圳市新蕾电子有限公司", party.getPartyGroup().getGroupName());
+	// assertEquals("1", party.getPartyGroup().getLogoImageUrl());
+	//
+	// }
+	/**
+	 * 测试插入
+	 * 
+	 * @since 2016年10月18日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	// @Test
+	// @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+	// "party_partygroup_sample.xml" })
+	// public void testFindPartyGroupByName() {
+	// Party party = partyGroupManager.findPartyGroupByName("深圳市新蕾电子有限公司");
+	// assertEquals("1", party.getPartyGroup().getDescription());
+	//
+	// }
+	/**
+	 * 测试插入
+	 * 
+	 * @since 2016年10月18日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	// @Test
+	// @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+	// "partygroup_info_sample.xml" })
+	// public void testGetAllPartyGroupList() {
+	// PartyGroupVo vo = new PartyGroupVo();
+	// List<Party> partyList =
+	// partyGroupManager.getAllPartyGroupList(vo,RowBounds.DEFAULT);
+	// assertEquals(1, partyList.size());
+	//
+	// }
+	/**
+	 * 测试插入
+	 * 
+	 * @since 2016年10月18日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	// @Test
+	// @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+	// "party_role_sample.xml" })
+	// public void testOrderPermissions() {
+	// MsgResultVo vo = partyGroupManager.orderPermissions("9999999901");
+	// assertEquals("10000", vo.getCode());
+	//
+	// }
+
+	/**
+	 * 新增物流信息
+	 * 
+	 * @since 2017年6月7日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "partygroup_info_sample.xml")
+	public void insertLogisticsCompanyTest() {
+		PartyGroupVo vo = new PartyGroupVo();
+		vo.setGroupName("aaa");
+		partyGroupManager.insertLogisticsCompany(vo);
+	}
+
+	/**
+	 * 编辑物流信息
+	 * 
+	 * @since 2017年6月7日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "partygroup_info_sample.xml")
+	public void updateLogisticsCompanyTest() {
+		PartyGroupVo vo = new PartyGroupVo();
+		vo.setPartyId("123456789");
+		vo.setGroupName("aaa");
+		partyGroupManager.insertLogisticsCompany(vo);
+	}
+
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "partygroup_info_sample.xml")
+	public void changeLogisticsCompanyStatusTest() {
+		PartyGroupVo vo = new PartyGroupVo();
+		vo.setPartyId("123456789");
+		vo.setStatus(PartyStatus.PARTY_ENABLED);
+		partyGroupManager.insertLogisticsCompany(vo);
+	}
+
+}

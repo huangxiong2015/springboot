@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.party.dao.PartyRoleDao" >
+   <resultMap id="BaseResultMap" type="com.yikuyi.party.model.Party" >
+    <id column="PARTY_ID" property="id" jdbcType="VARCHAR" />
+    <result column="PARTY_TYPE_ID" property="partyType" jdbcType="VARCHAR" />
+    <result column="PARTY_CODE" property="partyCode" jdbcType="VARCHAR" />
+    <result column="EXTERNAL_ID" property="externalId" jdbcType="VARCHAR" />
+    <result column="STATUS_ID" property="partyStatus" jdbcType="VARCHAR" />
+    <result column="IS_SYSTEM" property="isSystem" jdbcType="CHAR" />
+    <result column="CREATED_DATE" property="createdDate" jdbcType="TIMESTAMP" />
+    <result column="CREATOR" property="creator" jdbcType="VARCHAR" />
+    <result column="CORPORATION_ID" property="corporationId" />
+    <result column="LAST_UPDATE_USER" property="lastUpdateUser" jdbcType="VARCHAR" />
+    <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+     <association property="partyGroup" javaType="com.yikuyi.party.group.model.PartyGroup"> 
+      <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+      <result column="LOGO_IMAGE_URL" property="logoImageUrl" jdbcType="VARCHAR" />
+       <result column="VERIFY_STATUS_ID" property="activeStatus" jdbcType="VARCHAR" />
+    </association>
+     <association property="person" javaType="com.yikuyi.party.person.model.Person"> 
+      <result column="LAST_NAME_LOCAL" property="lastNameLocal"/>
+       <result column="MAIL" property="mail"/>
+    </association>
+    
+  </resultMap>
+   <resultMap id="ResultRoleTypeMap" type="com.yikuyi.party.vo.RoleTypeVo" >
+    <id column="ROLE_TYPE_ID" property="roleTypeId" jdbcType="VARCHAR" />
+    <result column="PARENT_TYPE_ID" property="parentTypeId" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+   </resultMap>
+   
+  <insert id="insert" >
+    insert into PARTY_ROLE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="partyId != null" >
+        PARTY_ID,
+      </if>
+      <if test="roleTypeId != null" >
+        ROLE_TYPE_ID,
+      </if>
+      <if test="creator != null" >
+        CREATOR,
+      </if>
+      <if test="createdDate != null" >
+        CREATED_DATE,
+      </if>
+      <if test="lastUpdateUser != null" >
+        LAST_UPDATE_USER,
+      </if>
+      <if test="lastUpdateDate != null" >
+        LAST_UPDATE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="partyId != null" >
+        #{partyId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleTypeId != null" >
+        #{roleTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null" >
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdateUser != null" >
+        #{lastUpdateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdateDate != null" >
+        #{lastUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+    <!-- 根据partyId查询角色类型 -->
+	<select id="isPersonal" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM PARTY_ROLE WHERE  ROLE_TYPE_ID='INDIVIDUAL_CUST' AND PARTY_ID =#{id} 
+	</select>
+	
+	<select id="findRoleByPartyId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT ROLE_TYPE_ID FROM PARTY_ROLE WHERE PARTY_ID =#{partyId} 
+	</select>
+	<select id="getUserByRole" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT r.`PARTY_ID`,p.`LAST_NAME_LOCAL`,p.`MAIL` FROM PARTY_ROLE r 
+		LEFT JOIN PERSON p ON r.`PARTY_ID`=p.`PARTY_ID` WHERE r.`ROLE_TYPE_ID`=#{role}
+	</select>
+   <select id="getMenuRole" resultMap="ResultRoleTypeMap">
+     SELECT  b.`ROLE_TYPE_ID` , b.`PARENT_TYPE_ID` ,b.`DESCRIPTION`  FROM  `ROLE_TYPE`  b WHERE `PARENT_TYPE_ID` = #{roleType}
+   </select>
+   
+   <delete id="deletePartyRole">
+  	DELETE FROM PARTY_ROLE WHERE `PARTY_ID` = #{partyId}
+   </delete>
+   <delete id="deletePartyRoleByType">
+  	 DELETE FROM PARTY_ROLE WHERE `PARTY_ID` = #{partyId}
+  	 <if test="roleList != null and roleList.size !=0">
+			AND  ROLE_TYPE_ID IN
+	        <foreach collection="roleList" item="ids" index="index" open="(" close=")" separator=",">
+	            #{ids,jdbcType=VARCHAR}
+	        </foreach>
+      </if>
+   </delete>
+   
+   	<select id="getRoleType" parameterType="java.lang.String" resultType="com.yikuyi.party.vo.RoleTypeVo">
+		SELECT PARTY_ID as parentTypeId,ROLE_TYPE_ID as roleTypeId FROM PARTY_ROLE WHERE  ROLE_TYPE_ID=#{roleTypeId} AND PARTY_ID =#{id} 
+	</select>
+</mapper>

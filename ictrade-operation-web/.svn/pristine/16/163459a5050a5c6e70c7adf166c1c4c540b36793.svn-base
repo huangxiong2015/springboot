@@ -1,0 +1,161 @@
+var vm ='';
+$(function(){  
+	  var fileTemp = $('#fileTemp').html(),dat={ t : 0};
+
+	  vm = new Vue({
+	        el: '#manufacturer-add',
+	        data: { 
+	        	manufacturerData:{
+	        		logo:'' ,
+	        		brandName:'',
+	        		brandAlias:[{name:'',brandId:'',brandName: ''}],
+	        	},
+	  			brandid : getQueryString('id'),
+	  			inNum : 0,
+	  			len : 0,
+	  			keyname: '选择品牌',
+	  	        validate:{
+	  	            "required": true
+	  	        },
+	  	        id:'selbox',
+	  	        name:'selbox',
+	  	        api:ykyUrl.product +"/v1/products/brands",
+	  	        optionName: 'brandName',
+	  	        optionId: 'id',
+	  	        selected:[],
+	  	        multiple:false,  
+	  	        placeholder:'搜索品牌',
+	  	        brandAliasCache: {},
+	  	        aliasName: '',
+	        },
+	        watch : {
+	        	"manufacturerData.desc" : function(val){
+	        		this.inNum = val.length;
+	        	},
+	        	"manufacturerData.brandName": function(val){
+	        		this.manufacturerData.brandAlias[0] = val.toLocaleUpperCase();
+	        	}
+	        },
+	        methods:{
+	        	delField: function(i){
+	        		this.manufacturerData.brandAlias.splice(i,1);
+	        	},
+	        	addField: function(){
+	        		var _this = this;
+	            	layer.open({
+		        		type: 1,
+		        		title: '添加别名',
+		        		area: ['800px', '500px'],
+		        		offset: '150px',
+		        		move: false,
+		        		skin: "s_select_data",
+		        		content: $(".alias-layer"),
+		        		btn: ['保存', '取消'],
+		        		yes: function(index, layero) {
+		        			_this.brandAliasCache = {};
+		        			
+		        			layer.close(index);
+		        		},
+		        		cancel: function(index, layero) {
+		        			
+		        		}
+		        	})
+	        	},
+	        	
+	        	//选择品牌点击事件
+	    		getBrandSelected: function(e){
+	    			var _this = this;
+	    			
+	    		},
+	        }
+	   });
+	  var brandid = getQueryString('id');
+	  if(brandid){
+		  syncData(ykyUrl.product + "/v1/products/brands/" + brandid , "get", null, function (data, err) {
+	          if (data) { 
+	        	  vm.manufacturerData = $.extend({},  vm.manufacturerData, data);
+	              $('.c-btn').removeAttr('disabled');
+	              dat.t= data.brandAlias.length;
+	          } 
+	      });
+	  }
+	  
+	//checkAbledButton();
+	//验证
+    formValidate('#manu-from', {}, function () {
+        //序列化form表单数据
+        var formArry = $('#manu-from').serializeObject(); 
+        if(brandid){
+            syncData(ykyUrl.product + "/v1/products/manufacturers/" + brandid, "put", formArry, function (data, err) {
+                if (data) {
+                    layer.msg('更新成功！');  
+              	  	history.go(-1);
+                }
+            });
+        }else{
+        	 syncData(ykyUrl.product + "/v1/products/manufacturers", "post", formArry, function (data, err) {
+                 if (data) {
+                     layer.msg('创建成功！');
+                     window.location.href=ykyUrl._this + "/manufacturer.htm";
+                 }
+             });
+        }
+    });
+
+    $('.del_logo').on('click', function(){
+    	vm.manufacturerData.logo ='';
+    }); 
+  /*  $('.logo-box').mouseover(function(){
+    	vm.isShow = false;
+    }); 
+    $('.logo-box').mouseout(function(){
+    	vm.isShow = true;
+    }); */ 
+    
+    //添加控件
+//    $('#addControl').click(function(){ 
+//    	var $control=$('.act-control-box .form-group');
+//    	if($control.length < 2000){
+//	        $('.act-control-box').append(applyTpl(fileTemp, dat));
+//	        dat.t++; 
+//        } 
+//    	vm.len = $('.act-control-box .form-group').length;
+//    	
+//    });   
+    var uploader = createUploader({
+			buttonId: "uploadBtn", 
+			uploadType: "ent.logo", 
+			url:  ykyUrl.webres,
+			types: "jpg,png,jpeg,gif",
+			fileSize: "5mb",
+			isImage: true, 
+			init:{
+				FileUploaded : function(up, file, info) { 
+		            layer.close(index);
+					if (info.status == 200 || info.status == 203) {
+						console.log(_fileUrl);
+						console.log(file); 
+						vm.manufacturerData.logo = _fileUrl;
+						//vm.isShow = true; 
+					} else {
+						layer.msg("上传文件失败,请重新上传！",{icon:2,offset:120}); 
+					}
+					up.files=[];
+				}
+			}
+	    }); 
+    uploader.init(); 
+    
+   $('.btn-concle').on('click', function(){
+	  history.go(-1);
+   });
+});
+
+//删除控件
+//function delField(obj){
+//	if($('.act-control-box .form-group').length ==1){
+//		$(obj).parents('.form-group').find('.form-control').val('');
+//	}else{ 
+//	    $(obj).parents('.form-group').remove();
+//	}
+//}; 

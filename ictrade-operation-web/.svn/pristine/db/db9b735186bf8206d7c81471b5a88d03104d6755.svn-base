@@ -1,0 +1,133 @@
+.mt50{
+	margin-top: 50px;
+}
+.yky_btn_y {
+    background-color: #c11f2e;
+    color: #fff;
+    padding: 9px 30px;
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.yky_btn_r {
+    background-color: #fff;
+    color: #fff;
+    padding: 8px 28px;
+    font-size: 12px;
+    color: #C00A17;
+    border: 1px solid #C00A17;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.content_main{
+	min-height: 300px;
+    margin-left: 100px;
+}
+.main_title{
+	height: 30px;
+    line-height: 30px;
+    font-size: 16px;
+}
+.choose_txt{
+	line-height: 30px;
+	height:30px;
+	clear:both;
+}
+.number{
+	color: #b1191a;
+}
+.member_list{
+	width: 610px;
+	min-height: 150px;
+}
+.member_list li{
+	float:left;
+	width: 150px;
+	line-height: 28px;
+    height: 28px;
+}
+.member_list input[type=checkbox]{
+	width: 14px;
+    height: 14px;
+    margin-right: 5px;
+}
+.member_c_l{
+	float:left;
+	
+}
+.member_c_r{
+	position:absolute;
+	top:10px;
+	right:10px;
+	margin-right:135px;
+}
+@media screen and (max-width: 1400px){
+	.member_c_r{
+	  margin-right:5px;
+	}
+}
+/* coupon ietm */
+.c_item{
+	min-width: 260px;
+    max-width: 400px;
+}
+.c_item_top{
+	height:60px;
+	background-color:#74D2D4;
+	color:#fff;
+	text-align:center;
+}
+.c_item_top .price{
+	padding-top:5px;
+	margin-bottom:5px;
+	font-size: 24px;
+	
+}
+.c_item_top .txt{
+	fonts-size: 12px;
+}
+.c_item_bottom{
+	height:60px;
+	padding-top:15px;
+	font-size: 12px;
+	color: #333;
+	background-color: #ECF0F1;
+}
+.c_item_bottom p{
+	margin-left: 40px;
+	line-height: 16px;
+	padding-right: 10px;
+}
+.c_item_bread{
+    display: inline-block;
+    max-width: 60px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    position: relative;
+    top: 4px;
+}
+.c_item_type {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    color: #fff;
+    font-style: normal;
+}
+.action_bar{
+	height: 36px;
+	line-height: 36px;
+	margin-top: 20px;
+}
+
+/* 成功页面样式 */
+.tb_wrap{
+	width: 600px;
+}
+.action_bar a{color:#35a7ff;padding-left: 5px;}
+.action_bar a:hover{color: #35a7ff;text-decoration: underline;}
+.action_bar a:visited {color: #35a7ff;}
+
+.fly_skin_class{margin: auto;background-color: #fff;border: 3px solid #afafaf !important;}
+.fly_skin_class .layui-layer-content{font-size:16px;color: #333;text-align: left;line-height: 91px !important;}
+.fly_skin_class .icon-right-c{position:relative;top:2px;font-size: 22px; color: #87b848; margin: 32px 0 0 0;font-weight: bold;display: inline-block;padding-right: 25px;}

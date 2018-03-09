@@ -1,0 +1,91 @@
+# \u6b64\u6587\u4ef6\u5b9a\u4e49\u7cfb\u7edf\u5e38\u7528\u7684\u53d8\u91cf
+
+#cas\u76f8\u5173
+#cas.serverUrlPrefix \u8868\u793aweb\u9875\u9762\u8df3\u8f6c\u7684cas\u7684\u5730\u5740\uff0c\u662f\u5916\u90e8url\u5730\u5740
+cas.serverUrlPrefix=https://120.25.133.214/cas
+login.cas.serverUrlPrefix=https://120.25.133.214/cas-cms
+#cas.serverUrlPrefix.internal \u8868\u793atomcat\u6240\u5728\u670d\u52a1\u5668\u8fdb\u884cticket\u8ba4\u8bc1\u7684\u5730\u5740\uff0c\u5185\u7f51\u5730\u5740
+cas.serverUrlPrefix.internal=http://10.46.121.145:8080/cas
+login.cas.serverUrlPrefix.internal=http://10.46.121.145:8080/cas-cms
+cas.localServerUrl=http://120.25.133.214
+admin.cas.localServerUrl=http://120.25.133.214
+quotation.serverUrlPrefix=http://operation.yky-uat.com/quotation
+pay.serverUrlPrefix=http://operation.yky-uat.com/pay
+## cas \u5ba2\u6237\u7aef\u6821\u9a8cticket\u7684URL\uff0c\u540e\u7eed\u6539
+main.cas.client.validation.url=http://120.25.133.214/ictrade-main-web/login.htm
+admin.cas.client.validation.url=http://120.25.133.214/ictrade-admin-web/login.htm
+portal.cas.client.validation.url=http://120.25.133.214/ictrade-portal-web/login.htm
+operation.cas.client.validation.url=http://120.25.133.214/ictrade-operation-web/login.htm
+quotation.cas.client.validation.url=http://120.25.133.214/ictrade-quotation-web/login.htm
+pay.cas.client.validation.url=http://120.25.133.214/pay-web/login.htm
+#\u767b\u5f55\u6210\u529f\u9875\u9762
+portal.cas.login.successUrl=http://120.25.133.214/ictrade-main-web/vipCenter.htm
+
+
+
+#GA\u76f8\u5173
+ga.id=UA-73342110-1
+#mq\u670d\u52a1\u5668\u5730\u5740
+mq.namesrvAddr=10.46.121.121:9876
+
+#redis
+redis.hostName=10.46.121.121
+redis.port=6379
+redis.password=Yky1024@UAT
+redis.database=0
+
+#aliyun.OSS
+aliyun.OSS.bucket.publicread=ictrade-biz-public-sz-uat
+aliyun.OSS.bucket.privateread=ictrade-private-sz-uat
+aliyun.OSS.bucket.material=ictrade-public-sz-uat
+aliyun.OSS.endpoint=OSS_CN_SHENZHEN
+aliyun.OSS.accessKeyId=OTRxkGCUJ8Rh8xFu
+aliyun.OSS.accessKeySecret=ljykU9VjebI9DrTUoVK9mjTDO8UFwb
+aliyun.OSS.role=acs:ram::1058949072375933:role/uat-ossaccess-role
+aliyun.OSS.bucket.root=uat/
+
+#elasticSearch
+search.hostName=10.46.121.121
+search.port=9083
+
+#mongoDb
+mongodb.hostName=10.46.121.121
+mongodb.port=10000
+
+#quotation\u5de5\u7a0b\u76f8\u5173
+quotation.api.serverUrlPrefix=http://120.25.133.214:9093
+
+#portal\u5de5\u7a0b\u76f8\u5173
+portal.serverUrlPrefix=http://120.25.133.214/ictrade-portal-web
+
+#admin\u5de5\u7a0b\u76f8\u5173
+admin.serverUrlPrefix=http://120.25.133.214/ictrade-admin-web
+
+#main\u5de5\u7a0b\u76f8\u5173
+main.serverUrlPrefix=http://120.25.133.214/ictrade-main-web
+
+#operation\u5de5\u7a0b\u76f8\u5173
+operation.serverUrlPrefix=http://120.25.133.214/ictrade-operation-web
+
+#ueditor\u7f16\u8f91\u5668\u7684\u5730\u5740
+ueditor.iframeUrl = http://120.25.133.214/ictrade-ueditor-web/
+
+#dns-prefetchs
+dns-prefetchs =  //img0.ykystatic.com,//img1.ykystatic.com
+
+#\u7269\u6599\u56fe\u7247\u8def\u5f84
+item.FileUrl = //file-uat.ykystatic.com/material/
+item.ImgUrl  = //img0-uat.ykystatic.com/material/
+
+#\u5bcc\u6587\u672c\u7f16\u8f91\u5668URL
+ueditor.iframeUrl = http://120.25.133.214/ictrade-ueditor-web/
+
+#shiro\u5fae\u670d\u52a1
+service.auth.role=http://120.25.133.214/v1/acl/roles?partyId=
+service.auth.permission=http://120.25.133.214/v1/acl/permissions?partyId=
+
+#\u4f9b\u5e94\u94fe\u8ba4\u8bc1\u90e8\u95e8ID
+deptId=e6f0ec513c3a11e79187
+
+#\u914d\u7f6e\u73af\u5883\u53d8\u91cf 
+serverEnvironment=uat

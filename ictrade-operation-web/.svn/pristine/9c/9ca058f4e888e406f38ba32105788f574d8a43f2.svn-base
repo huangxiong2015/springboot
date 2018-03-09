@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %> 
+<c:set var="ctx" value="${pageContext.request.contextPath }" scope="request" /> 
+<html lang="zh-CN">
+<head> 
+<title>分销商管理</title>    
+<c:import url ="/WEB-INF/jsp/include/lemon/constants.jsp"/>
+<c:import url ="/WEB-INF/jsp/include/lemon/layout.jsp"/>
+<link rel="stylesheet" href="${ctx}/css/common/base.css">
+<link rel="stylesheet" href="${ctx}/css/app/distributor.css">
+</head>
+<body class="hold-transition skin-blue sidebar-mini detection">
+<div class="wrapper"> 
+
+  <div class="content-wrapper" id="distributor-edit">
+	<section class="content-header">
+	  <h1>
+	 分销商 
+	  		<small v-if="requeryId==''">添加</small> 
+		    <small v-else>编辑</small> 
+	  </h1>
+	  <ol class="breadcrumb">
+	    <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+	    <li class="active"><a  :href="newsHome">分销商</a></li>
+	  </ol>
+	</section> 
+    <section class="content" style=" color:#666;">
+    <form class="form-horizontal" name="create" id="create" onsubmit="return false;">    
+    <div class="row">
+        <section class="col-lg-12">
+          <div class="box box-danger ">
+              <!-- Morris chart - Sales -->
+                <div class="box-header with-border">
+                  <h3 class="box-title">
+		    		<span v-if="requeryId==''">添加  -</span>
+                  	<span v-else>编辑  -</span>
+                  	<span>分销商</span>
+                  </h3>
+                </div>
+				<input type="hidden" id="newsId" name="newsId" :value="newsId">
+                <div class="box-body "> 
+				 <div class="form-group">
+                    <div class="col-md-11">
+                        <label for="specurl" class="col-sm-2 control-label">选择分销商<span class="text-red">*</span>：</label>
+                        <div class="col-sm-7" > 
+                        	<a v-if="isShow" onClick="showData()" href="javascript:void(0);" class="file-btn">选择</a>
+                        	<div v-show="!isShow">
+		                       	<div class="manu_logo">
+	                            	 <div class="img-box">
+	                            	 	<img alt="" :src="initData.attachUrl ? initData.attachUrl : '${ctx}/images/defaultImg01.jpg'"  class="d-logo"/>
+		                        		<input class="file-btn" type="button" value="上传文件" id="uploadBtn" >  
+	                            	 </div>
+	                            	 <a v-if="isEdit" onClick="showData()" href="javascript:void(0);" class="re-change">重新选择</a>  
+	                            </div> 
+	                       		<div class="manu_text">建议上传120*44像素，支持jpg、jpeg、png、gif，文件大小不超过5MB</div>
+                        		<input type="text" v-model="initData.attachUrl" id="attachUrl" name="attachUrl"  style="visibility: hidden;height:0;" required> 
+                        	</div>
+                        </div> 
+                    </div>
+                 </div>
+                <div class="form-group ">
+                    <div class="col-md-11">
+                        <label for="title" class="col-sm-2 control-label">分销商名称<span class="text-red">*</span>：</label>
+                        <div class="col-sm-4"> 
+                            <input type="text" class="form-control" name="title" id="title" required v-model.trim="initData.title" maxlength="50" :readonly="isReadonly"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <div class="col-md-11">
+                        <label for="title" class="col-sm-2 control-label">分销商商品链接<span class="text-red">*</span>：</label>
+                        <div class="col-sm-4"> 
+                            <input type="text" class="form-control" name="extend" id="extend" readonly="readonly" v-model.trim="initData.extend"  />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-11">
+                        <label for="title" class="col-sm-2 control-label">排序位置<span class="text-red">*</span>：</label>
+                        <div class="col-sm-4"> 
+                            <input type="text" class="form-control number" name="orderSeq" id="orderSeq" required v-model.trim="initData.orderSeq" maxlength="9"  />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <div class="col-md-11">
+                        <label for="title" class="col-sm-2 control-label">分销商简介<span class="text-red">*</span>：</label>
+                        <div class="col-sm-4"> 
+                            <textarea class="form-control" name="abstracts" id="abstracts" required v-model.trim="initData.abstracts" maxlength="75" rows="3" ></textarea>
+                            <div class="pull-right"><span class="in-num">{{inNum}}</span>/75</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <div class="col-md-11">
+                        <label for="desc" class="col-sm-2 control-label">关于分销商<span class="text-red">*</span>：</label>
+                         <div class="col-sm-10" >
+		          			<!-- 使用的时，将这个部分引入到页面中start -->
+							<div id="desc" class="ueditor_wrapper" style="margin-left:-8px;"> 
+							    <iframe style="width:100%;border: none;min-height:546px;" src="<spring:eval expression="@appProps.getProperty('ueditor.iframeUrl')"/>" scrolling="no" frameborder="0"  allowTransparency="true">
+							    </iframe>
+							</div>
+							<!-- 使用的时，将这个部分引入到页面中end -->
+						</div>
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <div class="col-md-11">
+                        <label for="agentid" class="col-sm-2 control-label">主要代理线<span class="text-red">*</span>：</label>
+                        <div class="col-sm-4">
+			                     <multi-select 
+								        :api="agenturl" 
+								        :id="agentid"
+								        :name="agentname" 
+								        :option-id="agentoptionId"
+								        :option-name="agentoptionName"
+								        placeholder="请选择"  
+								        :selected-options="agents"
+								        :validate="validate"
+									> </multi-select> 
+    					</div>
+                    </div>
+                </div>  
+                <div class="form-group">
+                    <div class="col-md-11">
+                        <label for="checkId" class="col-sm-2 control-label">应用领域<span class="text-red">*</span>：</label>
+                        <div class="col-sm-9">
+								<checkbox-control
+								        :id="checkId"
+								        :name="checkName"
+								        :option-id="optionId"
+								        :option-name="optionName"
+								        :api="checkUrl"
+								        :sel-options="applications" 
+								        :input-class="inputClass"
+								        :validate="applyadvalidate"
+								></checkbox-control>
+								<span class="g9">【最多选择15项】</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-11">
+                       <label for="adcheckId" class="col-sm-2 control-label">优势类别<span class="text-red">*</span>：</label>
+                       <div class="col-sm-9">
+						<checkbox-control
+						        :id="adcheckId"
+						        :name="adcheckName"
+						        :option-id="adoptionId"
+						        :option-name="adoptionName"
+						        :api="adcheckUrl"
+						        :input-class="inputClass"
+						        :validate="advalidate"
+						        :sel-options="types" 
+						        
+						></checkbox-control>
+						<span class="g9">【最多选择10项】</span>
+                       </div>
+                	</div>
+                </div> 
+                 <div class="form-group">
+                    <div class="col-md-11">
+                       <label for="adcheckId" class="col-sm-2 control-label">显示活动图标<span class="text-red">*</span>：</label>
+                       <div class="col-sm-9">
+						<label class="radio-item l"><input type="radio" name="isShowActive" value="Y" v-model="initData.isShowActive"/>是</label>
+						<label class="radio-item l ml40"><input type="radio" name="isShowActive" value="N" v-model="initData.isShowActive"/>否</label>
+                       </div>
+                	</div>
+                </div> 
+                 <div v-show="initData.isShowActive=='Y'" class="form-group">
+                    <div class="col-md-11">
+                       <label class="col-sm-2 control-label">标签内容<span class="text-red">*</span>：</label>
+                       <div class="col-sm-4">
+                       	<select name="labelContent" class="form-control" id="" v-model="initData.labelContent">
+                       		<option value="promotion">促销</option>
+                       		<option value="fullCut">满减</option>
+                       		<option value="fullDelivery">满送</option>
+                       		<option value="seckill">秒杀</option>
+                       		<option value="flashPurchase">闪购</option>
+                       		<option value="custom">自定义</option>
+                       	</select>
+                       </div>
+                	</div>
+                </div> 
+                 <div v-show="initData.labelContent=='custom' && initData.isShowActive=='Y'" class="form-group">
+                    <div class="col-md-11">
+                       <label class="col-sm-2 control-label">自定义内容<span class="text-red">*</span>：</label>
+                       <div class="col-sm-4">
+						<input class="customContent form-control" type="text" name="customContent" id="" placeholder="2-3个字符，支持中文、英文和数字及其组合" maxLength="3" v-model="initData.customContent" required/>
+                       </div>
+                	</div>
+                </div> 
+				<input type="hidden" id="categoryTypeId" name="categoryTypeId" v-model="initData.categoryTypeId"/>
+				<input type="hidden" id="iframeUrl_Id" value="<spring:eval expression="@appProps.getProperty('ueditor.iframeUrl')"/>" />
+                <div class="box-footer text-center">
+                    <button type="button" class="btn btn-danger c-btn" onclick="requireSaveData();">保存</button>
+                    <button type="button" class="btn btn-cancel c-btn" @click="returnListPage">取消</button>
+                </div>
+          </div>
+          </section>
+          </div>
+	</form>
+	</section>
+</div>
+<jsp:directive.include file="../include/lemon/footer.jsp" />
+ 
+<div id="extension" class="selector_box" style="display:none" >
+  <div class="search_criteria">
+    <a style="width:32px;" v-on:mouseover="firstSearch('',$event)">全部</a>
+    <a v-for="ele in letterList" v-on:mouseover="ele.ishave=='yes'?firstSearch(ele.letter,$event):''" v-bind:class="ele.ishave=='no'?'disable':''">{{ele.letter}}</a>
+    <a style="width:32px;" v-on:mouseover="showOther?firstSearch('other',$event):''" v-bind:class="showOther?'':'disable'">其他</a>
+    <span class="rel ml5">
+      <input type="text" placeholder="输入首字母可快速查找" class="search_box" v-model="query" v-on:keyup="inputSearch">
+      <i class="icon-smallSearch abs search_icon"></i>
+    </span>
+  </div>
+  <div class="supplier_list">
+    <span v-for="(el,ids) in list" v-if="el.ishave" v-bind:class="[((ids+1)%5==0&&ids!==0?'mr0':'')]" v-on:click="selectSupplier(el,$event)"><a href="javascript:;">{{el.partyGroup.groupName}}</a></span>
+  </div>
+</div>
+</div>	 	  
+<script src="${ctx}/js/lib/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/oss/oss_uploader.js"></script>
+<script type="text/javascript" src="${ctx}/js/lib/pinyin.js"></script>  
+<script type="text/javascript" src="${ctx}/assets/lemon/1.0.0/lemon-checkbox.js"></script>
+<script type="text/javascript" src="${ctx}/assets/lemon/1.0.0/lemon-common.js"></script>
+<script type="text/javascript" src="${ctx}/assets/lemon/1.0.0/lemon-multi-select.js"></script>
+<script type="text/javascript" src="${ctx}/js/app/distributorEdit.js"></script>
+<script type="text/javascript" src="${ctx}/js/common/add.validate.js"></script>
+</body>
+</html>

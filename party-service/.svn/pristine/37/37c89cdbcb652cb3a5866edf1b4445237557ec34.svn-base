@@ -1,0 +1,277 @@
+/*
+ * Created: 2017年2月8日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2017 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+package com.yikuyi.party.register.bll;
+
+import java.io.UnsupportedEncodingException;
+import java.util.UUID;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.match.MockRestRequestMatchers;
+import org.springframework.test.web.client.response.MockRestResponseCreators;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.ykyframework.exception.BusinessException;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+		TransactionDbUnitTestExecutionListener.class })
+@Transactional
+@Rollback
+public class RegisterManagerTest {
+
+	@Autowired
+	private RegisterManager registerManager;
+
+	@Autowired
+	private CacheManager cacheManager;
+
+	@Value("${api.message.serverUrlPrefix}")
+	private String serverUrl;
+	@Value("${api.workflow.serverUrlPrefix}")
+	private String workflowUrlPrefix;
+	@Autowired
+	private RestTemplate restTemplateMock;
+
+	public MockRestServiceServer mockRestServiceServer() {
+		return  MockRestServiceServer.createServer(restTemplateMock);
+	}
+	
+	/**
+	 * 个人注册
+	 * 
+	 * @param userVo
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 * @throws BusinessException 
+	 */
+	@Test
+	// @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value =
+	// "userlogin_sampledata2.xml")
+	// @ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value
+	// = "userlogin_update_data.xml")
+	public void testSave() throws UnsupportedEncodingException, BusinessException {
+		Cache cache = cacheManager.getCache("validateCodeCache");
+		cache.put("validateImgCode.123456789", "ABCD");
+		String uuid = UUID.randomUUID().toString();
+		UserVo userVo = new UserVo();
+		userVo.setUuid(uuid);
+		userVo.setImgCode("ABCD");
+		userVo.setMobile("123456789");
+		userVo.setPassword("123456");
+
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/img/verifycode?uuid=").concat(userVo.getUuid())
+						.concat("&imgValidCode=").concat(userVo.getImgCode())))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("success".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+
+		registerManager.save(userVo);
+	}
+
+	@Test
+	// @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value =
+	// "userlogin_sampledata2.xml")
+	// @ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value
+	// = "userlogin_update_data.xml")
+	public void testSaveEnt()throws UnsupportedEncodingException, BusinessException {
+		Cache cache = cacheManager.getCache("validateCodeCache");
+		cache.put("validateImgCode.123456789", "ABCD");
+
+		UserVo userVo = new UserVo();
+		userVo.setUuid("123456789");
+		userVo.setImgCode("ABCD");
+		userVo.setMobile("15813513531");
+		userVo.setPassword("123456");
+		userVo.setMail("sz@test.com");
+		
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/img/verifycode?uuid=").concat(userVo.getUuid())
+						.concat("&imgValidCode=").concat(userVo.getImgCode())))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("success".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/mail/verifyCode")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		
+		registerManager.saveEnt(userVo);
+	}
+
+	@Test
+	// @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value =
+	// "userlogin_sampledata2.xml")
+	// @ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value
+	// = "userlogin_update_data.xml")
+	public void testVerifyCode() throws Exception {
+		Cache cache = cacheManager.getCache("validateCodeCache");
+		cache.put("validateImgCode.123456789", "ABCD");
+		UserVo userVo = new UserVo();
+		userVo.setUuid("123456789");
+		userVo.setImgCode("ABCD");
+		userVo.setMobile("15813513532");
+		userVo.setPassword("123456");
+		
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/img/verifycode?uuid=").concat(userVo.getUuid())
+						.concat("&imgValidCode=").concat(userVo.getImgCode())))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		registerManager.verifyCode(userVo);
+	}
+
+	@Test
+	// @DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value =
+	// "userlogin_sampledata2.xml")
+	// @ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value
+	// = "userlogin_update_data.xml")
+	public void testGetVerifyCode() throws UnsupportedEncodingException {
+		Cache cache = cacheManager.getCache("validateCodeCache");
+		cache.put("validateImgCode.123456789", "ABCD");
+		UserVo userVo = new UserVo();
+		userVo.setUuid("123456789");
+		userVo.setImgCode("ABCD");
+		userVo.setMobile("15813513532");
+		userVo.setPassword("123456");
+		userVo.setMail("admin@yikuyi.com");
+		
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/mail/verifyCode")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		
+		registerManager.getVerifyCode(userVo);
+	}
+
+	@Test
+	public void testSendMail() {
+		UserVo userVo = new UserVo();
+		userVo.setUuid("123456789");
+		userVo.setImgCode("ABCD");
+		userVo.setMobile("15813513532");
+		userVo.setPassword("123456");
+		userVo.setMail("admin@yikuyi.com");
+		registerManager.sendMail(userVo);
+	}
+	/**
+	 * 重新发送注册邮件
+	 * @param userVo
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	public void testReSend() {
+		UserVo userVo = new UserVo();
+		userVo.setUuid("123456789");
+		userVo.setImgCode("ABCD");
+		userVo.setMobile("15813513532");
+		userVo.setPassword("123456");
+		userVo.setMail("1111@qq.com");
+		registerManager.reSend(userVo);
+	}
+	
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "userlogin_sampledata.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "userlogin_update_data.xml")
+	public void testSavePerson() {
+		UserVo userVo = new UserVo();
+		userVo.setUuid("123456789");
+		userVo.setImgCode("ABCD");
+		userVo.setMobile("15813513532");
+		userVo.setPassword("123456");
+		userVo.setMail("admin@yikuyi.com");
+		registerManager.savePerson(userVo);
+		;
+	}
+
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "userlogin_sampledata.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "userlogin_update_data2.xml")
+	public void testSaveEnterprise() {
+		UserVo userVo = new UserVo();
+		userVo.setUuid("123456789");
+		userVo.setImgCode("ABCD");
+		userVo.setMobile("15813513532");
+		userVo.setPassword("123456");
+		userVo.setMail("admin@yikuyi.com");
+		registerManager.saveEnterprise(userVo);
+	}
+	/**
+	 * 加入主账号
+	 * @param entId
+	 * @param account
+	 * @return
+	 * @since 2017年5月5日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	public void testJoinMainAccount() throws Exception {
+		MockRestServiceServer server = this.mockRestServiceServer();
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(workflowUrlPrefix.concat("/v1/task/APPROVED/1000")))
+		.andExpect(MockRestRequestMatchers.method(HttpMethod.PUT)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		registerManager.joinMainAccount("99999999", "test@126.com", "1000");
+		registerManager.joinMainAccount("99999999", "123456@qq.com", "1000");
+	}
+	/**
+	 * 根据账号创建子账号(子账号设置密码)
+	 * @param account
+	 * @param entId
+	 * @return
+	 * @since 2017年5月5日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "userlogin_sampledata.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "userlogin_update_data2.xml")
+	public void testSaveAccout() throws Exception {
+		UserVo vo = new UserVo();
+		vo.setMail("admin@yikuyi.com");
+		vo.setEnterpriseId("111");
+		vo.setPassword("123456");
+		registerManager.saveAccout(vo);
+	}
+	
+	
+}

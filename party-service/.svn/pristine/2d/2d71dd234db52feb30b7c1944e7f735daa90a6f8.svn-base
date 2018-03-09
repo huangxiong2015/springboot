@@ -1,0 +1,314 @@
+/*
+ * Created: 2017年1月18日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2017 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+package com.yikuyi.party.enterprise.api;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageInfo;
+import com.yikuyi.party.contact.vo.EnterpriseCertificatesVo;
+import com.yikuyi.party.contact.vo.EnterpriseVo;
+import com.yikuyi.party.contact.vo.MsgResultVo;
+import com.yikuyi.party.contact.vo.UserExtendVo;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.model.Party;
+import com.yikuyi.workflow.Apply;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+/**
+ * 用户信息接口
+ * @author helinmei
+ *
+ */
+public interface IEnterpriseResource {
+	int List = 0;
+	int EnterpriseVo = 0;
+
+	/**
+	 * 公司信息查询
+	 * @param id
+	 * @return
+	 * @since 2016年1月18日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "公司信息查询", notes = "公司信息查询", response = UserExtendVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public EnterpriseVo getEnterprise(@ApiParam(value = "用户登录id", required = true) String id);
+	
+	
+	@ApiOperation(value = "查询指定企业详细信息", notes = "查询指定企业详细信息", response = UserExtendVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public EnterpriseVo getEnterpriseDetailByEntId(@ApiParam(value = "企业id", required = true) String entId);
+	
+	/**
+	 * 查询注册的企业公司列表
+	 * @param mail
+	 * @param name
+	 * @param vaildStatus
+	 * @param status
+	 * @param registerStart
+	 * @param registerEnd
+	 * @param lastLoginStart
+	 * @param lastLoginEnd
+	 * @param page
+	 * @param size
+	 * @return
+	 * @since 2017年1月18日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@ApiOperation(value = "查询后台企业会员列表", notes = "查询后台企业会员列表", response = List.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public PageInfo<EnterpriseVo> enterpriseList(@ApiParam(value = "邮箱")String mail,
+			@ApiParam(value="公司名称")String name,
+			@ApiParam(value="有效状态")String status,
+			@ApiParam(value="激活状态")String verifyStatus,
+			@ApiParam(value = "注册时间开始", required = false)String registerStart,
+			@ApiParam(value = "注册时间结束", required = false)String registerEnd,
+			@ApiParam(value = "最后登录时间开始", required = false)String lastLoginStart,
+			@ApiParam(value = "最后登录时间结束", required = false)String lastLoginEnd,
+			@ApiParam(value="page",required=false,defaultValue="1") int page,
+			@ApiParam(value="size",required=false,defaultValue="10") int size);
+	
+	/**
+	 * 查询企业账号及子账号
+	 * @param id
+	 * @return
+	 * @since 2017年1月19日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@ApiOperation(value = "查询企业账号及子账号", notes = "查询企业账号及子账号", response = List.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public List<UserExtendVo> enterpriseAccountsList(@ApiParam(value="企业id",required=true)String id);
+	
+	
+	/**
+	 * 企业账号关联成功之后回调
+	 * @param id
+	 * @return
+	 * @since 2017年1月19日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@ApiOperation(value = "新增企业子账号与主账号关联关系", notes = "新增企业子账号与主账号关联关系", response = MsgResultVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public MsgResultVo addEnterPriserelation(@ApiParam(value = "公司信息ObjectJson", required = true)JSONObject jsonObject);
+	
+	
+	@ApiOperation(value = "修改关联状态", notes = "修改关联状态", response = MsgResultVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public MsgResultVo editRelationStatus(@ApiParam(value="要关联的公司id")String id,@ApiParam(value = "公司信息ObjectJson", required = true)Apply apply);
+	
+	/**
+	 * 根据公司名字联想企业名称
+	 * @param name
+	 * @return
+	 * @since 2017年1月23日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@ApiOperation(value = "根据输入公司名称联想出五个公司名字", notes = "根据输入公司名称联想出五个公司名字", response = MsgResultVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public List<EnterpriseVo> associateEnterpriseList(@ApiParam(value = "公司名称", required = true)String name);
+	
+	/**
+	 * 根据账号查询管理员信息
+	 * 
+	 * @param id
+	 * @param role
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value = "根据用户id查询管理员账号", notes = "根据用户id查询管理员账号", response = UserVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = UserVo.class)
+			})
+	public UserVo getAdmin(@ApiParam(value = "用户登录id", required = true) String id,@RequestParam(value="role" ) String role);
+
+	/**
+	 * 根据用户的id判断是否为首次激活或者关联
+	 * 
+	 * @param id
+	 * @param role
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value = "根据用户的id判断是否为首次激活或者关联", notes = "根据用户的id判断是否为首次激活或者关联", response = Boolean.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Boolean.class)
+			})
+	public Boolean isFristActive();
+	/**
+	 * 根据用户的id判断是否为激活或者关联
+	 * 
+	 * @param id
+	 * @param role
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value = "根据用户的id判断是否为激活或者关联", notes = "根据用户的id判断是否为激活或者关联", response = String.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = String.class)
+			})
+	public String isActivedOrRelationed();
+	/**
+	 * 根据用户的id判断是否为管理员
+	 * 
+	 * @param id
+	 * @param role
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value = "根据用户的id判断是否为管理员", notes = "根据用户的id判断是否为管理员", response = Boolean.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Boolean.class)
+			})
+	public Boolean isAdmin();
+	/**
+	 * 根据id更新状态
+	 * @param id
+	 * @param status
+	 * @return
+	 * @since 2017年1月20日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value ="根据id更新状态",notes="根据id更新状态",response = Void.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class)
+			})
+	public void updateStatus(@ApiParam(value="id",required = true)String id,@ApiParam(value="status",required = true) Party.PartyStatus status);
+	/**
+	 * 公司信息保存
+	 * @param id
+	 * @return
+	 * @since 2016年1月18日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "公司信息ObjectJson保存", notes = "公司信息ObjectJson保存", response = EnterpriseVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public void save(@ApiParam(value = "公司信息ObjectJson", required = true) JSONObject jsonObject);
+	
+	/**
+	 * 是否激活或者关联
+	 * @param id
+	 * @return
+	 * @since 2016年1月18日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "通过公司名称查询是否激活或者关联", notes = "通过公司名称查询是否激活或者关联", response = UserExtendVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public Party actived(@ApiParam(value = "公司名称", required = false) String name);
+	
+	/**
+	 * 修改公司信息
+	 * @param id
+	 * @return
+	 * @since 2016年1月18日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "公司信息保存", notes = "公司信息ObjectJson保存", response = EnterpriseVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public void editCompany(@ApiParam(value = "公司信息表单", required = true) EnterpriseVo enterpriseVo);
+	
+	/**
+	 * 账户激活首次申请保存数据
+	 * @param id
+	 * @return
+	 * @since 2016年1月18日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "企业账户激活申请保存", notes = "企业账户激活申请保存", response = EnterpriseVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public void activeAccountSave(@ApiParam(value = "公司信息表单", required = true)Apply apply);
+	
+	/**
+	 * 保存资质编辑信息
+	 * @param id
+	 * @return
+	 * @since 2016年2月18日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "保存资质编辑信息", notes = "保存资质编辑信息ObjectJson保存", response = EnterpriseCertificatesVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public void saveCetrificate(@ApiParam(value = "保存资质编辑信息ObjectJson", required = true) EnterpriseCertificatesVo entVo);
+	
+	/**
+	 * 公司资质查询
+	 * @param id
+	 * @return
+	 * @since 2016年2月18日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "公司信息查询", notes = "保存资质编辑信息ObjectJson保存", response = EnterpriseCertificatesVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public EnterpriseCertificatesVo getCetrificate(@ApiParam(value = "企业id", required = true) String id);
+	
+
+	/**
+	 * 根据数据库中保存的url从阿里云获取私有图片url
+	 * @param id
+	 * @return
+	 * @since 2016年2月18日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "从阿里云获取私有图片url", notes = "从阿里云获取私有图片url", response = EnterpriseVo.class)
+	@ApiResponses(value ={ 
+			@ApiResponse(code = 400, message = "请求参数不正确", response = Void.class) ,
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) 
+			})
+	public String getImgUrl(@ApiParam(value = "url", required = true) JSONObject jsonObject);
+}

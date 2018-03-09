@@ -1,0 +1,38 @@
+.ml10{margin-left:10px !important;}
+.dn{display:none;}
+.tree_area{position: absolute;padding: 5px;margin: 20px 0px;width: 15%;min-height: 565px;border: 1px solid #d2d2d2; min-width: 180px;}
+.cont_area{padding: 5px;margin: 20px 0px;min-width: 780px;min-height: 565px;border: 1px solid #d2d2d2;margin-left: 19%;width: 81%; background-color: #fff;}
+.cont_area .title{
+	background-color: #f8f8f8;
+    line-height: 36px;
+    padding-left: 10px;
+    color: #333;
+    font-size: 14px;
+   }
+.m_edit_icon{display:inline-block;width:16px;height:16px;background: url(../../images/edit_delete_sprite.png) no-repeat -15px 0px;cursor: pointer;}
+.m_delete_icon{display:inline-block;width:16px;height:16px;background: url(../../images/edit_delete_sprite.png)  no-repeat 0px 0px;cursor: pointer; margin-left:10px !important;}
+.new_btn{display:inline-block;border: solid 1px #b1191a;color: #b1191a !important;padding: 5px 15px;}
+.edit_btn{display:inline-block;border: solid 1px #e4e4ea;padding:5px 15px;margin-right:10px;cursor: pointer;}
+.edit_btn:hover{border: solid 1px #b1191a;}
+.menu_label{display:inline-block;min-width:98px;}
+.role_cont{
+	margin:20px 0 0 30px;
+}
+.role_item{
+	width: 200px;
+    height: 28px;
+    line-height: 28px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 5px;
+    float: left;
+    text-align: left;
+    font-size: 14px;
+}
+.ck_wrap{
+	position: relative;
+    top: 5px;
+    margin-right: 7px;
+}

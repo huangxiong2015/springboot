@@ -1,0 +1,111 @@
+package com.yikuyi.party.vendors.api;
+
+import java.util.List;
+
+import com.github.pagehelper.PageInfo;
+import com.yikuyi.party.contact.vo.MsgResultVo;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.model.Party;
+import com.yikuyi.party.model.PartyRelationship;
+import com.yikuyi.party.vo.SupplierVo;
+import com.yikuyi.party.vo.VendorVo;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+/**
+ * 定义供应商的相关接口
+ * 
+ * @author guowenyao
+ *
+ */
+public interface IVendorResource {
+
+	/**
+	 * 查询供应商列表
+	 * 
+	 * @author 张伟
+	 * @param partyGroup
+	 * @return
+	 */
+	@ApiOperation(value = "获取供应商列表", notes = "获取供应商列表", response = Party.class, responseContainer = "List")
+	@ApiResponses(value = { @ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public MsgResultVo getPartyList(@ApiParam(value = "page", required = false, defaultValue = "1") int page,
+			@ApiParam(value = "size", required = false, defaultValue = "10") int size);
+
+	/**
+	 * 根据供应商id获取单条供应商详情
+	 * 
+	 * @author 张伟
+	 * @param partyId
+	 * @return
+	 */
+	@ApiOperation(value = "根据供应商id获取单条供应商详情", notes = "根据供应商id获取单条供应商详情", response = Party.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public MsgResultVo getPartyByPartyId(@ApiParam(value = "供应商id", required = true) String partyId);
+	
+	/**
+	 * 查询供应商详情
+	 * 
+	 * @author 张伟
+	 * @param partyId
+	 * @return
+	 */
+	@ApiOperation(value = "根据供应商id获取单条供应商详情", notes = "根据供应商id获取单条供应商详情", response = Party.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public MsgResultVo getVendorDetail(@ApiParam(value = "供应商id", required = true) String partyId);
+
+	/**
+	 * 保存供应商信息
+	 * 
+	 * @author 张伟
+	 * @param Party
+	 * @return
+	 */
+	@ApiOperation(value = "保存供应商信息", notes = "保存供应商", response = Party.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public MsgResultVo save(@ApiParam(value = "供应商信息的json结构", required = true) VendorVo vendorVo);
+
+	/**
+	 * 4.编辑供应商
+	 * 
+	 * @param id,供应商json
+	 * @return 供应商
+	 */
+	@ApiOperation(value = "修改供应商", notes = "修改供应商", response = Party.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public MsgResultVo update(@ApiParam(value = "根据id修改供应商信息", required = true) VendorVo vendorVo);
+
+	/**
+	 * 5.删除供应商
+	 * 
+	 * @param id
+	 * @return 供应商
+	 */
+	@ApiOperation(value = "删除供应商", notes = "删除供应商", response = Party.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public MsgResultVo delete(@ApiParam(value = "根据id修改供应商信息", required = true) List<String> ids);
+	
+	@ApiOperation(value = "保存分享关系", notes = "保存分享关系", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public MsgResultVo saveSupplierShare(@ApiParam(value = "供应商ID", required = true) String id,@ApiParam(value = "用户vo，获取公司名字，id（id多个用,分开）", required = true)UserVo userVo);
+	
+	@ApiOperation(value = "查询供应商分享关系", notes = "查询供应商分享关系", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public List<PartyRelationship> findSupplierShare(@ApiParam(value = "供应商ID", required = true) String id);
+	
+	@ApiOperation(value = "查询供应商列表", notes = "查询供应商列表", response = SupplierVo.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public PageInfo<SupplierVo> getVendorList(@ApiParam(value = "当前登录用户ID", required = true) String id,@ApiParam(value = "page", required = true) int page,@ApiParam(value = "size", required = true) int size);
+	
+}

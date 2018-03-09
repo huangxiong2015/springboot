@@ -1,0 +1,61 @@
+package com.yikuyi.party.vendor.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.yikuyi.party.vendor.vo.PartyProductLine;
+import com.yikuyi.party.vendor.vo.PartyProductLineJS;
+
+@Mapper
+public interface PartyProductLineDao {
+	  
+	
+	/**
+	 * 根据partyID获取供应商产品线
+	 * @param partyId
+	 * @return
+	 * @since 2017年8月11日
+	 * @author zr.chenxuemin@yikuyi.com
+	 */
+	public PartyProductLine findById(@Param("partyProductLineId")String partyProductLineId);	
+	
+	public List<PartyProductLine> findByEntity(PartyProductLine partyProductLine);
+	
+	/**
+	 * 供应商管理  插入产品线
+	 * @param partyId
+	 * @return
+	 * @since 2017年8月14日
+	 * @author tb.huangqingfeng@yikuyi.com
+	 */
+	public void insertLineList(@Param("pList")List<PartyProductLine> pList);	
+	
+	/**
+	 * 删除产品线
+	 * @param partyId
+	 * @since 2017年8月22日
+	 * @author zr.zhanghua@yikuyi.com
+	 */
+	public void deleteById(String partyId);
+	
+	/**
+	 * 新增产品线
+	 * @param partyProductLine
+	 * @since 2017年8月22日
+	 * @author zr.zhanghua@yikuyi.com
+	 */
+	public void insert(PartyProductLineJS partyProductLineJS);
+	
+	/**
+	 * 根据id，删除（专用）
+	 * @param partyId
+	 * @return
+	 * @since 2017年8月31日
+	 * @author tb.huangqingfeng@yikuyi.com
+	 */
+	public void deleteByPartyId(@Param("partyId")String partyId);
+	
+
+}

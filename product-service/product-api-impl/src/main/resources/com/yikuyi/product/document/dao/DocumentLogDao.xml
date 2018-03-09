@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.product.document.dao.DocumentLogDao">
+
+	<resultMap id="BaseResultMap" type="com.yikuyi.document.model.DocumentLog">
+		<id column="DOCUMENT_ID" property="id" />
+		<result column="SHEET_INDEX" property="sheetIndex" />
+		<result column="LINE_NO" property="lineNo" />
+		<result column="STATUS" property="status" />
+		<result column="COMMENTS" property="comments" />
+		<result column="ORIGINAL_DATA" property="originalData" />
+		<result column="CREATED_DATE" property="createdDate" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate" />
+	</resultMap>
+	
+	<select id="findLogsByStatus" resultMap="BaseResultMap">
+			SELECT DOCUMENT_ID , COMMENTS, ORIGINAL_DATA FROM DOCUMENT_LOG WHERE DOCUMENT_ID = #{docId} AND STATUS = #{status.value} 
+		<if test="sheetIndex != null">
+				AND SHEET_INDEX = #{sheetIndex}
+		</if>
+		ORDER BY LINE_NO
+	</select>
+	
+	<insert id="insertDocLogs" parameterType="java.util.List">
+		INSERT INTO DOCUMENT_LOG (DOCUMENT_ID ,SHEET_INDEX ,LINE_NO , STATUS , COMMENTS , ORIGINAL_DATA , CREATED_DATE, LAST_UPDATE_DATE)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id}, #{item.sheetIndex} ,#{item.lineNo}, #{item.status.value}, #{item.comments}, #{item.originalData}, NOW(),NOW())
+		</foreach>
+	</insert>
+	
+	<sql id="batchUpdateSameMsg">
+		UPDATE DOCUMENT_LOG SET status = 1, COMMENTS = #{comments}, LAST_UPDATE_DATE = NOW()
+		WHERE DOCUMENT_ID = #{docId} AND LINE_NO IN
+	 	<foreach collection="list" item="item" index="index" separator="," open="(" close=")" >
+			#{item.lineNo}
+		</foreach>
+	</sql>
+	
+	<update id="updateFailDocLogsByVoMsg">
+		<include refid="batchUpdateSameMsg"/>
+	</update>
+	
+	<update id="updateFailDocLogsByRawMsg">
+		<include refid="batchUpdateSameMsg"/>
+	</update>
+	
+	<sql id="batchUpdateNoSameMsg">
+		UPDATE DOCUMENT_LOG
+		<trim prefix="SET" suffixOverrides=",">
+			STATUS = 1,
+			LAST_UPDATE_DATE = NOW(),
+			<trim prefix="COMMENTS =case" suffix="end,">
+				<foreach collection="list" item="i" index="index">
+					WHEN LINE_NO=#{i.lineNo} then #{i.errorMsg}
+				</foreach>
+			</trim>
+		</trim>
+		WHERE
+		<foreach collection="list" separator="or" item="ii" index="index">
+			DOCUMENT_ID =#{ii.processId} AND LINE_NO =#{ii.lineNo}
+		</foreach>
+	</sql>
+	
+	<update id="updateDocLogsStatusByDoc">
+		<include refid="batchUpdateNoSameMsg" />
+	</update>
+	
+	<update id="updateDocLogsStatusByRaw">
+		<include refid="batchUpdateNoSameMsg" />
+	</update>
+	
+	<update id="updateDocLogsStatusByRawAndSheet">
+		UPDATE DOCUMENT_LOG
+		<trim prefix="SET" suffixOverrides=",">
+			STATUS = 1,
+			LAST_UPDATE_DATE = NOW(),
+			<trim prefix="COMMENTS =case" suffix="end,">
+				<foreach collection="list" item="i" index="index">
+					WHEN (LINE_NO =#{i.lineNo} AND SHEET_INDEX = #{i.sheetIndex}) then #{i.errorMsg}
+				</foreach>
+			</trim>
+		</trim>
+		WHERE
+		<foreach collection="list" separator="or" item="ii" index="index">
+			DOCUMENT_ID =#{ii.processId} AND LINE_NO =#{ii.lineNo} AND SHEET_INDEX = #{ii.sheetIndex}
+		</foreach>
+	</update>
+	
+	<select id="findCountGroupStatus" resultType="java.util.HashMap" >
+		SELECT STATUS , COUNT(STATUS) AS NUM FROM DOCUMENT_LOG
+		WHERE DOCUMENT_ID = #{docId} GROUP BY STATUS
+	</select>
+	
+	<delete id="deleteHistoryLogById">
+		DELETE FROM `DOCUMENT_LOG` WHERE `DOCUMENT_ID` = #{docId}
+	</delete>
+	
+	<select id="findLogsByPage" resultMap="BaseResultMap">
+		SELECT DOCUMENT_ID , COMMENTS, ORIGINAL_DATA FROM DOCUMENT_LOG WHERE 1=1
+			AND DOCUMENT_ID = #{docId}
+			AND STATUS = #{status.value}
+		<if test="sheetIndex != null">
+			AND SHEET_INDEX = #{sheetIndex}
+		</if>
+		ORDER BY LINE_NO
+	</select>
+</mapper>

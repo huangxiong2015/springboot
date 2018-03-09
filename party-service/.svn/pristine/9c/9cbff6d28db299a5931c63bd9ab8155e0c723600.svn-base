@@ -1,0 +1,323 @@
+package com.yikuyi.party.customer.bll;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.match.MockRestRequestMatchers;
+import org.springframework.test.web.client.response.MockRestResponseCreators;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.framework.springboot.model.LoginUser;
+import com.framewrok.springboot.web.LoginUserInjectionInterceptor;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.yikuyi.party.contact.vo.MsgResultVo;
+import com.yikuyi.party.contact.vo.UserVo;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+		TransactionDbUnitTestExecutionListener.class })
+@Transactional
+@Rollback
+public class CustomerSummeryManagerTest {
+
+	@Autowired
+	private CustomerSummeryManager customerSummeryManager;
+
+	@Value("${api.message.serverUrlPrefix}")
+	private String serverUrl;
+
+	@Autowired
+	private RestTemplate restTemplateMock;
+
+	public MockRestServiceServer mockRestServiceServer() {
+		return MockRestServiceServer.createServer(restTemplateMock);
+	}
+
+	@Before
+	public void init() {
+		LoginUser loginUser = new LoginUser("9999999901", "admin", "9999999901",
+				Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(new MockHttpServletRequest()));
+		;
+		RequestContextHolder.currentRequestAttributes().setAttribute(LoginUserInjectionInterceptor.LOGIN_USER_KEY,
+				loginUser, RequestAttributes.SCOPE_REQUEST);
+	}
+
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/party_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/partyRole_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/person_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/userloginhistory_sampledata.xml" })
+	public void testGetUserSummeryInfo_main() {
+		customerSummeryManager.getUserSummeryInfo("123456@yikuyi.com", "9999999901");
+	}
+
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/party_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/partyRole_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/person_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/userloginhistory_sampledata.xml" })
+	public void testGetUserSummeryInfo_customer() {
+		customerSummeryManager.getUserSummeryInfo("12345678910", "9999999902");
+	}
+
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/partygroup_sampledata.xml" })
+	public void testGetCompanyNameByPartyId() {
+		customerSummeryManager.getCompanyNameByPartyId("9999999901");
+	}
+
+	/**
+	 * 单元测试 - 修改密码 - 成功
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testChangePassword() {
+		UserVo userVo = new UserVo();
+		userVo.setPassword("123456");
+		userVo.setNewPassword("123.qwe");
+		MsgResultVo vo = customerSummeryManager.changePassword("9999999901", userVo);
+		assertEquals(vo.getCode(), "success");
+	}
+
+	/**
+	 * 单元测 - 修改密码（验证原密码失败）
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testChangePassword_passFailed() {
+		UserVo userVo = new UserVo();
+		userVo.setPassword("111111");
+		MsgResultVo vo = customerSummeryManager.changePassword("9999999901", userVo);
+		assertEquals(vo.getCode(), "failed");
+
+	}
+
+	/**
+	 * 单元测试 - 修改密码（验证原密码） - 原密码为null
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testChangePassword_passNull() {
+		UserVo userVo = new UserVo();
+		userVo.setPassword("");
+		MsgResultVo vo = customerSummeryManager.changePassword("9999999901", userVo);
+		assertEquals(vo.getCode(), "failed");
+
+	}
+
+	/**
+	 * 单元测试 - 找回密码 - 成功
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testFindPassword() {
+		UserVo userVo = new UserVo();
+		userVo.setNewPassword("123456");
+		MsgResultVo vo = customerSummeryManager.findPassword("MTIzNDU2QHlpa3V5aS5jb20=", userVo);// 1001
+																									// base64
+																									// 加密
+		assertEquals(vo.getCode(), "success");
+	}
+
+	/**
+	 * 单元测试 -找回密码 id为null
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testFindPassword_idNull() {
+		UserVo userVo = new UserVo();
+		userVo.setNewPassword("123456");
+		MsgResultVo vo = customerSummeryManager.findPassword("", userVo);
+		assertEquals(vo.getCode(), "failed");
+	}
+
+	/**
+	 * 单元测试 - 校验原密码是否正确 - 成功
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testCheckedOldPassword_success() {
+		MsgResultVo vo = customerSummeryManager.checkedOldPassword("9999999901", "123456");
+		assertEquals(vo.getCode(), "success");
+	}
+
+	/**
+	 * 单元测试 - 校验原密码 - 失败
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testCheckedOldPassword_failed() {
+		MsgResultVo vo = customerSummeryManager.checkedOldPassword("9999999901", "123qwe");
+		assertEquals(vo.getCode(), "failed");
+	}
+
+	/**
+	 * 单元测试 - 修改密码 - 成功
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testChangePasswordByLoginId_success() {
+		UserVo userVo = new UserVo();
+		userVo.setNewPassword("123qwe");
+		MsgResultVo vo = customerSummeryManager.changePasswordByLoginId("9999999901", userVo);
+		assertEquals(vo.getCode(), "success");
+	}
+
+	/**
+	 * 单元测试 - 修改密码 - 修改失败
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testChangePasswordByLoginId_failed() {
+		UserVo userVo = new UserVo();
+		userVo.setNewPassword("123qwe");
+		MsgResultVo vo = customerSummeryManager.changePasswordByLoginId("999999901", userVo);
+		assertEquals(vo.getCode(), "failed");
+	}
+
+	/**
+	 * 单元测试 - 修改密码 - 原密码为空
+	 * 
+	 * @since 2017年1月16日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/userlogin_sampledata.xml" })
+	public void testChangePasswordByLoginId_passNull() {
+		UserVo userVo = new UserVo();
+		userVo.setNewPassword("");
+		MsgResultVo vo = customerSummeryManager.changePasswordByLoginId("99999999901", userVo);
+		assertEquals(vo.getCode(), "failed");
+	}
+
+	@Test
+	public void testSendMail() {
+		customerSummeryManager.sendMail("MTIzNDU2QHFxLmNvbQ==");
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/party_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/partygroup_sampledata.xml" })
+	public void testGetUserLoginInfo_MainRole() {
+		Collection cn = new ConcurrentLinkedQueue<>();
+		LoginUser user = new LoginUser("9999999901", "123456@qq.com", "123456", cn);
+		customerSummeryManager.getUserLoginInfo(user);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = {
+			"classpath:com/yikuyi/party/customer/bll/party_sampledata.xml",
+			"classpath:com/yikuyi/party/customer/bll/partygroup_sampledata.xml" })
+	public void testGetUserLoginInfo_Customer() {
+		Collection cn = new ConcurrentLinkedQueue<>();
+		LoginUser user = new LoginUser("123456", "13541257896", "123456", cn);
+		customerSummeryManager.getUserLoginInfo(user);
+	}
+
+	@Test
+	public void testGetMailCode() throws Exception {
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/mail/verifyCode")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("true".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		customerSummeryManager.getMailCode("123456@qq.com");
+	}
+
+	/**
+	 * 单元测试 - 隐藏邮箱
+	 * 
+	 * @since 2017年2月23日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	public void testHideMail_success() {
+		customerSummeryManager.hideMail("123456@qq.com");
+	}
+
+	/**
+	 * 单元测试 - 隐藏手机号
+	 * 
+	 * @since 2017年2月23日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Test
+	public void testHideMail_failed() {
+		customerSummeryManager.hideMail("13544781256");
+	}
+
+}

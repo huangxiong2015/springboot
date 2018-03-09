@@ -1,0 +1,266 @@
+/**
+ * create by roy.he@yikuyi.com at 2017/10/25
+ */
+//var database = ykyUrl.database + '/v1/menus';
+var zTreeObj,zNodes,treeObj;
+//var activeMenuId = localStorage.getItem('activeMenuId');
+
+
+var setting = { //zTree配置
+		data: {
+			key: {
+				name: "cateName"
+			},
+			simpleData: {
+				enable: true,
+				idKey: "_id",
+				pIdKey: "parentId",
+				rootPId: 0
+			}
+		},
+		edit: {
+			enable: true,
+			showRemoveBtn: false, //是否显示删除按钮
+			showRenameBtn: false, //是否显示编辑名称按钮
+			drag: {
+				isCopy: false, //是否允许复制节点
+				isMove: true, //是否允许移动节点
+				prev: true,
+				next: true,
+				inner: false //是否允许成为目标节点的子节点
+			}
+		},
+		callback: {
+			beforeClick: zTreeBeforeClick,//点击之前回调
+			onClick: zTreeOnClick, //点击事件回调
+			beforeDrag: zTreeBeforeDrag, //被拖拽之前的事件回调
+			beforeDrop: zTreeBeforeDrop, //拽操作结束之前的事件回调
+			onDrop: zTreeOnDrop //拖拽操作结束的事件回调
+		}
+	};
+var pathList;
+
+function zTreeBeforeClick(treeId, treeNode, clickFlag) {
+	if(!(treeNode.children && treeNode.children.length > 0)){
+		return false;
+	}
+};
+
+function zTreeOnClick(event, treeId, treeNode, clickFlag) {//点击事件回调
+	maintain.editMenuDetail = [];
+	maintain.clickMenu(treeNode._id, treeNode.level, treeNode.cateName);
+	maintain.editStatusTip = true;
+	maintain.pathList = treeNode.getPath();
+};
+function zTreeBeforeDrag(treeId, treeNodes) {//被拖拽之前的事件回调  
+	return false;
+} 
+function zTreeBeforeDrop(treeId, treeNodes, targetNode, moveType) {//拽操作结束之前的事件回调
+	return false;    	         	
+}
+function zTreeOnDrop(event, treeId, treeNodes, targetNode, moveType) {//拖拽操作结束的事件回调
+	return false;
+};
+	 
+    
+
+var maintain = new Vue({
+	el:"#maintainList",
+	data:{
+		dataList:[],
+		childrenList:[],
+		contentList:[],
+		activeMenu:[],
+		categoryName: '',
+		cateId:'',
+		editMenuDetail:[],
+		newContentBtn:false,
+		editStatusTip:true,
+		pathList:[],
+		url: ykyUrl.product + '/v2/products/categories/children', //访问数据接口
+		queryParams: { //请求接口参数
+			defaultStatus: true, //监测参数变化标识
+//			size: 10,
+//			page: 1,
+			parentCateId: '',
+			status: 1
+		},
+		gridColumns: [ //表格列
+		               {
+		   				key: 'cateName',
+		   				name: '分类名称',
+		   				align: 'center',
+		   				default: '--',
+		   				cutstring: true
+		   			},
+		   			{
+		   				key: 'icon',
+		   				name: '类别ICON',
+		   				width: '120px',
+		   				type: 'image',
+		   				default: ykyUrl._this + '/images/defaultImg01.jpg'
+		   			},
+		   			{
+		   				key: 'createdDate',
+		   				name: '创建时间',
+		   				align: 'center',
+		   				default: '--',
+		   				cutstring: true
+		   			},
+		   			{
+		   				key: 'lastUpdateDate',
+		   				name: '最后一次编辑时间',
+		   				align: 'center',
+		   				default: '--',
+		   				cutstring: true
+		   			},
+		   			{
+		   				key: 'operatedUserName',
+		   				name: '操作人',
+		   				align: 'center',
+		   				default: '--',
+		   				cutstring: true
+		   			},
+		   			{
+						key: 'operate',
+						name: '操作',
+						align: 'center',
+						width: '150px',
+						items: [{
+							className: 'btn-edit',
+							show: true,
+							text: '编辑',
+							href: '#editCategory',
+							callback: {
+								action: 'editCategory',
+								params: ['{status}', '{_id}', '{cateName}','{icon}',]
+							}
+						},]
+					}
+		],
+		pageflag: false, //是否显示分页
+		refresh: false, //重载
+		keyname:'上传',
+        isImage: "true",
+        key: "other",
+        name: "other",
+        validate:{},
+        inputClass:'',
+        attachFile:'',
+        defaultPic: ykyUrl._this + '/images/defaultImg01.jpg',
+        config: {						//设置上传按钮
+            buttonId: "faceUploadBtn",
+            types: "jpg,png,jpeg,gif",
+            url: pluginURL,
+            uploadType: "ent.logo",
+            fileSize: "2mb"
+        },
+        attr:{
+            disabled:true
+        },
+        manuText: '*支持jpg、jpeg、png、gif格式，大小不超过2M'
+	},
+	methods:{
+		getData:function(){
+			var _this = this;
+			syncData(ykyUrl.product + '/v1/products/categories/list', 'GET', null, function(data){
+				if(data){
+					var rootParent = [{
+							cateLevel: 0,
+							cateName: '产品分类',
+							_id: 0,
+							children:[]
+					}];
+					rootParent[0].children = data;
+//					data.push(rootParent);
+					rootParent.forEach(function(item){
+						if(item.children && item.children.length > 0){
+							_this.filterData(item)
+						}
+					})
+					
+					zNodes = rootParent;
+					zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+					treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+					var nodes = treeObj.getNodes();
+					var curMenuId = _this.activeMenu.id;
+					maintain.dataList = data;
+					if (nodes.length > 0 && !curMenuId) {
+						treeObj.selectNode(nodes[0]); //选中默认节点
+						treeObj.expandNode(nodes[0]); //展开默认节点
+						_this.pathList = treeObj.getSelectedNodes()[0].getPath();					
+						maintain.clickMenu(nodes[0]._id, nodes[0].level, nodes[0].cateName);
+					} else {
+						$.each(zNodes, function(i, e) {
+							if (e.id == curMenuId) {
+								var a_nodes = treeObj.getNodeByParam('_id', curMenuId);
+								treeObj.selectNode(a_nodes); //选中指定节点
+								treeObj.expandNode(a_nodes); //展开指定节点
+								_this.pathList = treeObj.getSelectedNodes()[0].getPath();
+								maintain.clickMenu(a_nodes._id, a_nodes.level, a_nodes.cateName);
+							}
+						})
+					}
+				}
+			})
+		},
+		filterData: function(data){
+			var _this = this;
+			data.children.forEach(function(el){
+				el.parentId = data._id;
+				
+				if(el.children && el.children.length > 0){
+					_this.filterData(el)
+				}
+			})
+		},
+		clickMenu:function(id,level,name){//选中菜单
+			var _this = this;
+			if (id || id == 0) {
+				if(id == 0){
+					maintain.queryParams.parentCateId = '';
+				}else{
+					maintain.queryParams.parentCateId = id;
+				}
+				
+				maintain.queryParams.defaultStatus = !maintain.queryParams.defaultStatus;
+			}
+		},
+		 saveData:function(){//保存菜单
+			 var _this = this;
+			 
+			 if(!$('#other').val()){
+				 layer.msg('分类ICON不能为空！');
+				 return false;
+			 }
+			 
+			var postObj = {
+				_id: _this.cateId,
+				icon: $("#other").val(),
+			};
+				
+				syncData(ykyUrl.product + '/v1/products/categories', 'PUT', postObj, function(data){
+					if(data != null){
+						maintain.queryParams.defaultStatus = !maintain.queryParams.defaultStatus;
+						_this.newContentBtn = false;
+					}
+				})
+		 },
+		cancelEdit: function(){
+			this.newContentBtn = false;
+		}
+	},
+})
+
+function editCategory(index,ele){//新增、编辑菜单信息
+//	var _this = this;
+	maintain.newContentBtn = true;
+	maintain.categoryName = ele[2];
+	maintain.cateId = ele[1];
+	if(ele[3]){
+		maintain.attachFile = ele[3];
+	}else{
+		maintain.attachFile = '';
+	}
+ }
+maintain.getData();

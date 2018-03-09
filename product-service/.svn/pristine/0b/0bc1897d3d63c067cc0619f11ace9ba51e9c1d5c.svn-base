@@ -1,0 +1,52 @@
+package com.yikuyi.product.goods;
+
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.yikuyi.product.vo.ProductVoV8;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+/**
+ * 批量查询商品信息相关的服务
+ * 
+ * @author zr.wujiajun@yikuyi.com
+ * @version 1.0.0
+ */
+public interface IProductResourceV8 {
+	/**
+	 * 批量查询商品详细信息,包含价格,交期等
+	 * @params ids
+	 * @author zr.wanghong
+	 */
+	@ApiOperation(value = "手机端商品详情接口，批量查询商品信息,包含实时价格,交期等", notes = "作者：王洪<br>手机端商品详情接口，批量查询商品信息,包含实时价格,交期等" ,response = ProductVoV8.class)
+	@ApiResponses(value ={@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	@RequestMapping(method=RequestMethod.POST)
+	public ProductVoV8 getFullInfoByIds(@ApiParam("商品ID")String id);	
+	
+	/**
+	 * 商品列表查询
+	 * @param keyword
+	 * @param filterParam
+	 * @param sort
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 * @throws InterruptedException
+	 */
+	@ApiOperation(value = "商品列表查询", notes = "商品列表查询" ,response = Map.class)
+	@ApiResponses(value ={@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public Map<String,Object> search(@ApiParam(value = "关键字查询（包含 型号、制造商、分类）")String keyword,
+			@ApiParam(value = "返回过虑条件，例如：category，vendor，mfr")String includeFilter,
+			@ApiParam(value = "(供应商 vendorIds:1,2,3，品牌 brandIds:1,2,3，分类categories:1,2,3，库存minQty,maxQty，价格minPrice maxPrice ),json字符串")String filterParam,
+			@ApiParam(value = "(库存qty，价格price 栗子：{qty:-1} 1:正序 -1:倒序 )")String sort,
+			@ApiParam(value="库存数") String showQty,
+			@ApiParam(value = "当前页") int page,
+			@ApiParam(value = "每页条数") int pageSize)throws InterruptedException;
+	
+}

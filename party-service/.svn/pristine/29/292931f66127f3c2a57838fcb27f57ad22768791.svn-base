@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.vendor.dao.PartyBankAccountDao">
+   <resultMap id="BaseResultMap" type="com.yikuyi.party.vendor.vo.PartyBankAccount">
+   		<id column="PARTY_BANK_ACCOUNT_ID" property="partyBankAccountId"/>
+		<id column="PARTY_ID" property="partyId"/>
+		<result column="CURRENCY" property="currency"/>
+		<result column="ACCOUNT_NAME" property="accountName"/>
+		<result column="BANK_NAME" property="bankName"/>
+		<result column="BANK_ACCOUNT" property="bankAccount"/>
+		<result column="TAX_NUMBER" property="taxNumber"/>
+		<result column="ADDRESS" property="address"/>
+		<result column="CONTACT_NUMBER" property="contactNumber"/>
+		<result column="IS_DEFAULT" property="isDefault"/>
+		<result column="STATUS" property="status"/>
+		<result column="SWIFT_CODE" property="swiftCode"/>
+		<result column="CREATOR" property="creator"/>
+		<result column="CREATED_DATE" property="createdDate"/>
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser"/>
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate"/>
+</resultMap>
+  
+  <select id="findPartyBankAccountList" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    select * from PARTY_BANK_ACCOUNT p
+		where  p.`PARTY_ID` = #{partyId}
+  </select>
+  
+  
+  <!--   添加账期信息 -->
+  <insert id="insert" parameterType="com.yikuyi.party.vendor.vo.PartyBankAccount" >
+    insert into PARTY_BANK_ACCOUNT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="partyBankAccountId != null" >
+        PARTY_BANK_ACCOUNT_ID,
+      </if>
+      <if test="partyId != null" >
+        PARTY_ID,
+      </if>
+      <if test="currency != null" >
+        CURRENCY,
+      </if>
+      <if test="accountName != null" >
+        ACCOUNT_NAME,
+      </if>
+      <if test="bankName != null" >
+        BANK_NAME,
+      </if>
+      <if test="bankAccount != null" >
+        BANK_ACCOUNT,
+      </if>      
+     <if test="taxNumber != null" >
+        TAX_NUMBER,
+      </if>
+       <if test="address != null" >
+        ADDRESS,
+      </if>
+      <if test="contactNumber != null" >
+        CONTACT_NUMBER,
+      </if>
+      <if test="isDefault != null" >
+        IS_DEFAULT,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="swiftCode != null" >
+        SWIFT_CODE,
+      </if>
+      <if test="creator != null" >
+        CREATOR,
+      </if>
+     <if test="createdDate != null" > 
+        CREATED_DATE,
+      </if>
+       <if test="lastUpdateUser != null" >
+       LAST_UPDATE_USER, 
+      </if>
+     <if test="lastUpdateDate != null" > 
+      LAST_UPDATE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+     <if test="partyBankAccountId != null" >
+          #{partyBankAccountId},
+      </if>
+      <if test="partyId != null" >
+         #{partyId},
+      </if>
+      <if test="currency != null" >
+         #{currency},
+      </if>
+      <if test="accountName != null" >
+          #{accountName},
+      </if>
+      <if test="bankName != null" >
+         #{bankName},
+      </if>
+      <if test="bankAccount != null" >
+          #{bankAccount},
+      </if>      
+     <if test="taxNumber != null" >
+          #{taxNumber},
+      </if>
+       <if test="address != null" >
+         #{address},
+      </if>
+      <if test="contactNumber != null" >
+          #{contactNumber},
+      </if>
+      <if test="isDefault != null" >
+          #{isDefault},
+      </if>
+      <if test="status != null" >
+          #{status},
+      </if>
+      <if test="swiftCode != null" >
+          #{swiftCode},
+      </if>
+      <if test="creator != null" >
+        #{creator},
+      </if>
+     <if test="createdDate != null" > 
+       #{createdDate},
+      </if>
+       <if test="lastUpdateUser != null" >
+        #{lastUpdateUser},
+      </if>
+     <if test="lastUpdateDate != null" > 
+       #{lastUpdateDate},
+      </if>
+    </trim>
+  </insert>
+  
+  <delete id="delByPartyId" parameterType="java.lang.String">
+  
+      delete from PARTY_BANK_ACCOUNT where PARTY_ID=#{partyId}
+  
+  </delete>
+  
+</mapper>

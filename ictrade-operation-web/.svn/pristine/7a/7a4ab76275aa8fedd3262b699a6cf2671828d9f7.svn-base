@@ -1,0 +1,532 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<c:set var="ctx" value="${pageContext.request.contextPath }" scope="request" />
+<!-- <!DOCTYPE> -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<html>
+<head>
+<title>物料详情</title>
+<style type="text/css">
+/* 物料详情  */
+.table .name {
+	background-color: #eeeeee;
+	text-align: right;
+	padding-right: 10px;
+}
+
+.table .value {
+	background-color: #fff;
+	text-align: left;
+	padding-left: 10px;
+}
+
+a:hover, a:active, a:focus {
+	color: #23527c;
+}
+
+#largeImg {
+	position: absolute;
+	z-index: 99999;
+}
+
+.litterImg {
+	width:120px;
+	height:120px;
+}
+
+.bigImg {
+	width: 200px;
+	height: 200px;
+	border:2px solid #d6d6d6;
+}
+.content{
+  background-color: #fff;
+ }
+ .col-xs-10 ul li{
+  list-style: none;
+  }
+  .l{
+    float:left;
+  }
+  .mt30{
+     margin-top:30px;
+   }
+  .mt10{
+  margin-top:10px;}
+.mt20{
+  margin-top:20px;}
+  .r{
+    float:right;
+  }
+  #todateCode{
+    height: 185px;
+    width: 100%;
+    padding: 10px;
+  }
+  .logo-box #uploadback{
+    position: absolute;
+    bottom: 0;
+    width: 120px;
+
+  }
+  input[type=button]{
+   filter: alpha(opacity=0.8);
+    -moz-opacity: 0.8;
+    -khtml-opacity:0 .8;
+    opacity: 0.8;
+  }
+  
+  .manu_logo .file-btn{
+    width: 120px;
+    margin-top: 20px;
+  }
+  .remove-box{
+   margin-top:35px;
+   margin-left:10px;
+  }
+  .del_logo, .re-change, .manu_text{
+   margin-right:10px;
+  }
+  .add-box{
+  margin-top:20px;
+ 
+  }
+  
+ .condition_inquery{
+    background-color: #c11f2e;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 3px;
+  }
+  .return_btn{
+    padding: 10px 20px;
+    cursor: pointer;
+    border: solid 1px #ddd;
+    border-radius: 3px;
+    font-size: 14px;
+    color: #ffffff;
+    margin-left: 30px;
+    background-color: #c11f2e;
+  }
+   .return_btn:hover{
+       color: #72afd2
+       }
+   .word-break-all{
+   		word-break: break-all;
+   }
+</style>
+
+<c:import url ="/WEB-INF/jsp/include/lemon/constants.jsp"/>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+<c:import url ="/WEB-INF/jsp/include/lemon/layout.jsp"/>
+	<div class="content-wrapper" id="extension_edit">
+			<section class="content-header">
+			  <h1>
+			    	物料详情
+			    <small class="edit_state"></small>
+			  </h1>
+			  <ol class="breadcrumb">
+			    <li><a href="./"><i class="fa fa-dashboard"></i> 首页</a></li>
+			    <li class="active">物料详情</li>
+			  </ol>
+			</section>
+
+<section class="content" style="color:#666;">
+<form class="form-horizontal" name="materials-view" id="materials-view" onsubmit="return false;" >
+
+<!-- Main content -->
+	 <div style="min-height: 406px;" >
+		<section  class="content container-fluid" >
+			<div class="row mt20">
+				<div class="col-xs-6">
+					<div class="row ">
+						<div class="row ">
+							<div class="col-xs-2 tr pl0">
+								<label >物料型号：</label>
+							</div>
+							<div class="col-xs-10 c5e">
+								<span  v-html="datas.manufacturerPartNumber ? datas.manufacturerPartNumber : '--' "></span>
+							</div>
+						</div>
+						<div class="row mt30">
+							<div class="col-xs-2 tr">
+								<label>物料分类：</label>
+							</div>
+							<div class="col-xs-10 c5e">
+								<span v-for="ele in datas.categories">
+								   <i v-if="ele.cateLevel=='1'" class="l">{{ele.cateName}}></i>
+								   <i v-if="ele.cateLevel=='2'" class="l">{{ele.cateName}}></i>
+								   <i v-if="ele.cateLevel=='3'" class="l">{{ele.cateName}}</i>
+								</span>
+							</div>
+						</div>
+						<div class="row mt30">
+							<div class="col-xs-2 tr">
+								<label>原厂：</label>
+							</div>
+							<div class="col-xs-10 c5e">
+								<span v-html="datas.manufacturer ? datas.manufacturer : '--' "></span>
+							</div>
+						</div>
+						<div class="row mt30">
+							<div class="col-xs-2 tr">
+								<label >物料图片：</label>
+								<span></span>
+							</div>
+							<div class="col-xs-10 c5e">
+										<p>
+										    <img  :src="datas.imageurl"   class="litterImg">
+										</p>
+									 
+						    </div>
+						</div>
+						<div class="row mt30">
+							<div class="col-xs-2 tr">
+								<label>SPEC文档地址：</label>
+							</div>
+							<div class="col-xs-10 c5e word-break-all">
+								    <div v-for="(ele,index) in datas.documents"    v-if="ele.type == 'datasheets' " >
+								       <p  v-for="(el,index) in ele.attaches" >
+								         <a target="_blank"  v-html ='el.url' :href='el.url'  ></a>
+								       </p>
+									 </div> 
+							</div>
+						</div>
+						 <div class="row mt30">
+							<div class="col-xs-2 tr">
+								<label>RoHS标准：</label>
+							</div>
+							<div class="col-xs-10 c5e">
+								    <span  v-if="datas.rohs == true " >符合</span >
+							       <span  v-if="datas.rohs == false " >不符合</span >
+							       <span  v-if="datas.rohs == undefined " >未知</span >
+							</div>
+						</div>
+						<div class="row mt30">
+							<div class="col-xs-2 tr ">
+								<label>物料描述：</label>
+							</div>
+							 <div class="col-xs-10 c5e word-break-all">
+							   <span v-html="datas.description ?datas.description:'--'"></span>
+							</div>
+						</div>
+						<div class="row mt30  mb30">
+							<div class="col-xs-2 tr ">
+								<label>状态：</label>
+							</div>
+							<div class="col-xs-10 c5e">
+								<span v-html="datas.status ? '失效':'有效'"></span>
+							</div>
+						</div>
+						<div class="row mt30  mb30">
+							<div class="col-xs-2 tr ">
+								<label>是否限制物料：</label>
+							</div>
+							<div class="col-xs-10 c5e">
+								<span  v-if="datas.restrictMaterialType == 'N'" >否</span >
+								<span   v-if="datas.restrictMaterialType == 'P'" >需特殊包装</span >
+								<span   v-if="datas.restrictMaterialType == 'F'" >需特殊文件</span >
+								<span  v-if="datas.restrictMaterialType == undefined " >否</span >
+							</div>
+						</div>
+						<div class="row mt30">
+							<div class="col-xs-2 tr">
+								<label>审核状态：</label>
+							</div>
+							<div class="col-xs-10 c5e">
+								<span  v-if="datas.auditStatus == 0" >待审核</span >
+								<span   v-if="datas.auditStatus == 1 " >未通过</span >
+								<span   v-if="datas.auditStatus == 2 " >通过</span >
+								<span  v-if="datas.auditStatus == undefined " >--</span >
+								  
+							</div>
+						</div> 
+						<div class="row mt30">
+							<div class="col-xs-2 tr">
+								<label><span  v-if="datas.auditStatus == 1 " >未通过原因：</span ></label>
+							</div>
+							<div class="col-xs-10 c5e">
+								<span  v-if="datas.auditStatus == 1 "  v-html='datas.reason'></span >
+								
+								  
+							</div>
+						</div>
+						<div class="row mt30">
+							<div class="col-xs-2 tr">
+								<label>操作日志：</label>
+							</div>
+							<div class="col-xs-10 c5e" v-if="datas.operateDate">
+								<span >--</span>
+							</div> 
+							<div class="col-xs-10 c5e"  v-if="!datas.operateDate" >
+								<p  v-for=  "(el,index) in operateDate">
+									  <span >{{el.date}}</span>
+									  <span class="ml10">{{el.actionDesc}}</span>
+	                  		    </p> 
+							</div>
+						 </div>
+						<div class="row mt30" v-if="datas.auditStatus == 0">
+							<div class="col-xs-2 tr">
+								<label></label>
+							</div>
+							<div class="col-xs-10 c5e">
+								
+				               <input id="passBtn" type="button" class="btn btn-light" @click="checkPass" value="通过审核">
+	                           <input id="noPassBtn" type="button" class="btn btn-light" @click="opendescr" value="不通过审核">
+				         
+							</div>
+						</div>
+					</div>
+					     
+				</div>
+				<div class="col-xs-6">
+					<div class="row">
+						<div class="col-xs-2 pl0">
+							<label>物料参数：</label>
+						</div>
+						<div class="col-xs-10 c5e">
+							<table class="table">
+								<tbody>
+									 <tr v-for="ele in datas.parameters">
+										<td class="name">{{ele.name}}</td>
+										<td class="value">{{ele.value}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				 
+			</div>
+			
+		</section>
+	</div>
+	<!-- Main content end -->
+	      </form>
+	    </section>
+
+
+
+	</div>
+
+</div>
+
+
+
+<!---footer  start   ---->
+<jsp:directive.include file="../include/lemon/footer.jsp" />
+<!---footer  end   ---->
+<script type="text/javascript" src="${ctx}/js/oss/common.js"></script>
+<script type="text/javascript" src="${ctx}/assets/lemon/1.0.0/lemon-multi-file.js"></script>
+
+<script type="text/javascript">
+var	 vm ;
+var  id= getQueryString("id");    //活动id
+
+$(function() {
+vm = new Vue({
+        el: '#materials-view',
+        data: {
+            datas:{},
+            attachUrl1:'',    //图片上传路径
+            cur: 1,
+            curPage: 1,
+            operateDate:[]
+	   },
+        beforeCreate:function(){
+        	var that = this;
+        	//查询活动详情
+        	syncData(
+        		ykyUrl.product + "/v1/products/standaudit/"+id ,
+        			'GET',
+        			null,
+        			function(res,err) {
+						if(res){     //初始化 
+							that.datas = res;
+							vm.imageurl(res.images);
+						}
+				    }
+        		)
+        	var operaData = {
+				  actions:"Material Modify",
+				  applicationCodes:"PRODUCT",
+				  actionRst:"SUCCEEDED",
+				  page:"1",
+				  size:"10"
+		      }
+		  syncData( //不通过审核 
+  		    ykyUrl.party + "/v1/audit?actionId=" + id,
+  			'GET',
+  			operaData,
+  			function(res,err) {
+			      if(res.list){
+			    	  that.operateDate = res.list;
+			      }
+  		    	
+	            }
+	        )
+        },
+        methods: {
+           imageurl:function(data){
+      	    	if(!data.length){/* 图片集合为空 */
+      	    		//return true;
+      	    	}
+      	    	var hasStandard = false   ;
+      	    	$.each(data,function(index,ele){
+      	    		if( ele.type == 'standard'){
+      	    			hasStandard = true   ;
+      	    			vm.datas.imageurl = ele.url;
+      	    		}
+      	    	})
+      	    	
+      	    	
+      	    	if(!hasStandard || vm.datas.imageurl == '' ){
+      	    		vm.datas.imageurl = ykyUrl._this +'/images/defaultImg01.jpg';
+      	    	}
+      	    	
+      	    },
+			checkPass: function(e){
+				var target = e.currentTarget;
+				if($(target).hasClass("disabled")){
+					return;
+				}
+				var addData ={
+						  "auditStats":2,
+						  "ids": []
+						};
+			    
+				 addData.ids.push(id);   //单个物料id 
+				//询问框
+				layer.confirm("<p>确认通过审核吗？</p>", {
+					  	offset: "auto",
+					  	//time:3000,
+					  	area:['450px','auto'],
+						btn: ['确认 ','取消 '], //按钮
+						title: " ",
+						shade: 0,
+						move: false,
+						skin: "up_skin_class",
+				}, 
+				//确认，调接口 
+				function(){
+					syncData( //通过审核 
+			        		ykyUrl.product + "/v1/products/standaudit/audit",
+			        			'PUT',
+			        			addData,
+			        			function(res,err) {
+			        			 $("#passBtn").addClass("disabled");
+			        			 $("#noPassBtn").addClass("disabled");
+			        			  if(err == null){
+			        				     layer.closeAll();
+					        			 layer.msg('操作成功', {time: 3000});
+					        			 setTimeout(function(){
+					        				 location.href = ykyUrl._this + '/approveMaterial.htm'
+					        			 },3000)
+			        			    }
+			        			
+							    }
+			        		)
+				    }, 
+				 //取消
+				function(){
+					layer.closeAll(); 
+				});
+			},
+			checknoPass:function(e){
+				 var addData ={
+						  "auditStats":1,
+						  "descr": "",   //不通过的描述 
+						  "ids": []
+						};
+				 addData.descr = $('.descr').val() ;
+				 addData.ids.push(id);
+					
+				 syncData( //不通过审核 
+				        		ykyUrl.product + "/v1/products/standaudit/audit",
+				        			'PUT',
+				        			addData,
+				        			function(res,err) {
+				        			$("#passBtn").addClass("disabled");
+				        			$("#noPassBtn").addClass("disabled");
+				        			if(err == null){
+				        				layer.closeAll();
+					        			layer.msg('操作成功', {time: 3000});
+					        			setTimeout(function(){
+					        				location.href = ykyUrl._this + '/approveMaterial.htm'
+					        			 },3000)
+				        			 }
+				        							        			
+						            }
+				        )
+				
+			  },
+              opendescr: function (e) {//预览  
+            	 	var target = e.currentTarget;
+	  				if($(target).hasClass("disabled")){
+	  					return;
+	  				}
+           		   var viewHtml=' <div  id="viewContent"><table align="center"><tbody><tr><td><textarea type="text" id="auditOpinion" name="auditOpinion"  class="descr" maxlength="100"  style="margin-top:20px;height:120px;width:380px;" > </textarea></td></tr></tbody></table></div>';
+					  
+					  	layer.open({
+					  		  type: 1, 
+					  		  title: '审核意见',
+					  		  move: false,
+					  	      shade: 0.8,
+					  	      area: ['500px','300px'],
+					  	      offset:"80px",
+					  		  content: viewHtml,
+						  	  btn: ['确认', '取消'],
+							  yes: function(index, layero) {
+								  if(!$.trim($('#auditOpinion').val())){
+									  $('#auditOpinion').css('border-color','#eb0038');
+									  $('#auditOpinion').focus();
+									  return;
+								  }
+								  vm.checknoPass();
+							  },
+							  cancel: function(index, layero) {
+								  layer.closeAll(); 	
+							  }
+					  		});
+					  	$('#auditOpinion').on('blur',function(){
+					  		if($.trim($(this).val())){
+					  			$(this).css('border-color','#a9a9a9');
+					  		}
+					  	})
+					 
+	           	   
+			   },
+			 cancel:function(){
+					  layer.closeAll(); 
+			  },
+			  //获取操作日志接口 
+			  operateDate:function(){
+				  
+				
+			  }
+         },
+        computed: {
+            showLast: function() {
+            }
+        },
+    });
+
+	$(".return_btn").on("click",function(){
+		history.go(-1);
+	});
+
+});
+
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+    <groupId>com.yikuyi</groupId>
+    <artifactId>ictrade-config</artifactId>
+	<version>1.4.1-SNAPSHOT</version>
+    <url>http://maven.apache.org</url>
+    <packaging>jar</packaging>
+    <name>ictrade-config</name>
+    <properties>
+	    <dep.spring.version>4.2.6.RELEASE</dep.spring.version>
+	    <dep.wink.version>1.4</dep.wink.version>
+	    <maven-war-plugin.version>2.3</maven-war-plugin.version>
+	    <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+	    <dep.mybatis.version>3.2.8</dep.mybatis.version>
+	    <dep.shiro.version>1.2.4</dep.shiro.version>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+	    <maven.compiler.source>1.8</maven.compiler.source>
+	    <dep.spring-security.version>4.1.0.RELEASE</dep.spring-security.version>
+	    <dep.jaxb-api.version>2.2.12</dep.jaxb-api.version>
+	    <dep.jaxb-impl.version>2.2.11</dep.jaxb-impl.version>
+	    <dep.mybatis-spring.version>1.2.3</dep.mybatis-spring.version>
+	    <dep.ykyframework.version>1.0.0-SNAPSHOT</dep.ykyframework.version>
+	    <dep.slf4j.version>1.7.12</dep.slf4j.version>
+	    <dep.spring-session.version>1.2.1.RELEASE</dep.spring-session.version>
+	    <dep.jackson.version>2.4.0</dep.jackson.version>
+	    <maven.compiler.target>1.8</maven.compiler.target>
+	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	    <env.type>dev</env.type>
+	    <dep.logback.version>1.0.9</dep.logback.version>
+	    <dep.mysql-jdbc.version>5.1.37</dep.mysql-jdbc.version>
+	    <maven-replacer-plugin.version>1.5.3</maven-replacer-plugin.version>
+	    <env.nexus.domain>https://develop.yikuyi.com:28443</env.nexus.domain> <!-- 私服库地址 -->
+    </properties>
+	<description>本工程是配置文件集合工程，集合了所有项目中所用的spring.xml和properties配置文件</description>
+	
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<url>${env.nexus.domain}/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>${env.nexus.domain}/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<dependencies>
+	    <dependency>
+	      <groupId>junit</groupId>
+	      <artifactId>junit</artifactId>
+	      <version>4.12</version>
+	      <scope>test</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>commons-lang</groupId>
+		  <artifactId>commons-lang</artifactId>
+		  <version>2.6</version>
+		  <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.fasterxml.jackson.core</groupId>
+		  <artifactId>jackson-core</artifactId>
+		  <version>2.5.1</version>
+		  <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+		  <groupId>com.fasterxml.jackson.core</groupId>
+		  <artifactId>jackson-databind</artifactId>
+		  <version>2.5.1</version>
+		  <scope>provided</scope>
+	    </dependency>
+	</dependencies>
+</project>

@@ -1,0 +1,816 @@
+package com.yikuyi.product.vo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import javax.validation.Valid;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yikuyi.activity.vo.ActivityProductVo;
+import com.yikuyi.product.model.ProductParameter;
+import com.yikuyi.product.model.ProductPrice;
+import com.yikuyi.rule.mov.vo.MovInfo;
+import com.ykyframework.model.AbstractEntity;
+
+import io.swagger.annotations.ApiModelProperty;
+
+/**
+ * ProductVoV8
+ */
+public class ProductVoV8 extends AbstractEntity  {
+	  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@JsonProperty("id")
+	  private String id = null;
+
+	  @JsonProperty("vendorName")
+	  private String vendorName = null;
+
+	  @JsonProperty("vendorLogo")
+	  private String vendorLogo = null;
+
+	  @JsonProperty("vendorId")
+	  private String vendorId = null;
+
+	  @JsonProperty("moq")
+	  private Integer moq = null;
+
+	  @JsonProperty("qty")
+	  private Long qty = null;
+
+	  @JsonProperty("unit")
+	  private String unit = null;
+
+	  @JsonProperty("sourceName")
+	  private String sourceName = null;
+
+	  @JsonProperty("remark")
+	  private String remark = null;
+
+	  @JsonProperty("largeUrl")
+	  private String largeUrl = null;
+
+	  @JsonProperty("standardUrl")
+	  private String standardUrl = null;
+
+	  @JsonProperty("thumbnailUrl")
+	  private String thumbnailUrl = null;
+
+	  @JsonProperty("cateId")
+	  private Integer cateId = null;
+
+	  @JsonProperty("cateName1")
+	  private String cateName1 = null;
+
+	  @JsonProperty("cateName2")
+	  private String cateName2 = null;
+
+	  @JsonProperty("cateName3")
+	  private String cateName3 = null;
+
+	  @JsonProperty("movInfo")
+	  private MovInfo movInfo = null;
+
+	  @JsonProperty("leadTimeCH")
+	  private String leadTimeCH = null;
+
+	  @JsonProperty("leadTimeHK")
+	  private String leadTimeHK = null;
+
+	  @JsonProperty("mpn")
+	  private String mpn = null;
+
+	  @JsonProperty("mfr")
+	  private String mfr = null;
+
+	  @JsonProperty("rohs")
+	  private Boolean rohs = null;
+
+	  @JsonProperty("tax")
+	  private Double tax = null;
+
+	  @JsonProperty("forbid")
+	  private Boolean forbid = null;
+
+	  @JsonProperty("inspection")
+	  private String inspection = null;
+
+	  @JsonProperty("prices")
+	  private List<ProductPrice> prices = null;
+	  
+	  @ApiModelProperty(value = "原销售价")
+	  private List<ProductPrice> originalResalePrices; // original resale  price
+
+	  @JsonProperty("DataSheetUrl")
+	  private List<String> dataSheetUrl = null;
+
+	  @JsonProperty("parameters")
+	  private List<ProductParameter> parameters = null;
+	  
+	  @ApiModelProperty(value="商品活动信息")
+	  private ActivityProductVo activityProductVo;
+
+	  
+	  
+	  public ActivityProductVo getActivityProductVo() {
+		return activityProductVo;
+	}
+
+	public void setActivityProductVo(ActivityProductVo activityProductVo) {
+		this.activityProductVo = activityProductVo;
+	}
+
+	public ProductVoV8 id(String id) {
+	    this.id = id;
+	    return this;
+	  }
+
+	   /**
+	   * Get id
+	   * @return id
+	  **/
+	  @ApiModelProperty(value = "")
+
+
+	  public String getId() {
+	    return id;
+	  }
+
+	  public void setId(String id) {
+	    this.id = id;
+	  }
+
+	  public ProductVoV8 vendorName(String vendorName) {
+	    this.vendorName = vendorName;
+	    return this;
+	  }
+
+	   /**
+	   * 供应商名称
+	   * @return vendorName
+	  **/
+	  @ApiModelProperty(value = "供应商名称")
+
+
+	  public String getVendorName() {
+	    return vendorName;
+	  }
+
+	  public void setVendorName(String vendorName) {
+	    this.vendorName = vendorName;
+	  }
+
+	  public ProductVoV8 vendorLogo(String vendorLogo) {
+	    this.vendorLogo = vendorLogo;
+	    return this;
+	  }
+
+	   /**
+	   * 供应商logo
+	   * @return vendorLogo
+	  **/
+	  @ApiModelProperty(value = "供应商logo")
+
+
+	  public String getVendorLogo() {
+	    return vendorLogo;
+	  }
+
+	  public void setVendorLogo(String vendorLogo) {
+	    this.vendorLogo = vendorLogo;
+	  }
+
+	  public ProductVoV8 vendorId(String vendorId) {
+	    this.vendorId = vendorId;
+	    return this;
+	  }
+
+	   /**
+	   * 供应商id
+	   * @return vendorId
+	  **/
+	  @ApiModelProperty(value = "供应商id")
+
+
+	  public String getVendorId() {
+	    return vendorId;
+	  }
+
+	  public void setVendorId(String vendorId) {
+	    this.vendorId = vendorId;
+	  }
+
+	  public ProductVoV8 moq(Integer moq) {
+	    this.moq = moq;
+	    return this;
+	  }
+
+	   /**
+	   * 最小交易量  起定量
+	   * @return moq
+	  **/
+	  @ApiModelProperty(value = "最小交易量  起定量")
+
+
+	  public Integer getMoq() {
+	    return moq;
+	  }
+
+	  public void setMoq(Integer moq) {
+	    this.moq = moq;
+	  }
+
+	  public ProductVoV8 qty(Long qty) {
+	    this.qty = qty;
+	    return this;
+	  }
+
+	   /**
+	   * 库存
+	   * @return qty
+	  **/
+	  @ApiModelProperty(value = "库存")
+
+
+	  public Long getQty() {
+	    return qty;
+	  }
+
+	  public void setQty(Long qty) {
+	    this.qty = qty;
+	  }
+
+	  public ProductVoV8 unit(String unit) {
+	    this.unit = unit;
+	    return this;
+	  }
+
+	   /**
+	   * 单位
+	   * @return unit
+	  **/
+	  @ApiModelProperty(value = "单位")
+
+
+	  public String getUnit() {
+	    return unit;
+	  }
+
+	  public void setUnit(String unit) {
+	    this.unit = unit;
+	  }
+
+	  public ProductVoV8 sourceName(String sourceName) {
+	    this.sourceName = sourceName;
+	    return this;
+	  }
+
+	   /**
+	   * 仓库名称
+	   * @return sourceName
+	  **/
+	  @ApiModelProperty(value = "仓库名称")
+
+
+	  public String getSourceName() {
+	    return sourceName;
+	  }
+
+	  public void setSourceName(String sourceName) {
+	    this.sourceName = sourceName;
+	  }
+
+	  public ProductVoV8 remark(String remark) {
+	    this.remark = remark;
+	    return this;
+	  }
+
+	   /**
+	   * 商品备注
+	   * @return remark
+	  **/
+	  @ApiModelProperty(value = "商品备注")
+
+
+	  public String getRemark() {
+	    return remark;
+	  }
+
+	  public void setRemark(String remark) {
+	    this.remark = remark;
+	  }
+
+	  public ProductVoV8 largeUrl(String largeUrl) {
+	    this.largeUrl = largeUrl;
+	    return this;
+	  }
+
+	   /**
+	   * 大图路径
+	   * @return largeUrl
+	  **/
+	  @ApiModelProperty(value = "大图路径")
+
+
+	  public String getLargeUrl() {
+	    return largeUrl;
+	  }
+
+	  public void setLargeUrl(String largeUrl) {
+	    this.largeUrl = largeUrl;
+	  }
+
+	  public ProductVoV8 standardUrl(String standardUrl) {
+	    this.standardUrl = standardUrl;
+	    return this;
+	  }
+
+	   /**
+	   * 标准图路径
+	   * @return standardUrl
+	  **/
+	  @ApiModelProperty(value = "标准图路径")
+
+
+	  public String getStandardUrl() {
+	    return standardUrl;
+	  }
+
+	  public void setStandardUrl(String standardUrl) {
+	    this.standardUrl = standardUrl;
+	  }
+
+	  public ProductVoV8 thumbnailUrl(String thumbnailUrl) {
+	    this.thumbnailUrl = thumbnailUrl;
+	    return this;
+	  }
+
+	   /**
+	   * 小图路径
+	   * @return thumbnailUrl
+	  **/
+	  @ApiModelProperty(value = "小图路径")
+
+
+	  public String getThumbnailUrl() {
+	    return thumbnailUrl;
+	  }
+
+	  public void setThumbnailUrl(String thumbnailUrl) {
+	    this.thumbnailUrl = thumbnailUrl;
+	  }
+
+	  public ProductVoV8 cateId(Integer cateId) {
+	    this.cateId = cateId;
+	    return this;
+	  }
+
+	   /**
+	   * 分类第三级的id
+	   * @return cateId
+	  **/
+	  @ApiModelProperty(value = "分类第三级的id")
+
+
+	  public Integer getCateId() {
+	    return cateId;
+	  }
+
+	  public void setCateId(Integer cateId) {
+	    this.cateId = cateId;
+	  }
+
+	  public ProductVoV8 cateName1(String cateName1) {
+	    this.cateName1 = cateName1;
+	    return this;
+	  }
+
+	   /**
+	   * 一级分类名称
+	   * @return cateName1
+	  **/
+	  @ApiModelProperty(value = "一级分类名称")
+
+
+	  public String getCateName1() {
+	    return cateName1;
+	  }
+
+	  public void setCateName1(String cateName1) {
+	    this.cateName1 = cateName1;
+	  }
+
+	  public ProductVoV8 cateName2(String cateName2) {
+	    this.cateName2 = cateName2;
+	    return this;
+	  }
+
+	   /**
+	   * 二级分类名称
+	   * @return cateName2
+	  **/
+	  @ApiModelProperty(value = "二级分类名称")
+
+
+	  public String getCateName2() {
+	    return cateName2;
+	  }
+
+	  public void setCateName2(String cateName2) {
+	    this.cateName2 = cateName2;
+	  }
+
+	  public ProductVoV8 cateName3(String cateName3) {
+	    this.cateName3 = cateName3;
+	    return this;
+	  }
+
+	   /**
+	   * 三级分类名称
+	   * @return cateName3
+	  **/
+	  @ApiModelProperty(value = "三级分类名称")
+
+
+	  public String getCateName3() {
+	    return cateName3;
+	  }
+
+	  public void setCateName3(String cateName3) {
+	    this.cateName3 = cateName3;
+	  }
+
+	  public ProductVoV8 movInfo(MovInfo movInfo) {
+	    this.movInfo = movInfo;
+	    return this;
+	  }
+
+	   /**
+	   * Get movInfo
+	   * @return movInfo
+	  **/
+	  @ApiModelProperty(value = "")
+
+	  @Valid
+
+	  public MovInfo getMovInfo() {
+	    return movInfo;
+	  }
+
+	  public void setMovInfo(MovInfo movInfo) {
+	    this.movInfo = movInfo;
+	  }
+
+	  public ProductVoV8 leadTimeCH(String leadTimeCH) {
+	    this.leadTimeCH = leadTimeCH;
+	    return this;
+	  }
+
+	   /**
+	   * 国内交期（新增）
+	   * @return leadTimeCH
+	  **/
+	  @ApiModelProperty(value = "国内交期（新增）")
+
+
+	  public String getLeadTimeCH() {
+	    return leadTimeCH;
+	  }
+
+	  public void setLeadTimeCH(String leadTimeCH) {
+	    this.leadTimeCH = leadTimeCH;
+	  }
+
+	  public ProductVoV8 leadTimeHK(String leadTimeHK) {
+	    this.leadTimeHK = leadTimeHK;
+	    return this;
+	  }
+
+	   /**
+	   * 香港交期（新增）
+	   * @return leadTimeHK
+	  **/
+	  @ApiModelProperty(value = "香港交期（新增）")
+
+
+	  public String getLeadTimeHK() {
+	    return leadTimeHK;
+	  }
+
+	  public void setLeadTimeHK(String leadTimeHK) {
+	    this.leadTimeHK = leadTimeHK;
+	  }
+
+	  public ProductVoV8 mpn(String mpn) {
+	    this.mpn = mpn;
+	    return this;
+	  }
+
+	   /**
+	   * 型号（新增）
+	   * @return mpn
+	  **/
+	  @ApiModelProperty(value = "型号（新增）")
+
+
+	  public String getMpn() {
+	    return mpn;
+	  }
+
+	  public void setMpn(String mpn) {
+	    this.mpn = mpn;
+	  }
+
+	  public ProductVoV8 mfr(String mfr) {
+	    this.mfr = mfr;
+	    return this;
+	  }
+
+	   /**
+	   * 制造商名称
+	   * @return mfr
+	  **/
+	  @ApiModelProperty(value = "制造商名称")
+
+
+	  public String getMfr() {
+	    return mfr;
+	  }
+
+	  public void setMfr(String mfr) {
+	    this.mfr = mfr;
+	  }
+
+	  public ProductVoV8 rohs(Boolean rohs) {
+	    this.rohs = rohs;
+	    return this;
+	  }
+
+	   /**
+	   * 是否无铅符合rohs  true or false
+	   * @return rohs
+	  **/
+	  @ApiModelProperty(value = "是否无铅符合rohs  true or false")
+
+
+	  public Boolean getRohs() {
+	    return rohs;
+	  }
+
+	  public void setRohs(Boolean rohs) {
+	    this.rohs = rohs;
+	  }
+
+	  public ProductVoV8 tax(Double tax) {
+	    this.tax = tax;
+	    return this;
+	  }
+
+	   /**
+	   * 关税
+	   * @return tax
+	  **/
+	  @ApiModelProperty(value = "关税")
+
+
+	  public Double getTax() {
+	    return tax;
+	  }
+
+	  public void setTax(Double tax) {
+	    this.tax = tax;
+	  }
+
+	  public ProductVoV8 forbid(Boolean forbid) {
+	    this.forbid = forbid;
+	    return this;
+	  }
+
+	   /**
+	   * 是否受控  true or false
+	   * @return forbid
+	  **/
+	  @ApiModelProperty(value = "是否受控  true or false")
+
+
+	  public Boolean getForbid() {
+	    return forbid;
+	  }
+
+	  public void setForbid(Boolean forbid) {
+	    this.forbid = forbid;
+	  }
+
+	  public ProductVoV8 inspection(String inspection) {
+	    this.inspection = inspection;
+	    return this;
+	  }
+
+	   /**
+	   * 商检
+	   * @return inspection
+	  **/
+	  @ApiModelProperty(value = "商检")
+
+
+	  public String getInspection() {
+	    return inspection;
+	  }
+
+	  public void setInspection(String inspection) {
+	    this.inspection = inspection;
+	  }
+
+	  public ProductVoV8 prices(List<ProductPrice> prices) {
+	    this.prices = prices;
+	    return this;
+	  }
+
+	  public ProductVoV8 addPricesItem(ProductPrice pricesItem) {
+	    if (this.prices == null) {
+	      this.prices = new ArrayList<ProductPrice>();
+	    }
+	    this.prices.add(pricesItem);
+	    return this;
+	  }
+
+	   /**
+	   * 梯度价格
+	   * @return prices
+	  **/
+	  @ApiModelProperty(value = "梯度价格")
+
+	  @Valid
+
+	  public List<ProductPrice> getPrices() {
+	    return prices;
+	  }
+
+	  public void setPrices(List<ProductPrice> prices) {
+	    this.prices = prices;
+	  }
+	  
+	  
+	  /**
+	   * 原销售价
+	   * @author injor.huang
+	   * @date 2018年3月2日
+	   * @return
+	   */
+	public List<ProductPrice> getOriginalResalePrices() {
+		return originalResalePrices;
+	}
+
+	public void setOriginalResalePrices(List<ProductPrice> originalResalePrices) {
+		this.originalResalePrices = originalResalePrices;
+	}
+
+	public ProductVoV8 dataSheetUrl(List<String> dataSheetUrl) {
+	    this.dataSheetUrl = dataSheetUrl;
+	    return this;
+	  }
+
+	   /**
+	   * 数据手册
+	   * @return dataSheetUrl
+	  **/
+	  @ApiModelProperty(value = "数据手册")
+
+
+
+
+	  public ProductVoV8 parameters(List<ProductParameter> parameters) {
+	    this.parameters = parameters;
+	    return this;
+	  }
+
+	  public List<String> getDataSheetUrl() {
+		return dataSheetUrl;
+	}
+
+	public void setDataSheetUrl(List<String> dataSheetUrl) {
+		this.dataSheetUrl = dataSheetUrl;
+	}
+
+	public ProductVoV8 addParametersItem(ProductParameter parametersItem) {
+	    if (this.parameters == null) {
+	      this.parameters = new ArrayList<ProductParameter>();
+	    }
+	    this.parameters.add(parametersItem);
+	    return this;
+	  }
+
+	   /**
+	   * 参数集合
+	   * @return parameters
+	  **/
+	  @ApiModelProperty(value = "参数集合")
+
+	  @Valid
+
+	  public List<ProductParameter> getParameters() {
+	    return parameters;
+	  }
+
+	  public void setParameters(List<ProductParameter> parameters) {
+	    this.parameters = parameters;
+	  }
+
+
+	  @Override
+	  public boolean equals(java.lang.Object o) {
+	    if (this == o) {
+	      return true;
+	    }
+	    if (o == null || getClass() != o.getClass()) {
+	      return false;
+	    }
+	    ProductVoV8 product = (ProductVoV8) o;
+	    return Objects.equals(this.id, product.id) &&
+	        Objects.equals(this.vendorName, product.vendorName) &&
+	        Objects.equals(this.vendorLogo, product.vendorLogo) &&
+	        Objects.equals(this.vendorId, product.vendorId) &&
+	        Objects.equals(this.moq, product.moq) &&
+	        Objects.equals(this.qty, product.qty) &&
+	        Objects.equals(this.unit, product.unit) &&
+	        Objects.equals(this.sourceName, product.sourceName) &&
+	        Objects.equals(this.remark, product.remark) &&
+	        Objects.equals(this.largeUrl, product.largeUrl) &&
+	        Objects.equals(this.standardUrl, product.standardUrl) &&
+	        Objects.equals(this.thumbnailUrl, product.thumbnailUrl) &&
+	        Objects.equals(this.cateId, product.cateId) &&
+	        Objects.equals(this.cateName1, product.cateName1) &&
+	        Objects.equals(this.cateName2, product.cateName2) &&
+	        Objects.equals(this.cateName3, product.cateName3) &&
+	        Objects.equals(this.movInfo, product.movInfo) &&
+	        Objects.equals(this.leadTimeCH, product.leadTimeCH) &&
+	        Objects.equals(this.leadTimeHK, product.leadTimeHK) &&
+	        Objects.equals(this.mpn, product.mpn) &&
+	        Objects.equals(this.mfr, product.mfr) &&
+	        Objects.equals(this.rohs, product.rohs) &&
+	        Objects.equals(this.tax, product.tax) &&
+	        Objects.equals(this.forbid, product.forbid) &&
+	        Objects.equals(this.inspection, product.inspection) &&
+	        Objects.equals(this.prices, product.prices) &&
+	        Objects.equals(this.dataSheetUrl, product.dataSheetUrl) &&
+	        Objects.equals(this.parameters, product.parameters);
+	  }
+
+	  @Override
+	  public int hashCode() {
+	    return Objects.hash(id, vendorName, vendorLogo, vendorId, moq, qty, unit, sourceName, remark, largeUrl, standardUrl, thumbnailUrl, cateId, cateName1, cateName2, cateName3, movInfo, leadTimeCH, leadTimeHK, mpn, mfr, rohs, tax, forbid, inspection, prices, dataSheetUrl, parameters);
+	  }
+
+	  @Override
+	  public String toString() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("class Product {\n");
+	    
+	    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+	    sb.append("    vendorName: ").append(toIndentedString(vendorName)).append("\n");
+	    sb.append("    vendorLogo: ").append(toIndentedString(vendorLogo)).append("\n");
+	    sb.append("    vendorId: ").append(toIndentedString(vendorId)).append("\n");
+	    sb.append("    moq: ").append(toIndentedString(moq)).append("\n");
+	    sb.append("    qty: ").append(toIndentedString(qty)).append("\n");
+	    sb.append("    unit: ").append(toIndentedString(unit)).append("\n");
+	    sb.append("    sourceName: ").append(toIndentedString(sourceName)).append("\n");
+	    sb.append("    remark: ").append(toIndentedString(remark)).append("\n");
+	    sb.append("    largeUrl: ").append(toIndentedString(largeUrl)).append("\n");
+	    sb.append("    standardUrl: ").append(toIndentedString(standardUrl)).append("\n");
+	    sb.append("    thumbnailUrl: ").append(toIndentedString(thumbnailUrl)).append("\n");
+	    sb.append("    cateId: ").append(toIndentedString(cateId)).append("\n");
+	    sb.append("    cateName1: ").append(toIndentedString(cateName1)).append("\n");
+	    sb.append("    cateName2: ").append(toIndentedString(cateName2)).append("\n");
+	    sb.append("    cateName3: ").append(toIndentedString(cateName3)).append("\n");
+	    sb.append("    movInfo: ").append(toIndentedString(movInfo)).append("\n");
+	    sb.append("    leadTimeCH: ").append(toIndentedString(leadTimeCH)).append("\n");
+	    sb.append("    leadTimeHK: ").append(toIndentedString(leadTimeHK)).append("\n");
+	    sb.append("    mpn: ").append(toIndentedString(mpn)).append("\n");
+	    sb.append("    mfr: ").append(toIndentedString(mfr)).append("\n");
+	    sb.append("    rohs: ").append(toIndentedString(rohs)).append("\n");
+	    sb.append("    tax: ").append(toIndentedString(tax)).append("\n");
+	    sb.append("    forbid: ").append(toIndentedString(forbid)).append("\n");
+	    sb.append("    inspection: ").append(toIndentedString(inspection)).append("\n");
+	    sb.append("    prices: ").append(toIndentedString(prices)).append("\n");
+	    sb.append("    dataSheetUrl: ").append(toIndentedString(dataSheetUrl)).append("\n");
+	    sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+	    sb.append("}");
+	    return sb.toString();
+	  }
+
+	  /**
+	   * Convert the given object to string with each line indented by 4 spaces
+	   * (except the first line).
+	   */
+	  private String toIndentedString(java.lang.Object o) {
+	    if (o == null) {
+	      return "null";
+	    }
+	    return o.toString().replace("\n", "\n    ");
+	  }
+	}
+

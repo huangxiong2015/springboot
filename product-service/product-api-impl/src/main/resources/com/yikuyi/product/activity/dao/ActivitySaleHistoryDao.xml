@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.product.activity.dao.ActivitySaleHistoryDao" >
+  <resultMap id="BaseResultMap" type="com.yikuyi.activity.model.ActivitySaleHistory" >
+    <id column="ACTIVITY_PRODUCT_ID" property="activityProductId" />
+    <result column="ACTIVITY_ID" property="activityId" />
+    <result column="PERIODS_ID" property="periodsId" />
+    <result column="PRODUCT_ID" property="productId" />
+    <result column="TOTAL_QTY" property="totalQty" />
+    <result column="TOTAL_QTY" property="totalQty" />
+    <result column="QTY" property="qty" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ACTIVITY_PRODUCT_ID,ACTIVITY_ID,PERIODS_ID,PRODUCT_ID,TOTAL_QTY,QTY 
+  </sql>
+  
+  <!-- 将历史保存到历史表中 -->
+  <insert id="saveTodayProductsToHistory" parameterType="com.yikuyi.activity.model.ActivitySaleHistory">
+  	INSERT INTO ACTIVITY_SALE_HISTORY (
+		ACTIVITY_PRODUCT_ID,
+		ACTIVITY_ID,
+		PERIODS_ID,
+		PRODUCT_ID,
+		ACTIVITY_DATE,
+		TOTAL_QTY,
+		QTY
+	) SELECT
+		ap.ACTIVITY_PRODUCT_ID,
+		ap.ACTIVITY_ID,
+		ap.PERIODS_ID,
+		ap.PRODUCT_ID,
+		yestorday.date AS ACTIVITY_DATE,
+		ap.TOTAL_QTY,
+		ap.QTY
+	FROM
+		ACTIVITY_PRODUCT ap,
+		(
+			SELECT
+				DATE_ADD(
+					CURRENT_DATE (),
+					INTERVAL - 1 DAY
+				) date
+		) yestorday,
+		ACTIVITY a
+	WHERE
+		a.ACTIVITY_ID = ap.ACTIVITY_ID
+	AND a.START_DATE &lt;= yestorday.date
+	AND a.END_DATE &gt;= yestorday.date
+	AND NOT EXISTS (
+		SELECT
+			1
+		FROM
+			ACTIVITY_SALE_HISTORY ash
+		WHERE
+			ash.ACTIVITY_PRODUCT_ID = ap.ACTIVITY_PRODUCT_ID
+		AND ash.ACTIVITY_DATE = yestorday.date
+	)
+  </insert>
+  
+</mapper>

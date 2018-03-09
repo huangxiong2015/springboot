@@ -1,0 +1,1098 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.partygroup.dao.PartyGroupDao">
+	<resultMap id="BaseResultMap" type="com.yikuyi.party.model.Party">
+		<id column="PARTY_ID" property="id" />
+		<result column="PARTY_CODE" property="partyCode" jdbcType="VARCHAR" />
+		<result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+		<association property="partyGroup"
+			javaType="com.yikuyi.party.group.model.PartyGroup">
+			<result column="GROUP_NAME" property="groupName" />
+			<result column="GROUP_NAME_FULL" property="groupNameFull" />
+			<result column="DESCRIPTION" property="description" />
+			<result column="COMMENTS" property="comments" />
+			<result column="LOGO_IMAGE_URL" property="logoImageUrl" />
+			<result column="VERIFY_STATUS_ID" property="activeStatus" />
+			<result column="ACCOUNT_STATUS" property="accountStatus" />
+			<result column="ACCOUNT_PERIOD_STATUS" property="accountPeriodStatus" />
+		</association>
+		<association property="partyAttributes"
+			javaType="com.yikuyi.party.model.PartyAttributes">
+			<association property="isShowName"
+				javaType="com.yikuyi.party.model.PartyAttribute">
+				<result column="ATTR_NAME" property="key" />
+				<result column="ATTR_VALUE" property="value" />
+			</association>
+		</association>
+	</resultMap>
+	
+	<resultMap id="AllBaseResultMap" type="com.yikuyi.party.model.Party">
+<!-- 	party -->
+		    <id column="PARTY_ID" jdbcType="VARCHAR" property="id" />
+		    <result column="PARTY_TYPE_ID" jdbcType="VARCHAR" property="partyType" />
+		    <result column="PARTY_CODE" jdbcType="VARCHAR" property="partyCode" />
+		    <result column="EXTERNAL_ID" jdbcType="VARCHAR" property="externalId" />
+		    <result column="DESCRIPTION" jdbcType="LONGVARCHAR" property="description" />
+		    <result column="STATUS_ID" jdbcType="VARCHAR" property="partyStatus" />
+		    <result column="IS_SYSTEM" jdbcType="CHAR" property="isSystem" />
+		    <result column="CREATED_DATE" jdbcType="TIMESTAMP" property="createdDate" />
+		    <result column="CREATED_BY_USER_LOGIN" jdbcType="VARCHAR" property="createdByUserLogin" />
+		    <result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+		    <result column="LAST_UPDATE_USER" jdbcType="VARCHAR" property="lastUpdateUser" />
+		    <result column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" property="lastUpdateDate" />
+		    <result column="IS_SHOW_NAME" property="isShowName"/>
+		    <result column="VENDOR_MOV_STATUS" property="vendorMovStatus"/>
+			<result column="SKU_MOV_STATUS" property="skuMovStatus"/>
+			<result column="ORDER_VERIFY" property="orderVerify"/>
+			<result column="IS_SUP_PRICE" property="isSupPrice"/>
+		<!-- partygroup -->
+		<association property="partyGroup"
+			javaType="com.yikuyi.party.group.model.PartyGroup">
+			    <result column="GROUP_NAME" jdbcType="VARCHAR" property="groupName" />
+			    <result column="VERIFY_STATUS_ID" jdbcType="VARCHAR" property="activeStatus" />
+			    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+			    <result column="COMMENTS" jdbcType="VARCHAR" property="comments" />
+			    <result column="LOGO_IMAGE_URL" jdbcType="VARCHAR" property="logoImageUrl" />
+			    <result column="LOGO_IMAGE_URL_SMALL" jdbcType="VARCHAR" property="logoImageUrlSmall" />
+		        <result column="APPLY_DATE" jdbcType="TIMESTAMP" property="applyDate" />
+		        <result column="APPROVED_DATE" jdbcType="TIMESTAMP" property="approvedDate" />
+		        <result column="ACCOUNT_STATUS" jdbcType="VARCHAR" property="accountStatus" />
+		        <result column="ACCOUNT_PERIOD_STATUS" property="accountPeriodStatus" />
+		</association>
+		<!--person -->
+		<association property="person" javaType="com.yikuyi.party.person.model.Person"> 
+          <result column="GENDER" property="gender" jdbcType="VARCHAR" />
+          <result column="RELATION_STATUS_ID" property="relationSratus"/>
+          <result column="LAST_NAME_LOCAL" property="lastNameLocal" jdbcType="VARCHAR" />
+       </association>
+		<!--角色 -->
+		  <collection property="roleTypeList" ofType="java.lang.String">
+	       		<result column="ROLE_TYPE_ID" jdbcType="VARCHAR"/>
+	      </collection>
+	</resultMap>
+	
+	
+	
+	<resultMap id="partyVoResultMap" type="com.yikuyi.party.vo.PartyVo">
+<!-- 	party -->
+		    <id column="PARTY_ID" jdbcType="VARCHAR" property="id" />
+		    <result column="PARTY_TYPE_ID" jdbcType="VARCHAR" property="partyType" />
+		    <result column="PARTY_CODE" jdbcType="VARCHAR" property="partyCode" />
+		    <result column="EXTERNAL_ID" jdbcType="VARCHAR" property="externalId" />
+		    <result column="DESCRIPTION" jdbcType="LONGVARCHAR" property="description" />
+		    <result column="STATUS_ID" jdbcType="VARCHAR" property="partyStatus" />
+		    <result column="IS_SYSTEM" jdbcType="CHAR" property="isSystem" />
+		    <result column="CREATED_DATE" jdbcType="TIMESTAMP" property="createdDate" />
+		    <result column="CREATED_BY_USER_LOGIN" jdbcType="VARCHAR" property="createdByUserLogin" />
+		    <result column="CREATOR" jdbcType="VARCHAR" property="creator" />
+		    <result column="LAST_UPDATE_USER" jdbcType="VARCHAR" property="lastUpdateUser" />
+		    <result column="LAST_UPDATE_DATE" jdbcType="TIMESTAMP" property="lastUpdateDate" />
+		    <result column="IS_SHOW_NAME" property="isShowName"/>
+		    <result column="VENDOR_MOV_STATUS" property="vendorMovStatus"/>
+			<result column="SKU_MOV_STATUS" property="skuMovStatus"/>
+			<result column="ORDER_VERIFY" property="orderVerify"/>
+			<result column="IS_SUP_PRICE" property="isSupPrice"/>
+			<result column="PRODUCT_INVALID_DAYS" property="productInvalidays"/>
+			<result column="IS_AUTO_INTEGRATE_QTY" property="isAutoIntegrateQty"/>
+		<!-- partygroup -->
+		<association property="partyGroup"
+			javaType="com.yikuyi.party.group.model.PartyGroup">
+			    <result column="GROUP_NAME" jdbcType="VARCHAR" property="groupName" />
+			    <result column="VERIFY_STATUS_ID" jdbcType="VARCHAR" property="activeStatus" />
+			    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+			    <result column="COMMENTS" jdbcType="VARCHAR" property="comments" />
+			    <result column="LOGO_IMAGE_URL" jdbcType="VARCHAR" property="logoImageUrl" />
+			    <result column="LOGO_IMAGE_URL_SMALL" jdbcType="VARCHAR" property="logoImageUrlSmall" />
+		        <result column="APPLY_DATE" jdbcType="TIMESTAMP" property="applyDate" />
+		        <result column="APPROVED_DATE" jdbcType="TIMESTAMP" property="approvedDate" />
+		        <result column="ACCOUNT_STATUS" jdbcType="VARCHAR" property="accountStatus" />
+		        <result column="ACCOUNT_PERIOD_STATUS" property="accountPeriodStatus" />
+		        <result column="LEADTIME_ACCURACYRATE" property="leadtimeAccuracyrate" />
+		        
+		</association>
+		<!--person -->
+		<association property="person" javaType="com.yikuyi.party.person.model.Person"> 
+          <result column="GENDER" property="gender" jdbcType="VARCHAR" />
+          <result column="RELATION_STATUS_ID" property="relationSratus"/>
+          <result column="LAST_NAME_LOCAL" property="lastNameLocal" jdbcType="VARCHAR" />
+       </association>
+		<!--角色 -->
+		  <collection property="roleTypeList" ofType="java.lang.String">
+	       		<result column="ROLE_TYPE_ID" jdbcType="VARCHAR"/>
+	      </collection>
+	      
+	</resultMap>
+	
+	
+	
+	
+	<resultMap id="vendorBaseResultMap" type="com.yikuyi.party.vo.SupplierVo">
+     <id column="PARTY_ID" jdbcType="VARCHAR" property="id" />
+	 <result column="PARTY_CODE" property="vendorCode" />
+	 <result column="GROUP_NAME" property="vendorName" />
+	 <result column="GROUP_NAME_FULL" property="vendorNameFull" />
+	 <result column="CREATOR" property="createor" />
+	 <result column="RELATIONSHIP_NAME" property="relacionshipName" />
+	 <result column="PARTY_RELATIONSHIP_TYPE_ID" property="relacionshipTypeId" />
+	 <result column="LOGO_IMAGE_URL" property="vendorLogo" />
+	 <result column="LEADTIME_ACCURACYRATE" property="leadtimeAccuracyrate" />
+	  <result column="COMMENTS" property="comments" />
+	</resultMap>
+
+	<resultMap id="deptBaseResultMap" type="com.yikuyi.party.vo.DeptVo">
+		 <id column="PARTY_ID" jdbcType="VARCHAR" property="id" />
+		 <result column="PARTY_ID_TO" property="parentId" />
+		 <result column="GROUP_NAME" property="name" />
+		 <result column="GROUP_NAME_FULL" property="nameFull" />
+		 <result column="DESCRIPTION" property="account" />
+		 <result column="CREATED_DATE" property="createdDate" />
+		 <result column="LAST_UPDATE_DATE" property="lastUpdateDate" />
+	</resultMap>
+	
+	<resultMap id="BaseResultMapInfo" type="com.yikuyi.party.contact.vo.UserManage" >
+    <id column="ROLE_TYPE_ID" property="id" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="name" jdbcType="VARCHAR" />
+    <result column="CREATED_DATE" property="createdDate" jdbcType="VARCHAR" />
+    <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="VARCHAR" />
+    <result column="CREATOR_ACCOUNT" property="account" jdbcType="VARCHAR" />
+    <result column="ROLE_TYPE" property="status" jdbcType="CHAR" />
+    <result column="PARTY_ID" property="deptId" jdbcType="TIMESTAMP" />
+    <result column="GROUP_NAME" property="deptName" jdbcType="VARCHAR" />
+    <collection property="menuList" ofType="java.lang.String"> 
+     <result column="PERMISSION_ID" jdbcType="VARCHAR"/>
+    </collection>
+    </resultMap>
+    <resultMap id="UserManageResultMap" type="com.yikuyi.party.contact.vo.UserManage" >
+    <id column="PARTY_ID" property="partyId" jdbcType="VARCHAR" />
+    <result column="LAST_NAME_LOCAL" property="partyAccount" jdbcType="VARCHAR" />
+    <result column="GENDER" property="gender" jdbcType="VARCHAR" />
+    <result column="TEL" property="phone" jdbcType="VARCHAR" />
+    <result column="STATUS_ID" property="statueId" jdbcType="VARCHAR" />
+    <result column="PARTY_ID_TO" property="deptId" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="deptName" jdbcType="VARCHAR" />
+    <result column="USER_LOGIN_ID" property="userLoginId" jdbcType="VARCHAR" />
+    <result column="ROLE_TYPE_ID" property="roleTypeId" jdbcType="VARCHAR" />
+    <result column="CREATED_DATE" property="createdDate" jdbcType="TIMESTAMP" />
+    <result column="creatorAccount" property="creatorAccount" jdbcType="VARCHAR" />   
+    </resultMap>
+    
+    <resultMap id="UserManage1ResultMap" type="com.yikuyi.party.contact.vo.UserManage" >
+    <id column="PARTY_ID" property="partyId" jdbcType="VARCHAR" />
+    <result column="LAST_NAME_LOCAL" property="partyAccount" jdbcType="VARCHAR" />
+    <result column="GENDER" property="gender" jdbcType="VARCHAR" />
+    <result column="TEL" property="phone" jdbcType="VARCHAR" />
+    <result column="STATUS_ID" property="statueId" jdbcType="VARCHAR" />
+    <result column="PARTY_ID_TO" property="deptId" jdbcType="VARCHAR" />
+    <result column="GROUP_NAME" property="deptName" jdbcType="VARCHAR" />
+    <result column="USER_LOGIN_ID" property="userLoginId" jdbcType="VARCHAR" />
+    <result column="ROLE_TYPE_ID" property="roleTypeId" jdbcType="VARCHAR" />
+    <result column="CREATED_DATE" property="createdDate" jdbcType="TIMESTAMP" />
+    <result column="creatorAccount" property="creatorAccount" jdbcType="VARCHAR" /> 
+    <collection property="roleTypeNameList" ofType="java.lang.String"> 
+     <result column="DESCRIPTION" jdbcType="VARCHAR"/>
+    </collection>  
+    </resultMap>
+    
+     <resultMap id="vendoDisplayNameResultMap" type="com.yikuyi.party.vo.PartyVo" >
+	    <id column="PARTY_ID" property="id" jdbcType="VARCHAR" />
+	    <result column="DISPLAY_NAME" property="displayName" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <select id="getVendorNameListByIds" resultMap="vendoDisplayNameResultMap" parameterType="java.util.List">
+    	SELECT 
+		  (
+		    CASE
+		      WHEN t2.`IS_SHOW_NAME` = 'N' 
+		      THEN t1.`PARTY_CODE` 
+		      ELSE t3.`GROUP_NAME` 
+		    END
+		  ) AS DISPLAY_NAME,
+		  t1.`PARTY_ID` 
+		FROM
+		  PARTY t1 
+		  LEFT JOIN PARTY_SUPPLIER t2 
+		    ON t1.`PARTY_ID` = t2.`PARTY_ID` 
+		  LEFT JOIN PARTY_GROUP t3 
+		    ON t1.`PARTY_ID` = t3.`PARTY_ID`
+ 		WHERE t1.`PARTY_ID` IN
+		<foreach collection ="list" item="item" index= "index" open="(" separator =","  close=")">
+	      	#{item}
+	    </foreach>
+    </select>
+    
+     <select id="getAllCertificationVendorId" resultType="java.lang.String">
+    	SELECT DISTINCT A.PARTY_ID FROM PARTY A INNER JOIN PARTY_GROUP B ON A.PARTY_ID = B.PARTY_ID 
+    	WHERE A.PARTY_TYPE_ID = 'SUPPLIER' AND  B.ACCOUNT_STATUS = 'VALID'
+    </select>
+    
+<!--     根据条件查询party详细信息 -->
+	<select id="getAllPartyVoList" resultMap="partyVoResultMap" parameterType="com.yikuyi.party.group.vo.PartyGroupVo">
+			SELECT 
+				  a.PARTY_ID,
+				  a.PARTY_TYPE_ID,
+				  a.PARTY_CODE,
+				  a.EXTERNAL_ID,
+				  a.DESCRIPTION,
+				  a.STATUS_ID,
+				  a.IS_SYSTEM,
+				  a.CREATED_DATE,
+				  a.CREATED_BY_USER_LOGIN,
+				  a.CREATOR,
+				  a.LAST_UPDATE_USER,
+				  a.LAST_UPDATE_DATE,
+				  b.ROLE_TYPE_ID,
+				  c.GROUP_NAME,
+				  c.VERIFY_STATUS_ID,
+				  c.DESCRIPTION,
+				  c.COMMENTS,
+				  c.LOGO_IMAGE_URL,
+				  c.LOGO_IMAGE_URL_SMALL,
+				      IF((SELECT t3.`RATE` FROM `SUPPLIER_LEADTIME_RATE` t3 WHERE t3.`PARTY_ID` = a.`PARTY_ID` ORDER  BY t3.`LAST_UPDATE_DATE` DESC LIMIT 1 ) IS NULL, c.LEADTIME_ACCURACYRATE,
+		 (SELECT t3.`RATE` FROM `SUPPLIER_LEADTIME_RATE` t3 WHERE t3.`PARTY_ID` = a.`PARTY_ID` ORDER  BY t3.`LAST_UPDATE_DATE` DESC LIMIT 1 )) AS LEADTIME_ACCURACYRATE,
+	
+				  e.`PARTY_ID_FROM`,
+				  e.`PARTY_ID_TO`,
+				  e.`ROLE_TYPE_ID_FROM`,
+				  e.`ROLE_TYPE_ID_TO`,
+				  e.RELATIONSHIP_NAME,
+				  
+				  f.`GENDER`,
+				  f.`RELATION_STATUS_ID`,
+				  f.`LAST_NAME_LOCAL`,
+				  p.IS_SHOW_NAME,
+				  p.VENDOR_MOV_STATUS,
+				  p.SKU_MOV_STATUS,
+				  p.ORDER_VERIFY,
+				  p.IS_SUP_PRICE,
+				  p.PRODUCT_INVALID_DAYS,
+				  p.IS_AUTO_INTEGRATE_QTY
+				FROM
+				  PARTY a 
+				  LEFT JOIN PARTY_ROLE b 
+				    ON a.`PARTY_ID` = b.`PARTY_ID` 
+				  LEFT JOIN PARTY_GROUP c 
+				    ON a.`PARTY_ID` = c.`PARTY_ID` 
+				  LEFT JOIN PARTY_RELATIONSHIP e 
+				    ON a.`PARTY_ID` = e.`PARTY_ID_TO` 
+				  LEFT JOIN PERSON f 
+				    ON a.`PARTY_ID`=f.`PARTY_ID` 
+				    
+				  LEFT JOIN PARTY_SUPPLIER p 
+				    ON a.`PARTY_ID` = p.`PARTY_ID`   
+				  WHERE <![CDATA[ (e.`THRU_DATE` IS NULL OR e.`THRU_DATE` > NOW()) ]]> 
+				  AND c.ACCOUNT_STATUS = 'VALID' 
+					  <if test="partyId != null">
+					     AND a.`PARTY_ID` = #{partyId}
+				      </if>
+					  <if test="groupName != null">
+					      AND c.`GROUP_NAME` like #{groupName}
+				      </if>
+					   <if test="roleType != null">
+					     AND b.ROLE_TYPE_ID = #{roleType}
+				      </if>
+					   <if test="partyType != null">
+					      AND a.`PARTY_TYPE_ID` = #{partyType}
+				      </if>
+					   <if test="status != null">
+					     AND a.`STATUS_ID` = #{status}
+				      </if>
+					   <if test="partyIdFrom != null">
+					     AND e.`PARTY_ID_FROM` = #{partyIdFrom}
+				       </if>
+				        <if test="partyIdTo != null">
+					     AND  e.`PARTY_ID_TO`= #{partyIdTo}
+				       </if>
+					   <if test="roleTypeIdFrom != null">
+					    AND e.`ROLE_TYPE_ID_FROM` = #{roleTypeIdFrom}
+				      </if>
+					   <if test="roleTypeIdTo != null">
+					      AND e.`ROLE_TYPE_ID_TO` = #{roleTypeIdTo}
+				      </if>
+			   ORDER BY a.`CREATED_DATE` DESC
+		</select>
+
+<!-- 供应商查询 如果 partyIdFrom 不为空则只查询 负责人，询价，报价员对应的供应商 -->
+	<select id="getVendorVoList" resultMap="partyVoResultMap" parameterType="com.yikuyi.party.group.vo.PartyGroupVo">
+		SELECT 
+		  a.PARTY_ID,
+		  a.PARTY_TYPE_ID,
+		  a.PARTY_CODE,
+		  a.EXTERNAL_ID,
+		  a.DESCRIPTION,
+		  a.STATUS_ID,
+		  a.IS_SYSTEM,
+		  a.CREATED_DATE,
+		  a.CREATED_BY_USER_LOGIN,
+		  a.CREATOR,
+		  a.LAST_UPDATE_USER,
+		  a.LAST_UPDATE_DATE,
+		  b.ROLE_TYPE_ID,
+		  c.GROUP_NAME,
+		  c.VERIFY_STATUS_ID,
+		  c.DESCRIPTION,
+		  c.COMMENTS,
+		  c.LOGO_IMAGE_URL,
+		  c.LOGO_IMAGE_URL_SMALL,
+		  f.`GENDER`,
+		  f.`RELATION_STATUS_ID`,
+		  f.`LAST_NAME_LOCAL`,
+		  p.IS_SHOW_NAME,
+		  p.VENDOR_MOV_STATUS,
+		  p.SKU_MOV_STATUS,
+		  p.ORDER_VERIFY,
+		  p.IS_SUP_PRICE 
+		FROM
+		  PARTY a 
+		  LEFT JOIN PARTY_ROLE b 
+		    ON a.`PARTY_ID` = b.`PARTY_ID` 
+		  LEFT JOIN PARTY_GROUP c 
+		    ON a.`PARTY_ID` = c.`PARTY_ID` 
+		  LEFT JOIN PERSON f 
+		    ON a.`PARTY_ID` = f.`PARTY_ID` 
+		  LEFT JOIN PARTY_SUPPLIER p 
+		    ON a.`PARTY_ID` = p.`PARTY_ID` 
+		WHERE a.PARTY_TYPE_ID = 'SUPPLIER' 
+		  and c.ACCOUNT_STATUS = 'VALID' 
+		  <if test="partyIdFrom != null">
+		  and a.`PARTY_ID` in 
+		  (select distinct 
+		    PARTY_ID_TO from PARTY_RELATIONSHIP 
+		  where PARTY_ID_FROM = #{partyIdFrom}
+		    and `PARTY_RELATIONSHIP_TYPE_ID` IN (
+		      'DEVELOPMENT_BY',
+		      'VENDOR_ENQUIRY_REL',
+		      'VENDOR_OFFER_REL'
+		    )) 
+		  </if>
+		ORDER BY a.`CREATED_DATE` DESC 
+	</select>		
+
+<!--     根据条件查询party详细信息 -->
+	<select id="getAllPartyGroupList" resultMap="AllBaseResultMap" parameterType="com.yikuyi.party.group.vo.PartyGroupVo">
+			SELECT 
+				  a.PARTY_ID,
+				  a.PARTY_TYPE_ID,
+				  a.PARTY_CODE,
+				  a.EXTERNAL_ID,
+				  a.DESCRIPTION,
+				  a.STATUS_ID,
+				  a.IS_SYSTEM,
+				  a.CREATED_DATE,
+				  a.CREATED_BY_USER_LOGIN,
+				  a.CREATOR,
+				  a.LAST_UPDATE_USER,
+				  a.LAST_UPDATE_DATE,
+				  b.ROLE_TYPE_ID,
+				  c.GROUP_NAME,
+				  c.VERIFY_STATUS_ID,
+				  c.DESCRIPTION,
+				  c.COMMENTS,
+				  c.LOGO_IMAGE_URL,
+				  c.LOGO_IMAGE_URL_SMALL,
+				  e.`PARTY_ID_FROM`,
+				  e.`PARTY_ID_TO`,
+				  e.`ROLE_TYPE_ID_FROM`,
+				  e.`ROLE_TYPE_ID_TO`,
+				  e.RELATIONSHIP_NAME,
+				  
+				  f.`GENDER`,
+				  f.`RELATION_STATUS_ID`,
+				  f.`LAST_NAME_LOCAL`
+				FROM
+				  PARTY a 
+				  LEFT JOIN PARTY_ROLE b 
+				    ON a.`PARTY_ID` = b.`PARTY_ID` 
+				  LEFT JOIN PARTY_GROUP c 
+				    ON a.`PARTY_ID` = c.`PARTY_ID` 
+				  LEFT JOIN PARTY_RELATIONSHIP e 
+				    ON a.`PARTY_ID` = e.`PARTY_ID_TO` 
+				  LEFT JOIN PERSON f 
+				    ON a.`PARTY_ID`=f.`PARTY_ID`   
+				  WHERE <![CDATA[ (e.`THRU_DATE` IS NULL OR e.`THRU_DATE` > NOW()) ]]> 
+					  <if test="partyId != null">
+					     AND a.`PARTY_ID` = #{partyId}
+				      </if>
+					  <if test="groupName != null">
+					      AND c.`GROUP_NAME` like #{groupName}
+				      </if>
+					   <if test="roleType != null">
+					     AND b.ROLE_TYPE_ID = #{roleType}
+				      </if>
+					   <if test="partyType != null">
+					      AND a.`PARTY_TYPE_ID` = #{partyType}
+				      </if>
+					   <if test="status != null">
+					     AND a.`STATUS_ID` = #{status}
+				      </if>
+					   <if test="partyIdFrom != null">
+					     AND e.`PARTY_ID_FROM` = #{partyIdFrom}
+				       </if>
+				        <if test="partyIdTo != null">
+					     AND  e.`PARTY_ID_TO`= #{partyIdTo}
+				       </if>
+					   <if test="roleTypeIdFrom != null">
+					    AND e.`ROLE_TYPE_ID_FROM` = #{roleTypeIdFrom}
+				      </if>
+					   <if test="roleTypeIdTo != null">
+					      AND e.`ROLE_TYPE_ID_TO` = #{roleTypeIdTo}
+				      </if>
+			   ORDER BY a.`CREATED_DATE` DESC
+		</select>
+
+
+
+	<insert id="insert" parameterType="com.yikuyi.party.model.Party">
+		insert into PARTY_GROUP
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				PARTY_ID,
+			</if>
+			<if test="partyGroup.groupName != null">
+				GROUP_NAME,
+			</if>
+			<if test="partyGroup.groupNameFull != null">
+				GROUP_NAME_FULL,
+			</if>
+			<if test="partyGroup.description != null">
+				DESCRIPTION,
+			</if>
+			<if test="partyGroup.comments != null">
+				COMMENTS,
+			</if>
+			<if test="partyGroup.logoImageUrl != null">
+				LOGO_IMAGE_URL,
+			</if>
+			<if test="partyGroup.logoImageUrlSmall != null">
+		        LOGO_IMAGE_URL_SMALL,
+		    </if>
+			<if test="partyGroup.creator != null">
+				CREATOR,
+			</if>
+			<if test="partyGroup.createdDate != null">
+				CREATED_DATE,
+			</if>
+			<if test="partyGroup.lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			<if test="partyGroup.lastUpdateDate != null">
+				LAST_UPDATE_DATE,
+			</if>
+			<if test="partyGroup.activeStatus != null">
+				VERIFY_STATUS_ID,
+			</if>
+			<if test="partyGroup.accountStatus != null">
+				ACCOUNT_STATUS,
+			</if>
+			<if test="partyGroup.applyDate != null">
+				APPLY_DATE,
+			</if>
+			<if test="partyGroup.approvedDate != null">
+				APPROVED_DATE,
+			</if>
+			<if test="partyGroup.creditComments != null">
+				CREDIT_COMMENTS,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.groupName != null">
+				#{partyGroup.groupName,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.groupNameFull != null">
+				#{partyGroup.groupNameFull,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.description != null">
+				#{partyGroup.description,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.comments != null">
+				#{partyGroup.comments,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.logoImageUrl != null">
+				#{partyGroup.logoImageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.logoImageUrlSmall != null">
+		        #{partyGroup.logoImageUrlSmall,jdbcType=VARCHAR},
+		    </if>
+			<if test="partyGroup.creator != null">
+				#{partyGroup.creator,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.createdDate != null">
+				#{partyGroup.createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="partyGroup.lastUpdateUser != null">
+				#{partyGroup.lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.lastUpdateDate != null">
+				#{partyGroup.lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="partyGroup.activeStatus != null">
+				#{partyGroup.activeStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.accountStatus != null">
+				#{partyGroup.accountStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="partyGroup.applyDate != null">
+				#{partyGroup.applyDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="partyGroup.approvedDate != null">
+				#{partyGroup.approvedDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="partyGroup.creditComments != null">
+				#{partyGroup.creditComments,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updatePartyGroup" parameterType="com.yikuyi.party.model.Party" >
+     update PARTY_GROUP 
+     <set >
+      <if test="partyGroup.groupName != null">
+		 GROUP_NAME = #{partyGroup.groupName,jdbcType=VARCHAR},
+		</if>
+		 <if test="partyGroup.groupNameFull != null">
+		 GROUP_NAME_FULL = #{partyGroup.groupNameFull,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.description != null">
+		 DESCRIPTION = #{partyGroup.description,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.comments != null">
+		 COMMENTS = #{partyGroup.comments,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.logoImageUrl != null">
+		 LOGO_IMAGE_URL = #{partyGroup.logoImageUrl,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.logoImageUrlSmall != null">
+		 LOGO_IMAGE_URL_SMALL = #{partyGroup.logoImageUrlSmall,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.creator != null">
+		 CREATOR = #{partyGroup.creator,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.createdDate != null">
+			CREATED_DATE = #{partyGroup.createdDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="partyGroup.lastUpdateUser != null">
+			LAST_UPDATE_USER = #{partyGroup.lastUpdateUser,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.activeStatus != null">
+		  VERIFY_STATUS_ID = #{partyGroup.activeStatus,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.accountStatus != null">
+		  ACCOUNT_STATUS = #{partyGroup.accountStatus,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.applyDate != null">
+			APPLY_DATE = #{partyGroup.applyDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="partyGroup.approvedDate != null">
+			APPROVED_DATE = #{partyGroup.approvedDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="partyGroup.lastUpdateDate != null">
+		  LAST_UPDATE_DATE = #{partyGroup.lastUpdateDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="partyGroup.accountPeriodStatus != null">
+		  ACCOUNT_PERIOD_STATUS = #{partyGroup.accountPeriodStatus,jdbcType=VARCHAR},
+		</if>
+		<if test="partyGroup.creditComments != null">
+		  CREDIT_COMMENTS= #{partyGroup.creditComments,jdbcType=VARCHAR},
+		</if>
+    </set>
+       where PARTY_ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  
+  <update id="updatePartyGroupNull" parameterType="com.yikuyi.party.model.Party" >
+     UPDATE PARTY_GROUP g SET
+		 g.`GROUP_NAME` = #{partyGroup.groupName},
+		 g.`GROUP_NAME_FULL` = #{partyGroup.groupNameFull},
+		 g.`LOGO_IMAGE_URL` = #{partyGroup.logoImageUrl},
+		 g.`LOGO_IMAGE_URL_SMALL` = #{partyGroup.logoImageUrlSmall},
+		 g.`LAST_UPDATE_USER` = #{partyGroup.lastUpdateUser},
+		 g.`LAST_UPDATE_DATE` = #{partyGroup.lastUpdateDate}
+         WHERE g.`PARTY_ID` = #{id}
+  </update>
+  
+	<select id="associateEnterpriseList" resultMap="BaseResultMap">
+		SELECT t.PARTY_ID,t.GROUP_NAME,t.LOGO_IMAGE_URL FROM PARTY_GROUP t
+		WHERE t.GROUP_NAME LIKE CONCAT('%',#{name},'%')
+		LIMIT #{page},#{size}
+	</select>
+	
+	<select id="findPartyGroupByPartyId" resultMap="BaseResultMap">
+		SELECT 
+		  PARTY_ID,
+		  GROUP_NAME,
+		  DESCRIPTION,
+		  COMMENTS,
+		  LOGO_IMAGE_URL,
+		  LOGO_IMAGE_URL_SMALL,
+		  VERIFY_STATUS_ID,
+		  CREATOR,
+		  CREATED_DATE,
+		  LAST_UPDATE_USER,
+		  LAST_UPDATE_DATE,
+		  ACCOUNT_STATUS,
+		  ACCOUNT_PERIOD_STATUS
+		FROM
+		PARTY_GROUP
+		WHERE PARTY_ID=#{partyId}
+	</select>
+	
+	<select id="findPartyGroupByName" resultMap="BaseResultMap">
+		SELECT 
+			  b.PARTY_ID,
+			  b.GROUP_NAME,
+			  b.DESCRIPTION,
+			  b.COMMENTS,
+			  b.LOGO_IMAGE_URL,
+			  b.LOGO_IMAGE_URL_SMALL,
+			  b.CREATOR,
+			  b.CREATED_DATE,
+			  b.LAST_UPDATE_USER,
+			  b.LAST_UPDATE_DATE 
+			FROM
+			  PARTY a,
+			  PARTY_GROUP b 
+			WHERE a.`PARTY_ID` = b.`PARTY_ID` 
+			   AND a.`STATUS_ID`='PARTY_ENABLED' 
+			  AND b.GROUP_NAME = #{groupName} 
+	</select>
+	
+	<select id="findPartyGroupByNameFull" resultMap="BaseResultMap">
+		SELECT 
+			  b.PARTY_ID,
+			  b.GROUP_NAME,
+			  b.GROUP_NAME_FULL,
+			  b.DESCRIPTION,
+			  b.COMMENTS,
+			  b.LOGO_IMAGE_URL,
+			  b.LOGO_IMAGE_URL_SMALL,
+			  b.CREATOR,
+			  b.CREATED_DATE,
+			  b.LAST_UPDATE_USER,
+			  b.LAST_UPDATE_DATE 
+			FROM
+			  PARTY a,
+			  PARTY_GROUP b 
+			WHERE a.`PARTY_ID` = b.`PARTY_ID` 
+			   AND a.`STATUS_ID`='PARTY_ENABLED' 
+			  AND b.GROUP_NAME_FULL = #{groupNameFull} 
+	</select>
+	
+	
+	<select id="getPartyGroupByGroupId"  resultMap="BaseResultMap">
+	    SELECT 
+		  PARTY_ID,
+		  GROUP_NAME,
+		  DESCRIPTION,
+		  COMMENTS,
+		  LOGO_IMAGE_URL,
+		  LOGO_IMAGE_URL_SMALL,
+		  CREATOR,
+		  CREATED_DATE,
+		  LAST_UPDATE_USER,
+		  LAST_UPDATE_DATE,
+		  ACCOUNT_PERIOD_STATUS
+		FROM
+		PARTY_GROUP
+		WHERE PARTY_ID = #{partyGroupId}
+	</select>
+	
+	<select id="getEnterpriseNameByPartyId" resultType="java.lang.String">
+		SELECT t.GROUP_NAME FROM `PARTY_GROUP` t WHERE t.party_id =(SELECT CORPORATION_ID FROM PARTY WHERE party_id=#{partyId})
+	</select>
+	
+	<select id="getVendorList" resultMap="vendorBaseResultMap">
+		SELECT
+			`PARTY_CODE`,
+			`PARTY_ID`,
+			`GROUP_NAME` ,
+			GROUP_NAME_FULL,
+			`CREATOR`,
+			`LOGO_IMAGE_URL`,
+			`RELATIONSHIP_NAME`,
+			PARTY_RELATIONSHIP_TYPE_ID,
+			`CREATED_DATE` FROM
+		(SELECT DISTINCT
+			t1.`PARTY_CODE`,
+			t1.`PARTY_ID`,
+			t2.`GROUP_NAME` ,
+			t2.GROUP_NAME_FULL,
+			t2.`CREATOR`,
+			t2.`LOGO_IMAGE_URL`,	
+			t3.`RELATIONSHIP_NAME`,
+			t3.`PARTY_RELATIONSHIP_TYPE_ID`,
+			t1.`CREATED_DATE`
+		FROM 
+		PARTY t1 LEFT JOIN PARTY_GROUP t2 ON t1.`PARTY_ID`=t2.`PARTY_ID`
+		LEFT JOIN PARTY_RELATIONSHIP t3 ON t1.`PARTY_ID`=t3.`PARTY_ID_TO`
+		WHERE t3.`PARTY_ID_FROM` IN
+			(SELECT a.`PARTY_ID_FROM` FROM PARTY_RELATIONSHIP a WHERE FIND_IN_SET(a.`PARTY_ID_TO`,queryChildrenDeptIdInfo(
+			(SELECT `PARTY_ID_TO` FROM PARTY_RELATIONSHIP  WHERE `PARTY_ID_FROM`=#{partyId}
+			AND `PARTY_RELATIONSHIP_TYPE_ID` IN('USER_DEPT_REL','EXECUTIVE_DEPT_REL') AND (`THRU_DATE` > NOW() OR `THRU_DATE` IS NULL ))))
+			AND `PARTY_RELATIONSHIP_TYPE_ID` IN('USER_DEPT_REL','EXECUTIVE_DEPT_REL') AND (`THRU_DATE` > NOW() OR `THRU_DATE` IS NULL ))
+		<if test="vendorName != null and vendorName !=''">
+		AND t2.`GROUP_NAME` LIKE CONCAT(#{vendorName},'%')
+		</if> 
+		<if test="vendorCode!=null and vendorCode !=''">
+		AND t1.`PARTY_CODE` LIKE CONCAT(#{vendorCode},'%')
+		</if>  
+		AND t3.`PARTY_RELATIONSHIP_TYPE_ID`='DEVELOPMENT_BY'
+		AND (t3.`THRU_DATE`>NOW() OR t3.`THRU_DATE` IS NULL)
+		AND t3.`ROLE_TYPE_ID_TO`='SUPPLIER'
+		UNION ALL
+		SELECT DISTINCT
+			t1.`PARTY_CODE`,
+			t1.`PARTY_ID`,
+			t2.`GROUP_NAME` ,
+			t2.GROUP_NAME_FULL,
+			t2.`CREATOR`,
+			t2.`LOGO_IMAGE_URL`,
+			t3.`RELATIONSHIP_NAME`,
+			t3.`PARTY_RELATIONSHIP_TYPE_ID`,
+			t1.`CREATED_DATE`
+		FROM 
+		PARTY t1 LEFT JOIN PARTY_GROUP t2 ON t1.`PARTY_ID`=t2.`PARTY_ID`
+		LEFT JOIN PARTY_RELATIONSHIP t3 ON t1.`PARTY_ID`=t3.`PARTY_ID_TO`
+		WHERE t3.`PARTY_ID_FROM` =#{partyId}
+		<if test="vendorName != null and vendorName !=''">
+		AND t2.`GROUP_NAME` LIKE CONCAT(#{vendorName},'%')
+		</if> 
+		<if test="vendorCode!=null and vendorCode !=''">
+		OR t1.`PARTY_CODE` LIKE CONCAT(#{vendorCode},'%')
+		</if>  
+		AND t3.`PARTY_RELATIONSHIP_TYPE_ID`='AGENT'
+		AND(t3.`THRU_DATE`>NOW() OR t3.`THRU_DATE` IS NULL)
+		AND t3.`ROLE_TYPE_ID_TO`='SUPPLIER'
+		) t_vendor
+		ORDER BY CREATED_DATE DESC
+	</select>
+	
+	<select id="getMyVendorList" resultMap="vendorBaseResultMap">
+		SELECT DISTINCT
+			t1.`PARTY_CODE`,
+			t1.`PARTY_ID`,
+			t2.`GROUP_NAME` ,
+			t2.GROUP_NAME_FULL,
+			t2.`CREATOR`,
+			t2.`LOGO_IMAGE_URL`,
+			t3.`RELATIONSHIP_NAME`,
+			t3.`PARTY_RELATIONSHIP_TYPE_ID`,
+			t1.`CREATED_DATE`
+		FROM 
+		PARTY t1 LEFT JOIN PARTY_GROUP t2 ON t1.`PARTY_ID`=t2.`PARTY_ID`
+		LEFT JOIN PARTY_RELATIONSHIP t3 ON t1.`PARTY_ID`=t3.`PARTY_ID_TO`
+		WHERE t3.`PARTY_ID_FROM` =#{partyId}
+		<if test="vendorName != null and vendorName !=''">
+		AND t2.`GROUP_NAME` LIKE CONCAT(#{vendorName},'%')
+		</if> 
+		<if test="vendorCode!=null and vendorCode !=''">
+		OR t1.`PARTY_CODE` LIKE CONCAT(#{vendorCode},'%')
+		</if>  
+		AND(t3.`THRU_DATE`>NOW() OR t3.`THRU_DATE` IS NULL)
+		AND t3.`ROLE_TYPE_ID_TO`='SUPPLIER'
+		ORDER BY t1.CREATED_DATE DESC
+	</select>
+	
+	
+	<select id="getVendorDetail" resultMap="BaseResultMap">
+		SELECT t1.`PARTY_ID` , t1.`GROUP_NAME`,t1.`GROUP_NAME_FULL`,t1.`LOGO_IMAGE_URL` ,t2.`PARTY_CODE`
+		FROM PARTY_GROUP t1 
+		INNER JOIN PARTY t2 ON t1.`PARTY_ID`=t2.`PARTY_ID`
+		AND t1.`PARTY_ID`=#{partyId};
+	</select>
+	
+	<select id="deptList" resultMap="deptBaseResultMap">
+		SELECT 
+		  t1.`PARTY_ID`,
+		  t2.`PARTY_ID_TO`,
+		  t3.`GROUP_NAME`,
+		  t3.`DESCRIPTION` ,
+		  t3.`CREATED_DATE`,
+		  t3.`LAST_UPDATE_DATE`
+		FROM PARTY t1,PARTY_RELATIONSHIP t2,PARTY_GROUP t3
+		WHERE t1.`PARTY_ID`=t2.`PARTY_ID_FROM` 
+		AND t1.`PARTY_ID` = t3.`PARTY_ID`
+		AND t2.`PARTY_RELATIONSHIP_TYPE_ID` IN ('DEPT_DEPT_REL','DEPT_CORPORATION_REL')
+		AND (t2.`THRU_DATE` > NOW() OR t2.`THRU_DATE` IS NULL )
+		AND  FIND_IN_SET(t1.`PARTY_ID`,queryChildrenDeptIdInfo(
+		(SELECT `PARTY_ID_TO` FROM PARTY_RELATIONSHIP  WHERE `PARTY_ID_FROM`=#{partyId}
+		AND `PARTY_RELATIONSHIP_TYPE_ID` IN('USER_DEPT_REL','EXECUTIVE_DEPT_REL') AND (`THRU_DATE` > NOW() OR `THRU_DATE` IS NULL ))
+		)
+		)
+		ORDER BY t1.`LAST_UPDATE_DATE` DESC
+	</select>
+	
+	<select id="findSonDeptList" resultMap="deptBaseResultMap">
+	SELECT 
+	  t1.`PARTY_ID`,
+	  t2.`PARTY_ID_TO`,
+	  t3.`GROUP_NAME`,
+	  t3.`DESCRIPTION` ,
+	  t3.`CREATED_DATE`,
+	  t3.`LAST_UPDATE_DATE`
+	FROM PARTY t1,PARTY_RELATIONSHIP t2,PARTY_GROUP t3
+	WHERE t1.`PARTY_ID`=t2.`PARTY_ID_FROM` 
+	AND t1.`PARTY_ID` = t3.`PARTY_ID`
+	AND t2.`PARTY_RELATIONSHIP_TYPE_ID` =#{relactionName.name}
+	AND (t2.`THRU_DATE` > NOW() OR t2.`THRU_DATE` IS NULL )
+	AND t2.`PARTY_ID_TO`=#{parentId}
+	ORDER BY t3.CREATED_DATE DESC
+	</select>
+	
+	<select id="deptDetail" resultMap="deptBaseResultMap">
+		SELECT 
+		  t1.`PARTY_ID`,
+		  t2.`PARTY_ID_TO`,
+		  t3.`GROUP_NAME`,
+		  t3.`DESCRIPTION` ,
+		  t3.`CREATED_DATE`,
+		  t3.`LAST_UPDATE_DATE`
+		FROM PARTY t1,PARTY_RELATIONSHIP t2,PARTY_GROUP t3
+		WHERE t1.`PARTY_ID`=t2.`PARTY_ID_FROM` 
+		AND t1.`PARTY_ID` = t3.`PARTY_ID`
+		AND (t2.`THRU_DATE` > NOW() OR t2.`THRU_DATE` IS NULL )
+		AND t1.`PARTY_ID`=#{partyId}
+	</select>
+	
+	<select id="findSubDeptId" resultType="java.lang.String">		
+           SELECT queryChildrenDeptIdInfo(#{deptId});
+	</select>
+	
+	
+	<select id="findCustomerByDeptId" resultMap="UserManageResultMap">	
+	SELECT t1.`PARTY_ID`,t2.`LAST_NAME_LOCAL`,t2.`GENDER`,t2.`TEL`,t1.`STATUS_ID`,t4.`PARTY_ID_TO`,t3.`USER_LOGIN_ID`,t4.`CREATED_DATE`,t7.`GROUP_NAME`,t8.`LAST_NAME_LOCAL` as creatorAccount
+		FROM PARTY t1,PERSON t2,USER_LOGIN t3,PARTY_RELATIONSHIP t4,PARTY_GROUP t7,PERSON t8
+		WHERE t1.`PARTY_ID`=t2.`PARTY_ID`
+		AND t1.`PARTY_ID`=t3.`PARTY_ID`	
+		AND t1.`PARTY_ID`=t4.`PARTY_ID_FROM`
+		AND (t4.`THRU_DATE`>NOW() OR t4.`THRU_DATE` IS NULL)
+		AND t4.`PARTY_RELATIONSHIP_TYPE_ID` IN('USER_DEPT_REL','EXECUTIVE_DEPT_REL')
+		AND t4.`PARTY_ID_TO` = t7.`PARTY_ID`	
+		AND t4.`CREATOR` = t8.`PARTY_ID`	
+		AND t4.`PARTY_ID_TO`IN 
+		<foreach collection="deptId" item="id"  open="(" separator="," close=")">     
+          #{id}      
+        </foreach>  
+        ORDER BY t4.`CREATED_DATE` DESC
+	</select>
+	
+	<select id="findRoleNameByPartyId" resultMap="UserManage1ResultMap">		
+	     SELECT t1.PARTY_ID,t3.DESCRIPTION FROM PARTY t1,PARTY_ROLE t2,ROLE_TYPE t3 WHERE t1.`PARTY_ID`=t2.`PARTY_ID` AND t2.`ROLE_TYPE_ID`=t3.`ROLE_TYPE_ID` AND t1.`PARTY_ID`= #{partyId} 
+	</select>
+	
+	<select id="findCodeVoById" parameterType="java.lang.String" resultType="com.yikuyi.party.partycode.vo.PartyCodeVo">		
+	   select 
+	   PARTY_ID as partyId,
+	   CODE_PREFIX as codePrefix,
+	   CODE_NUM as codeNum,
+	   CREATOR as creator,
+	   CREATED_DATE as createdDate,
+	   LAST_UPDATE_USER as lastUpdateUser,
+	   LAST_UPDATE_DATE as lastUpdateDate
+	   FROM PARTY_CODE WHERE PARTY_ID = #{id} 
+	   LIMIT 1
+	</select>
+	
+	<select id="findPersonByRoleName" parameterType="java.lang.String" resultType="com.yikuyi.party.person.model.Person">		
+	   SELECT t3.TEL,t3.MAIL
+		FROM PARTY_ROLE t1,ROLE_TYPE t2,PERSON t3,PARTY t4
+		WHERE t1.`ROLE_TYPE_ID`=t2.`ROLE_TYPE_ID`
+		AND t1.PARTY_ID =t3.PARTY_ID
+		AND t1.PARTY_ID =t4.PARTY_ID	
+		AND t4.STATUS_ID = 'PARTY_ENABLED'
+		AND t2.DESCRIPTION = #{roleName}
+	</select>
+	
+	<update id="invalidAccount">
+     UPDATE PARTY_GROUP  tt SET tt.`COMMENTS`=#{comments}, tt.`VERIFY_STATUS_ID`=#{verifyStatus}
+	 WHERE tt.`PARTY_ID` IN(
+	   SELECT t.`PARTY_ID_FROM` 
+	   FROM PARTY_RELATIONSHIP t 
+	   WHERE t.`PARTY_ID_TO` = #{id}
+	   AND (t.`THRU_DATE` > NOW() OR t.THRU_DATE IS NULL)
+	   )
+  </update>
+  
+
+  <insert id="insertPartyGroup" parameterType="com.yikuyi.party.group.model.PartyGroup">
+		insert into PARTY_GROUP
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="partyId != null">
+				PARTY_ID,
+			</if>
+			<if test="groupName != null">
+				GROUP_NAME,
+			</if>
+			<if test="groupNameFull != null">
+				GROUP_NAME_FULL,
+			</if>
+			<if test="logoImageUrl != null">
+				LOGO_IMAGE_URL,
+			</if>
+			<if test="activeStatus != null">
+				VERIFY_STATUS_ID,
+			</if>
+			<if test="accountStatus != null">
+				ACCOUNT_STATUS,
+			</if>
+			<if test="creator != null">
+				CREATOR,
+			</if>
+			<if test="createdDate != null">
+				CREATED_DATE,
+			</if>
+			<if test="lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE,
+			</if>		
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="partyId != null">
+				#{partyId,jdbcType=VARCHAR},
+			</if>
+			<if test="groupName != null">
+				#{groupName,jdbcType=VARCHAR},
+			</if>
+			<if test="groupNameFull != null">
+				#{groupNameFull,jdbcType=VARCHAR},
+			</if>
+			<if test="logoImageUrl != null">
+				#{logoImageUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="activeStatus != null">
+				#{activeStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="accountStatus != null">
+				#{accountStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="creator != null">
+				#{creator,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDate != null">
+				#{createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastUpdateUser != null">
+				#{lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="findDeptInfo" parameterType="java.lang.String" resultMap="deptBaseResultMap">
+		SELECT * FROM PARTY_GROUP p WHERE p.`PARTY_ID` = #{partyId}
+	</select>
+	
+	<update id="updateVendor" parameterType="com.yikuyi.party.group.model.PartyGroup" >
+     update PARTY_GROUP 
+     <set >
+      <if test="groupName != null">
+		 GROUP_NAME = #{groupName,jdbcType=VARCHAR},
+		</if>
+		 <if test="groupNameFull != null">
+		 GROUP_NAME_FULL = #{groupNameFull,jdbcType=VARCHAR},
+		</if>		
+		<if test="logoImageUrl != null">
+		  LOGO_IMAGE_URL = #{logoImageUrl,jdbcType=VARCHAR},
+		</if>		
+		<if test="lastUpdateUser != null">
+		  LAST_UPDATE_USER = #{lastUpdateUser,jdbcType=VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+		  LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="leadtimeAccuracyrate != null">
+		  LEADTIME_ACCURACYRATE = #{leadtimeAccuracyrate,jdbcType=VARCHAR},
+		</if>
+		<if test="comments != null">
+		  COMMENTS = #{comments,jdbcType=VARCHAR},
+		</if>
+    </set>
+       where PARTY_ID = #{partyId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="findStatus" parameterType="java.lang.String" resultType="com.yikuyi.party.group.model.PartyGroup">
+		SELECT 
+			VERIFY_STATUS_ID as activeStatus,
+			ACCOUNT_STATUS as accountStatus
+			FROM PARTY_GROUP WHERE `PARTY_ID` = #{partyId}
+	</select>
+	
+	<update id="updateStatus" parameterType="com.yikuyi.party.group.model.PartyGroup" >
+     update PARTY_GROUP 
+     <set >
+      <if test="accountStatus != null">
+		 ACCOUNT_STATUS = #{accountStatus,jdbcType=VARCHAR},
+		</if>
+		 <if test="activeStatus != null">
+		 VERIFY_STATUS_ID = #{activeStatus,jdbcType=VARCHAR},
+		</if>				
+		<if test="lastUpdateUser != null">
+		  LAST_UPDATE_USER = #{lastUpdateUser,jdbcType=VARCHAR},
+		</if>
+		<if test="lastUpdateDate != null">
+		  LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType=TIMESTAMP},
+		</if>
+    </set>
+       where PARTY_ID = #{partyId,jdbcType=VARCHAR}
+  </update>
+  
+    <delete id="deleteByPartyId" parameterType="java.lang.String"> 
+         DELETE FROM PARTY_GROUP WHERE PARTY_ID = #{partyId}
+  </delete>
+  
+   <select id="findGroupName" parameterType="java.lang.String" resultType="com.yikuyi.party.group.model.PartyGroup">
+		 SELECT 
+			  t.PARTY_ID AS partyId,
+			  t.GROUP_NAME AS groupName 
+			FROM
+			  PARTY_GROUP t 
+			  INNER JOIN `PARTY` t1 
+			    ON t.`PARTY_ID` = t1.`PARTY_ID` 
+			WHERE t1.`PARTY_TYPE_ID` = 'SUPPLIER' 
+			  AND t.`GROUP_NAME` IS NOT NULL 
+			  AND t.`GROUP_NAME` = #{groupName}
+			  <if test="partyId != null">
+				and t.`PARTY_ID` != #{partyId}
+			 </if>
+			 LIMIT 1 
+	</select>
+	
+	<select id="getPartySupplierList" resultMap="vendorBaseResultMap">
+			SELECT 
+		  t.`PARTY_ID`,
+		  t1.`GROUP_NAME`,	
+		  IF((SELECT t3.`RATE` FROM `SUPPLIER_LEADTIME_RATE` t3 WHERE t3.`PARTY_ID` = t.`PARTY_ID` ORDER  BY t3.`LAST_UPDATE_DATE` DESC LIMIT 1 ) IS NULL, t1.LEADTIME_ACCURACYRATE,
+		 (SELECT t3.`RATE` FROM `SUPPLIER_LEADTIME_RATE` t3 WHERE t3.`PARTY_ID` = t.`PARTY_ID` ORDER  BY t3.`LAST_UPDATE_DATE` DESC LIMIT 1 )) AS LEADTIME_ACCURACYRATE,
+		 IF((SELECT t3.`COMMENTS` FROM `SUPPLIER_LEADTIME_RATE` t3 WHERE t3.`PARTY_ID` = t.`PARTY_ID` ORDER  BY t3.`LAST_UPDATE_DATE` DESC LIMIT 1 ) IS NULL,  t1.COMMENTS, (SELECT t3.`COMMENTS` FROM `SUPPLIER_LEADTIME_RATE` t3 WHERE t3.`PARTY_ID` = t.`PARTY_ID` ORDER  BY t3.`LAST_UPDATE_DATE` DESC LIMIT 1 )) AS COMMENTS		
+		FROM
+		  `PARTY` t 
+		  LEFT JOIN `PARTY_GROUP` t1 
+		    ON t.`PARTY_ID` = t1.`PARTY_ID` 
+		  LEFT JOIN `PARTY_SUPPLIER` t2 
+		    ON t.`PARTY_ID` = t2.`PARTY_ID`  
+		WHERE t.`PARTY_TYPE_ID` = 'SUPPLIER' 
+		  AND t.`STATUS_ID` = 'PARTY_ENABLED' 
+		  AND t1.`ACCOUNT_STATUS` = 'VALID' 
+		  AND t1.`GROUP_NAME` IS NOT NULL
+		  <if test="vendorName != null and vendorName !=''">
+			AND  t1.`GROUP_NAME` = #{vendorName}
+		  </if>
+		  	<choose>
+				<when test="orderSq != null and orderSq=='DESC'">
+				  ORDER BY LEADTIME_ACCURACYRATE DESC
+				</when>
+				<when test="orderSq != null and orderSq=='ASC'">
+				   ORDER BY LEADTIME_ACCURACYRATE ASC
+				</when>
+				<otherwise>
+				  ORDER BY LEADTIME_ACCURACYRATE DESC
+				</otherwise>
+			</choose>
+	</select>
+	
+</mapper>

@@ -1,0 +1,37 @@
+package com.yikuyi.party.userlogin;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.yikuyi.party.config.BaseTest;
+import com.yikuyi.party.login.model.UserLogin;
+
+public class UserLoginResourceTest extends BaseTest {
+
+	/**
+	 * 根据用户账户查找用户信息
+	 * @param account
+	 * @param authToken
+	 * @return
+	 * @since 2017年6月29日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	public void getAccountById() {
+		UserLogin userLogin = super.partyClient.userLoginResource().getAccountById("admin","YWRtaW46OTk5OTk5OTkwMQ==");
+		Assert.assertEquals(userLogin.getId(),"admin");
+	}
+	/**
+	 * 根据账号判断是否存在（手机、邮箱）
+	 * 
+	 * @param account
+	 * @return
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@Test
+	public void getAccount() {
+		Boolean flag = super.partyClient.userLoginResource().getAccount("admin","YWRtaW46OTk5OTk5OTkwMQ==");
+		Assert.assertEquals(true,flag);
+	}
+}

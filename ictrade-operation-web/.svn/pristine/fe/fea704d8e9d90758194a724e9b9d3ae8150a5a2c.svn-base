@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>主界面</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../css/lib/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="http://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Theme style -->
+<!--   <link rel="stylesheet" href="../css/common/base.css"> -->
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../css/common/common.css">
+  <link rel="stylesheet" href="../js/lib/jquery-ui-1.20.0/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="../js/lib/layer/skin/layer.css"/>
+<link rel="stylesheet" type="text/css" href="../js/lib/laydate/need/laydate.css"/>
+  <link rel="stylesheet" href="../css/app/setCouponInfo.css">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+  <!-- 首部导航 -->
+  <header class="main-header">
+    <!-- Logo -->
+    <a href="#" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>YKY</b></span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><b>YKY</b><p>运营管理后台</p></span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <a href="#" class="icon-switch" data-toggle="offcanvas" role="button"></a>
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+              <span>欢迎您,11222231</span>
+          </li>       
+          <li class="dropdown"> 
+              <a href="#" class="rel"><i class="icon-out f16"></i>退出</a>
+		  </li>  
+        </ul>
+      </div>
+    </nav>
+  </header>
+  
+  
+  <!-- 左边导航  -->
+  <aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu">
+		<li>
+			<a href="#">
+				<i class="fa icon-home"></i> <span>首<span style="margin-left:24px;">页</span></span>
+			</a>
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-vip"></i> <span class="first-menu">会员管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">注册用户</a></li>
+				<li><a href="#">初级会员</a></li>
+				<li><a href="#">认证会员</a></li>
+			</ul>
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-audit"></i> <span class="first-menu">审核管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">认证会员管理</a></li>
+				<li><a href="#">初级会员审核</a></li>
+				<li><a href="#">公司名称变更审核</a></li>
+			</ul>				
+		</li>
+		<li class="treeview pitch-on active">
+			<a href="#">
+				<i class="fa icon-commodity"></i> <span class="first-menu">商品管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li class="selected"><a href="#">商品管理</a></li>
+				<li><a href="#">商品运营</a></li>
+				<li><a href="#">库存管理</a></li>
+			</ul>			
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-deal"></i> <span class="first-menu">交易管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">库存管理</a></li>
+				<li><a href="#">采购需求管理</a></li>
+				<li><a href="#">询报价管理</a></li>
+			</ul>
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-dingdan"></i> <span class="first-menu">订单管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">订单管理</a></li>
+			</ul>
+		</li>	
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-operation"></i> <span class="first-menu">运营管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">广告咨询管理</a></li>
+				<li><a href="#">招聘管理</a></li>
+				<li><a href="#">帮助中心管理</a></li>
+				<li><a href="#">意见反馈管理</a></li>
+				<li><a href="#">分类目录管理</a></li>
+			</ul>
+		</li>	
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-popularize"></i> <span class="first-menu">推广管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">物料展示位管理</a></li>
+				<li><a href="#">广告位管理</a></li>
+				<li><a href="#">排行榜管理</a></li>
+				<li><a href="#">活动管理</a></li>
+				<li><a href="#">热词库管理</a></li>
+				<li><a href="#">站内信推送管理</a></li>
+				<li><a href="#">邮件推送管理</a></li>
+			</ul>
+		</li>	
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-basedata"></i> <span class="first-menu">基础数据库管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">品牌库管理</a></li>
+				<li><a href="#">物料库管理</a></li>
+				<li><a href="#">分类及参数管理</a></li>
+			</ul>			
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-baobiao"></i> <span class="first-menu">报表统计</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">注册会员总量统计</a></li>
+				<li><a href="#">注册会员增量统计</a></li>
+				<li><a href="#">月订单数量统计</a></li>
+				<li><a href="#">月订单总金额统计</a></li>
+				<li><a href="#">月询报价订单量对比</a></li>
+			</ul>				
+		</li>	
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-system"></i> <span class="first-menu">系统管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">用户授权</a></li>
+				<li><a href="#">权限角色管理</a></li>
+			</ul>			
+		</li>			
+      </ul>
+    </section>
+    <!-- /.sidebar -->
+  </aside>
+
+  
+  <!-- 右边内容显示 -->
+  <div class="content-wrapper">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<span class="header_tab">代金券</span>
+	</section>
+    <!-- Main content -->
+	<section class="content">
+		<div class="panel panel-default">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">创建代金券</h3>
+		  </div>
+		  <div class="panel-body">
+		  	<!-- main_cont-->
+		  	<div class="main_cont">
+		  		<!-- main_cont_l -->
+			    <div class="main_cont_l">
+			    	<h4 class="list_title">
+			    		代金券基本属性
+			    	</h4>
+			    	<ul class="list-group">
+					  <li class="item">
+					  	<span class="item_label"><i class="r_tag">*</i>代金券类型：</span>
+					  	<div class="item_r">
+					  		<span  class="c_type_wrap">
+					  			<select name="cType" id="cType">
+						  			<option value="">平台推广劵</option>
+						  			<option value="">平台定向劵</option>
+						  			<option value="">地推劵</option>
+						  		</select>
+					  		</span>
+					  	</div>
+					  </li>
+					  <li class="item">
+					  	 <span class="item_label"><i class="r_tag">*</i>代金券名称：</span>
+						 <div class="item_r">
+							<input type="text" name="cName" class="s_input" placeholder="" maxlength="50"   ms-duplex="">
+						 </div>
+					  </li>
+					  <li class="item">
+					  	 <span class="item_label"><i class="r_tag">*</i>有效时间：</span>
+						 <div class="item_r">
+							<p class="effect_type_wrap">
+								<select name="cEffectTimeType" id="cEffectTimeType">
+									<option value="">限时使用</option>
+									<option value="">限时领取</option>
+								</select>
+						 	</p>
+							<p class="mt10">
+						 		<span class="item_label"></span>
+						 		<span class="rel">
+					                <input id="applyBegin" value="" name="applyBegin" data-duplex="@parameter.applyBegin" ms-attr="{value:@parameter.applyBegin}" class="main_head_input " type="text">
+					                <span class="cc1 icon-calendar"></span>
+				                </span>
+				                <span style="color:#aaa; margin-left:5px;margin-right:5px;">-</span>
+				                <span class="rel">
+					                <input id="applyEnd" value="" name="applyEnd" data-duplex="@parameter.applyEnd" ms-attr="{value:@parameter.applyEnd}" class="main_head_input" type="text">
+					                <span class="cc2 icon-calendar"></span>
+				                </span>
+						 	</p>
+						 </div>
+					  </li>
+					  <li class="item">
+					  	 <span class="item_label"><i class="r_tag">*</i>总发行量：</span>
+						 <div class="item_r">
+							<div>
+								<input type="text" name="cTotal" class="s_input " placeholder="" maxlength="50"  ms-duplex="">
+								<span>张</span>
+							</div>
+						 </div>
+					  </li>
+					  <li class="item">
+					  	 <span class="item_label"><i class="r_tag">*</i>单张面值：</span>
+						 <div class="item_r">
+							<input type="text" name="cValue" class="s_input " placeholder="" maxlength="50"  ms-duplex="">
+						 	<span class="c_wrap">
+						 		<select name="cCurrency" id="cCurrency">
+							 		<option value="">RMB</option>
+							 		<option value="">USD</option>
+							 	</select>
+						 	</span>
+						 </div>
+					  </li>
+					</ul>
+					
+					<h4 class="list_title">
+			    		使用条件
+			    	</h4>
+			    	<ul class="list-group">
+					  <li class="item">
+					  	<span class="item_label"><i class="r_tag">*</i>可用货品：</span>
+					  	<div class="item_r">
+					  		<p><span class="chose_t">选择货品</span></p>
+					  	</div>
+					  </li>
+					  <li class="item">
+					  	 <span class="item_label"><i class="r_tag">*</i>使用限额：</span>
+						 <div class="item_r">
+							<span>单笔订单中此优惠券指定货品金额满</span>
+							<span class="ml5"><input type="text" name="cName" class="s_input" placeholder="" maxlength="50"  style="width:80px;" ms-duplex=""></span>
+							<span class="currency">RMB</span>
+							<span>使用</span>
+						 </div>
+					  </li>  
+					</ul>
+					
+					<h4 class="list_title">
+			    		使用条件
+			    	</h4>
+			    	<ul class="list-group">
+					  <li class="item">
+					  	<span class="item_label"><i class="r_tag">*</i>领取条件：</span>
+					  	<div class="item_r">
+					  		<p><input type="radio" /><label for="">自助领取</label></p>
+					  	</div>
+					  </li>
+					  <li class="item">
+					  	 <span class="item_label"><i class="r_tag">*</i>推广对象：</span>
+						 <div class="item_r">
+							<p>
+							<span><input type="checkbox" name="" value="" /><label for="">企业用户</label></span>
+							<span class="ml5"><input type="checkbox" name="" value="" /><label for="">个人用户</label></span>
+							</p>
+						 </div>
+					  </li>  
+					</ul>
+					<h4 class="list_title">
+			    		其他
+			    	</h4>
+			    	<ul class="list-group">
+					  <li class="item">
+					  	<span class="item_label"><i class="r_tag">*</i>代金券申请凭证：</span>
+					  	<div class="item_r">
+					  		<p><span id="upBtn">选择文件</span>
+					  		<span>支持图片格式.jpg .jpeg .png .bmp，文件大小不能超过5MB！</span></p>
+					  	</div>
+					  </li>
+					  <li class="item">
+					  	 <span class="item_label"><i class="r_tag">*</i>代金券备注：</span>
+						 <div class="item_r">
+							<textarea name="" id="" cols="30" rows="10" placeholder="可对代金券进行描述，如：此代金券为市场部推广申请创建的……"></textarea>
+						 </div>
+					  </li>  
+					</ul>
+					<div class="btn_bar">
+						<span>创建代金券</span>
+						<span>返回</span>
+					</div>
+			    </div>
+			    <!-- main_cont_l -->
+			 </div>
+			 <!-- main_cont-->
+		  </div>
+		</div>
+	</section>
+	<!-- /.content -->
+  </div>
+	
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 1.11.3 -->
+<script src="../js/lib/jquery-1.11.3.min.js"></script>
+<!-- jQuery UI -->
+<script src="../js/lib/jquery-ui-1.20.0/jquery-ui.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script src="../js/lib/bootstrap.min.js"></script>
+<script src="../js/component/leftMenu.js"></script>
+<script type="text/javascript" src="../js/lib/laydate/laydate.js"></script>
+<script>
+	$("#cType").selectmenu();
+	$("#cCurrency").selectmenu();
+	$("#cEffectTimeType").selectmenu();
+	$("#applyBegin").on("click",function(){
+	    laydate(start);
+	});
+	$(".cc1").on("click",function(){
+	    laydate(start);
+	});
+	$("#applyEnd").on("click",function(){
+	    laydate(end);
+	});
+	$(".cc2").on("click",function(){
+	    laydate(end);
+	});
+	 var start = {
+	        elem: '#applyBegin',
+	        format: 'YYYY-MM-DD',
+	       // min: laydate.now(),    //设定最小日期为当前日期
+	        istime: false,    //是否显示时间
+	        istoday: false,
+	        isclear: false,   //是否显示清空
+	        //选择好日期的回调
+	        choose: function(dates){ 
+	            $(this.elem).trigger("blur");
+	            var startTime = $('#applyBegin').val();
+	       	    var applyEnd = $('#applyEnd').val();
+	       	    var arr1 = startTime.split('-');
+	       	    var sdate=new Date(arr1[0],parseInt(arr1[1]-1),arr1[2]);
+	       	    var arr2 = applyEnd.split('-');
+	       	    var edate=new Date(arr2[0],parseInt(arr2[1]-1),arr2[2]);
+	       	    if(sdate > edate){
+	       			layer.tips('开始时间不能大于结束时间', '#applyBegin',{
+	       				tips: 1,
+	     				time: 1000,
+	       			});
+	       			$('#applyBegin').val('');
+	       		};
+	        }
+	    };
+	 var end = {
+	      elem: '#applyEnd',
+	      format: 'YYYY-MM-DD',
+	      // min: laydate.now(),    //设定最小日期为当前日期
+	      istime: false,    //是否显示时间
+	      istoday: false,
+	      isclear: false,   //是否显示清空
+	      //选择好日期的回调
+	      choose: function(dates){ 
+	          $(this.elem).trigger("blur");
+	          var startTime = $('#applyBegin').val();
+	     	  var applyEnd = $('#applyEnd').val();
+	     	  var arr1 = startTime.split('-');
+	     	  var sdate=new Date(arr1[0],parseInt(arr1[1]-1),arr1[2]);
+	     	  var arr2 = applyEnd.split('-');
+	     	  var edate=new Date(arr2[0],parseInt(arr2[1]-1),arr2[2]);
+	     	  if(sdate > edate){
+	     			layer.tips('开始时间不能大于结束时间', '#applyEnd',{
+	     				tips: 1,
+	     				time: 1000,
+	     			});
+	     			$('#applyEnd').val('');
+	     		};
+	      }
+	 };
+	 
+	 $('#applyBegin').on('blur',function(){
+		    var startTime = $('#applyBegin').val();
+		    var applyEnd = $('#applyEnd').val();
+		    var arr1 = startTime.split('-');
+		    var sdate=new Date(arr1[0],parseInt(arr1[1]-1),arr1[2]);
+		    var arr2 = applyEnd.split('-');
+		    var edate=new Date(arr2[0],parseInt(arr2[1]-1),arr2[2]);
+		    if(sdate > edate){
+				layer.tips('开始时间不能大于结束时间', '#applyBegin',{
+					tips: 1,
+					time: 1000,
+				});
+				$('#applyBegin').val('');
+			};
+			$("#search .g6").find('.cr').removeClass('cr');
+			$("#showColor").val('');
+	 });
+	 
+	 $('#applyEnd').on('blur',function(){
+		  var startTime = $('#applyBegin').val();
+		  var applyEnd = $('#applyEnd').val();
+		  var arr1 = startTime.split('-');
+		  var sdate=new Date(arr1[0],parseInt(arr1[1]-1),arr1[2]);
+		  var arr2 = applyEnd.split('-');
+		  var edate=new Date(arr2[0],parseInt(arr2[1]-1),arr2[2]);
+		  if(sdate > edate){
+				layer.tips('开始时间不能大于结束时间', '#applyEnd',{
+					tips: 1,
+					time: 1000,
+				});
+				$('#applyEnd').val('');
+			};
+			$("#search .g6").find('.cr').removeClass('cr');
+			$("#showColor").val('');
+	 });
+	 /* laydate call */
+</script>
+
+</body>
+</html>

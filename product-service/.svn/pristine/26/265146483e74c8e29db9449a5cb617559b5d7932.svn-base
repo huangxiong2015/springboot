@@ -1,0 +1,126 @@
+package com.yikuyi.product.strategy.cache;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.yikuyi.packagemail.vo.PackageMailVO;
+import com.yikuyi.product.vo.ProductVo;
+import com.yikuyi.strategy.model.Strategy;
+
+@Service
+@Transactional
+public class PackageMailCacheManager extends AbstactStrategyCacheManager<ProductVo>{
+	
+	private static final Logger logger = LoggerFactory.getLogger(PackageMailCacheManager.class);
+	
+	 /**
+	  * 特殊供应商商品id缓存名
+	  */
+	protected static final String PACKAGE_MAIL_PRODUCT_ID_CACHE_NAME = "packageMailProductIdCacheName";
+	
+	/**
+	 * 合并包邮信息
+	 * @param productVos
+	 */
+	@Async
+	public Future<Void> mergePackageMailInfo(List<ProductVo> productVos) {
+		Map<String, List<Strategy>> strategyMap = this.strategyCacheOps.entries(PACKAGE_MAIL_PRODUCT_ID_CACHE_NAME);
+		for (ProductVo productVo : productVos) {
+			//从缓存中取商品的包邮策略信息
+			List<Strategy> strategies = strategyMap.get(productVo.getId());
+			Strategy curentStrategy = null;
+			if(CollectionUtils.isNotEmpty(strategies)){
+				//迭代依次获取策略
+				for (int i = strategies.size()-1; i >= 0 ; i--) {
+					Strategy strategy = strategies.get(i);
+					if(!StringUtils.isNotEmpty(strategy.getStartDate())&& NumberUtils.isNumber(strategy.getStartDate())){
+						continue;
+					}
+					if(!StringUtils.isNotEmpty(strategy.getEndDate())&& NumberUtils.isNumber(strategy.getEndDate())){
+						continue;
+					}
+					long nowTime = System.currentTimeMillis();
+					
+					long startTime = Long.valueOf(strategy.getStartDate());
+					long endTime = Long.valueOf(strategy.getEndDate());
+					//是否在时间区段内的活动
+					if(nowTime>=startTime && nowTime<endTime){
+						curentStrategy = strategy;
+						break;
+					}
+				}
+			}
+			if(curentStrategy != null){
+				PackageMailVO packageMailInfo = new PackageMailVO();
+				packageMailInfo.setStrategyId(curentStrategy.getId());
+				packageMailInfo.setIsPackageMail("Y");
+				if(StringUtils.isNotEmpty(curentStrategy.getStartDate())){
+					packageMailInfo.setStartTime(new Date(Long.valueOf(curentStrategy.getStartDate())));
+				}
+				if(StringUtils.isNotEmpty(curentStrategy.getEndDate())){
+					packageMailInfo.setEndTime(new Date(Long.valueOf(curentStrategy.getEndDate())));
+				}
+				productVo.setPackageMailInfo(packageMailInfo);
+			}
+		}
+		return new AsyncResult<Void>(null);
+	}
+
+	/**
+	 * 获取缓存房间名称
+	 */
+	@Override
+	String getCacheRoomName() {
+		return PackageMailCacheManager.PACKAGE_MAIL_PRODUCT_ID_CACHE_NAME;
+	}
+	
+
+	/**
+	 * 定时清理过期包邮缓存接口
+	 * 1.执行时清理昨天已经过期的策略缓存
+	 */
+	public void refreshStrategyCacheTask(){
+		logger.debug("开始定时清理过期包邮缓存!");
+		Map<String, List<Strategy>> map = strategyCacheOps.entries(getCacheRoomName());
+		for (Entry<String, List<Strategy>> entry : map.entrySet()) {
+			String hashKey = entry.getKey();
+			List<Strategy> strategies = entry.getValue();
+			List<Strategy> newStrategies = strategies.stream().filter(strategy -> {
+				long nowTime = System.currentTimeMillis();
+				if(StringUtils.isEmpty(strategy.getStartDate())|| !NumberUtils.isNumber(strategy.getStartDate())){
+					return false;
+				}
+				if(StringUtils.isEmpty(strategy.getEndDate()) || !NumberUtils.isNumber(strategy.getEndDate())){
+					return false;
+				}
+				long startTime = Long.valueOf(strategy.getStartDate());
+				long endTime = Long.valueOf(strategy.getEndDate());
+				//是否在时间区段内的活动
+				if(nowTime>=startTime && nowTime<endTime){
+					return true;
+				}
+				return false;
+			}).collect(Collectors.toList());
+			if(CollectionUtils.isEmpty(newStrategies)){
+				strategyCacheOps.delete(getCacheRoomName(),hashKey);
+			}else{
+				strategyCacheOps.put(getCacheRoomName(), hashKey, newStrategies);
+			}
+		}
+		
+	}
+}

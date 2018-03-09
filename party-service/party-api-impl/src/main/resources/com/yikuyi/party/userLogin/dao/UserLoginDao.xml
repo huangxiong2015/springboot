@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.userLogin.dao.UserLoginDao">
+	<resultMap id="BaseResultMap" type="com.yikuyi.party.login.model.UserLogin">
+		<id column="USER_LOGIN_ID" property="id"/>
+		<result column="CURRENT_PASSWORD" property="bcryptPassword"/>
+		<result column="PASSWORD_HINT" property="passwordHint"/>
+		<result column="IS_SYSTEM" property="isSystem"/>
+		<result column="ENABLED" property="enabled"/>
+		<result column="REQUIRE_PASSWORD_CHANGE" property="requirePasswordChange"/>
+		<result column="LAST_LOCALE" property="lastLocale"/>
+		<result column="LAST_TIME_ZONE" property="lastTimeZone"/>
+		<result column="DISABLED_DATE_TIME" property="disabledDateTime"/>
+		<result column="SUCCESSIVE_FAILED_LOGINS" property="successiveFailedLogins"/>
+		<result column="SUCCEED_LOGINS" property="succeedLogins"/>
+		<result column="EXTERNAL_AUTH_ID" property="externalAuthId"/>
+		<result column="USER_LDAP_DN" property="userLdapDn"/>
+		<result column="CREATOR" property="creator"/>
+		<result column="CREATED_DATE" property="createdDate"/>
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser"/>
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate"/>
+		<result column="PWD_STRENGTH" property="pwdStrength"/>
+	    <association property="party" javaType="com.yikuyi.party.model.Party"> 
+	      <result column="PARTY_ID" property="id"/>
+	      <association property="person" javaType="com.yikuyi.party.person.model.Person"> 
+	      	<result column="LOGO_IMAGE_URL" property="logoImageUrl"/>
+	      	<result column="TEL" property="tel"/>
+	      	<result column="MAIL" property="mail"/>
+	      	<result column="TEL_VERIFIED" property="telStatus"/>
+	      	<result column="MAIL_VERIFIED" property="mailStatus"/>
+	      	<result column="ACCOUNT_TYPE" property="personTypeStatus"/>
+	      	
+	      </association>
+		<!--角色 -->
+		  <collection property="roleTypeList" ofType="java.lang.String">
+	       		<result column="ROLE_TYPE_ID" jdbcType="VARCHAR"/>
+	      </collection>
+	    </association>
+	</resultMap>
+
+	<resultMap id="BaseResultMap1" type="com.yikuyi.party.login.model.UserLogin">
+		<id column="USER_LOGIN_ID" property="id"/>
+		<result column="CURRENT_PASSWORD" property="bcryptPassword"/>
+		<result column="PASSWORD_HINT" property="passwordHint"/>
+		<result column="IS_SYSTEM" property="isSystem"/>
+		<result column="ENABLED" property="enabled"/>
+		<result column="REQUIRE_PASSWORD_CHANGE" property="requirePasswordChange"/>
+		<result column="LAST_LOCALE" property="lastLocale"/>
+		<result column="LAST_TIME_ZONE" property="lastTimeZone"/>
+		<result column="DISABLED_DATE_TIME" property="disabledDateTime"/>
+		<result column="SUCCESSIVE_FAILED_LOGINS" property="successiveFailedLogins"/>
+		<result column="SUCCEED_LOGINS" property="succeedLogins"/>
+		<result column="EXTERNAL_AUTH_ID" property="externalAuthId"/>
+		<result column="USER_LDAP_DN" property="userLdapDn"/>
+		<result column="CREATOR" property="creator"/>
+		<result column="CREATED_DATE" property="createdDate"/>
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser"/>
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate"/>
+		<result column="PWD_STRENGTH" property="pwdStrength"/>
+		<result column="USER_LOGIN_METHOD" property="userLoginMethod"/>
+		
+	    <association property="party" javaType="com.yikuyi.party.model.Party"> 
+		      <result column="PARTY_ID" property="id"/>
+		      <result column="STATUS_ID" property="partyStatus"/>
+		      <association property="person" javaType="com.yikuyi.party.person.model.Person"> 
+			      <result column="LOGO_IMAGE_URL" property="logoImageUrl"/>
+			      <result column="LAST_NAME" property="lastName"/>
+			      <result column="LAST_NAME_LOCAL" property="lastNameLocal"/>
+			      <result column="MAIL" property="mail"/>
+		      </association>
+		      <collection property="partyContactMechs" ofType="com.yikuyi.party.model.PartyContactMech">
+			         <association property="contactMech" javaType="com.yikuyi.party.contact.model.ContactMech"> 
+			      		<result column="CONTACT_MECH_ID" property="id"/>
+			      		
+			      		<association property="postalAddress" javaType="com.yikuyi.party.contact.model.PostalAddress">
+			      			<result column="POSTAL_CODE" property="postalCode"/>
+			      		</association>
+			      		<association property="telecomNumber" javaType="com.yikuyi.party.contact.model.TelecomNumber">
+			      			<association property="phoneTelecomNumber" javaType="com.yikuyi.party.contact.model.TelecomNumber$PhoneTelecomNumber">
+			      				<result column="CONTACT_NUMBER" property="contactNumber"/>
+			      			</association>
+			      		</association>
+			     	 </association>
+		       </collection>
+	    </association>
+	</resultMap>
+	
+	<resultMap id="BaseResultMap2" type="com.yikuyi.party.contact.vo.UserVo">
+		<id column="PARTY_ID" property="id"/>
+		<result column="LAST_NAME_LOCAL" property="name"/>
+		<result column="GENDER" property="sex"/>
+		<result column="TEL" property="telNumber"/>
+		<result column="USER_LOGIN_ID" property="userLoginId"/>
+		<result column="PARTY_ID_TO" property="deptId"/>
+		<result column="ROLE_TYPE_ID_FROM" property="managerRole"/>
+			<result column="MAIL" property="mail"/>
+		<collection property="roleList" ofType="java.lang.String">
+			<result column="ROLE_TYPE_ID" jdbcType="VARCHAR"/>
+		</collection>
+	
+	</resultMap>
+	
+	<select id="isExist" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM USER_LOGIN t WHERE t.`USER_LOGIN_ID`= #{account} and t.ENABLED='Y'
+	</select>
+
+	<!-- 查询用户登录密码 -->
+	<select id="findUserPassword" resultMap="BaseResultMap1">
+		SELECT CURRENT_PASSWORD,USER_LOGIN_ID,PARTY_ID FROM USER_LOGIN WHERE PARTY_ID=#{partyId}
+	</select>
+	
+	<update id="changePasswordByLoginId" parameterType="java.lang.String">
+		UPDATE USER_LOGIN SET CURRENT_PASSWORD = #{password},PWD_STRENGTH=#{pwdStrength} WHERE PARTY_ID=#{partyId}
+	</update>
+	<!-- 状态 -->
+	<select id="getUserSummeryInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT 
+		t1.USER_LOGIN_ID,
+		t1.LAST_UPDATE_DATE,
+		t1.PWD_STRENGTH,
+		t1.PARTY_ID,
+		t2.LOGO_IMAGE_URL,
+		t2.LAST_NAME,
+		t2.TEL,
+		t2.MAIL,
+		t2.ACCOUNT_TYPE,
+		t2.TEL_VERIFIED,
+		t2.MAIL_VERIFIED,
+		t4.ROLE_TYPE_ID,
+		t5.STATUS_ID 
+		FROM 
+		USER_LOGIN t1
+		left join PERSON t2 on t1.PARTY_ID = t2.PARTY_ID 
+		LEFT JOIN PARTY_ROLE t4 on t1.PARTY_ID = t4.PARTY_ID
+		LEFT JOIN PARTY t5 on t1.PARTY_ID = t5.PARTY_ID
+		WHERE  t1.USER_LOGIN_ID = #{loginId} AND t1.ENABLED='Y'
+	</select>
+	
+	<select id="findEntityById" parameterType="java.lang.String" resultMap="BaseResultMap1">
+		SELECT 
+	        USER_LOGIN_ID,
+	        CURRENT_PASSWORD,
+	        PASSWORD_HINT,
+	        IS_SYSTEM,
+	        ENABLED,
+	        REQUIRE_PASSWORD_CHANGE,
+	        LAST_LOCALE,
+	        LAST_TIME_ZONE,
+	        DISABLED_DATE_TIME,
+	        SUCCESSIVE_FAILED_LOGINS,
+	        SUCCEED_LOGINS,
+	        EXTERNAL_AUTH_ID,
+	        USER_LDAP_DN,
+	        USER_LOGIN_METHOD,
+	        USER_LOGIN_CATALOG,
+	        PARTY_ID,
+	        CREATOR,
+	        CREATED_DATE,
+	        LAST_UPDATE_USER,
+	        LAST_UPDATE_DATE,
+	        PWD_STRENGTH
+		  FROM USER_LOGIN WHERE USER_LOGIN_ID=#{id} and ENABLED='Y'
+	</select>
+	<select id="findEntityByIdAndAccount" parameterType="java.lang.String" resultMap="BaseResultMap1">
+		SELECT 
+	        USER_LOGIN_ID,
+	        CURRENT_PASSWORD,
+	        PASSWORD_HINT,
+	        IS_SYSTEM,
+	        ENABLED,
+	        REQUIRE_PASSWORD_CHANGE,
+	        LAST_LOCALE,
+	        LAST_TIME_ZONE,
+	        DISABLED_DATE_TIME,
+	        SUCCESSIVE_FAILED_LOGINS,
+	        SUCCEED_LOGINS,
+	        EXTERNAL_AUTH_ID,
+	        USER_LDAP_DN,
+	        USER_LOGIN_METHOD,
+	        USER_LOGIN_CATALOG,
+	        PARTY_ID,
+	        CREATOR,
+	        CREATED_DATE,
+	        LAST_UPDATE_USER,
+	        LAST_UPDATE_DATE,
+	        PWD_STRENGTH
+		  FROM USER_LOGIN WHERE USER_LOGIN_ID=#{id} and PARTY_ID=#{partyId}
+	</select>
+	<select id="findEntityByIdAndType" parameterType="java.lang.String" resultMap="BaseResultMap1">
+		SELECT 
+	        USER_LOGIN_ID,
+	        CURRENT_PASSWORD,
+	        PASSWORD_HINT,
+	        IS_SYSTEM,
+	        ENABLED,
+	        REQUIRE_PASSWORD_CHANGE,
+	        LAST_LOCALE,
+	        LAST_TIME_ZONE,
+	        DISABLED_DATE_TIME,
+	        SUCCESSIVE_FAILED_LOGINS,
+	        SUCCEED_LOGINS,
+	        EXTERNAL_AUTH_ID,
+	        USER_LDAP_DN,
+	        USER_LOGIN_METHOD,
+	        USER_LOGIN_CATALOG,
+	        PARTY_ID,
+	        CREATOR,
+	        CREATED_DATE,
+	        LAST_UPDATE_USER,
+	        LAST_UPDATE_DATE,
+	        PWD_STRENGTH
+		  FROM USER_LOGIN WHERE PARTY_ID=#{partyId} and ENABLED='Y' and USER_LOGIN_METHOD = #{userLoginMethod}
+	</select>
+	  <insert id="insert" parameterType="com.yikuyi.party.login.model.UserLogin" >
+	    insert into USER_LOGIN
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        USER_LOGIN_ID,
+	      </if>
+	      <if test="currentPassword != null" >
+	        CURRENT_PASSWORD,
+	      </if>
+	      <if test="bcryptPassword != null" >
+	        CURRENT_PASSWORD,
+	      </if>
+	      
+	      <if test="passwordHint != null" >
+	        PASSWORD_HINT,
+	      </if>
+	      <if test="isSystem != null" >
+	        IS_SYSTEM,
+	      </if>
+	      <if test="enabled != null" >
+	        ENABLED,
+	      </if>
+	      <if test="requirePasswordChange != null" >
+	        REQUIRE_PASSWORD_CHANGE,
+	      </if>
+	      <if test="lastLocale != null" >
+	        LAST_LOCALE,
+	      </if>
+	      <if test="lastTimeZone != null" >
+	        LAST_TIME_ZONE,
+	      </if>
+	      <if test="disabledDateTime != null" >
+	        DISABLED_DATE_TIME,
+	      </if>
+	      <if test="successiveFailedLogins != null" >
+	        SUCCESSIVE_FAILED_LOGINS,
+	      </if>
+	      <if test="succeedLogins != null" >
+	        SUCCEED_LOGINS,
+	      </if>
+	      <if test="externalAuthId != null" >
+	        EXTERNAL_AUTH_ID,
+	      </if>
+	      <if test="userLdapDn != null" >
+	        USER_LDAP_DN,
+	      </if>
+	      <if test="userLoginMethod != null" >
+	        USER_LOGIN_METHOD,
+	      </if>
+	      <if test="userLoginCatalog != null" >
+	        USER_LOGIN_CATALOG,
+	      </if>
+	      <if test="party != null and party.id != null" >
+	        PARTY_ID,
+	      </if>
+	      <if test="creator != null" >
+	        CREATOR,
+	      </if>
+	      <if test="createdDate != null" >
+	        CREATED_DATE,
+	      </if>
+	      <if test="lastUpdateUser != null" >
+	        LAST_UPDATE_USER,
+	      </if>
+	      <if test="lastUpdateDate != null" >
+	        LAST_UPDATE_DATE,
+	      </if>
+	      <if test="pwdStrength != null" >
+	        PWD_STRENGTH,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        #{id},
+	      </if>
+	      <if test="currentPassword != null" >
+	        #{currentPassword},
+	      </if>
+	      <if test="bcryptPassword != null" >
+	        #{bcryptPassword},
+	      </if>
+	      <if test="passwordHint != null" >
+	        #{passwordHint},
+	      </if>
+	      <if test="isSystem != null" >
+	        #{isSystem},
+	      </if>
+	      <if test="enabled != null" >
+	        #{enabled},
+	      </if>
+	      <if test="requirePasswordChange != null" >
+	        #{requirePasswordChange},
+	      </if>
+	      <if test="lastLocale != null" >
+	        #{lastLocale},
+	      </if>
+	      <if test="lastTimeZone != null" >
+	        #{lastTimeZone},
+	      </if>
+	      <if test="disabledDateTime != null" >
+	        #{disabledDateTime},
+	      </if>
+	      <if test="successiveFailedLogins != null" >
+	        #{successiveFailedLogins},
+	      </if>
+	      <if test="succeedLogins != null" >
+	        #{succeedLogins},
+	      </if>
+	      <if test="externalAuthId != null" >
+	        #{externalAuthId},
+	      </if>
+	      <if test="userLdapDn != null" >
+	        #{userLdapDn},
+	      </if>
+	      <if test="userLoginMethod != null" >
+	        #{userLoginMethod},
+	      </if>
+	      <if test="userLoginCatalog != null" >
+	        #{userLoginCatalog},
+	      </if>
+	      <if test="party != null and party.id != null" >
+	        #{party.id},
+	      </if>
+	      <if test="creator != null" >
+	        #{creator},
+	      </if>
+	      <if test="createdDate != null" >
+	        #{createdDate},
+	      </if>
+	      <if test="lastUpdateUser != null" >
+	        #{lastUpdateUser},
+	      </if>
+	      <if test="lastUpdateDate != null" >
+	        #{lastUpdateDate},
+	      </if>
+	      <if test="pwdStrength != null" >
+	        #{pwdStrength},
+	      </if>
+	    </trim>
+	  </insert>
+
+  <update id="update" parameterType="com.yikuyi.party.login.model.UserLogin" >
+    update USER_LOGIN
+    <set >
+      <if test="currentPassword != null" >
+        CURRENT_PASSWORD = #{currentPassword},
+      </if>
+      <if test="passwordHint != null" >
+        PASSWORD_HINT = #{passwordHint},
+      </if>
+      <if test="isSystem != null" >
+        IS_SYSTEM = #{isSystem},
+      </if>
+      <if test="enabled != null" >
+        ENABLED = #{enabled},
+      </if>
+      <if test="requirePasswordChange != null" >
+        REQUIRE_PASSWORD_CHANGE = #{requirePasswordChange},
+      </if>
+      <if test="lastLocale != null" >
+        LAST_LOCALE = #{lastLocale},
+      </if>
+      <if test="lastTimeZone != null" >
+        LAST_TIME_ZONE = #{lastTimeZone},
+      </if>
+      <if test="disabledDateTime != null" >
+        DISABLED_DATE_TIME = #{disabledDateTime},
+      </if>
+      <if test="successiveFailedLogins != null" >
+        SUCCESSIVE_FAILED_LOGINS = #{successiveFailedLogins},
+      </if>
+      <if test="succeedLogins != null" >
+        SUCCEED_LOGINS = #{succeedLogins},
+      </if>
+      <if test="externalAuthId != null" >
+        EXTERNAL_AUTH_ID = #{externalAuthId},
+      </if>
+      <if test="userLdapDn != null" >
+        USER_LDAP_DN = #{userLdapDn},
+      </if>
+      <if test="userLoginMethod != null" >
+        USER_LOGIN_METHOD = #{userLoginMethod},
+      </if>
+      <if test="userLoginCatalog != null" >
+        USER_LOGIN_CATALOG = #{userLoginCatalog},
+      </if>
+      <if test="party != null and party.id != null" >
+        PARTY_ID = #{party.id},
+      </if>
+      <if test="creator != null" >
+        CREATOR = #{creator},
+      </if>
+      <if test="createdDate != null" >
+        CREATED_DATE = #{createdDate},
+      </if>
+      <if test="lastUpdateUser != null" >
+        LAST_UPDATE_USER = #{lastUpdateUser},
+      </if>
+      <if test="lastUpdateDate != null" >
+        LAST_UPDATE_DATE = #{lastUpdateDate},
+      </if>
+      <if test="pwdStrength != null" >
+        PWD_STRENGTH = #{pwdStrength},
+      </if>
+    </set>
+    where USER_LOGIN_ID = #{id}
+  </update>
+  <update id="updateByPartyId" parameterType="com.yikuyi.party.login.model.UserLogin" >
+    update USER_LOGIN
+    <set >
+      <if test="currentPassword != null" >
+        CURRENT_PASSWORD = #{currentPassword},
+      </if>
+      <if test="passwordHint != null" >
+        PASSWORD_HINT = #{passwordHint},
+      </if>
+      <if test="isSystem != null" >
+        IS_SYSTEM = #{isSystem},
+      </if>
+      <if test="enabled != null" >
+        ENABLED = #{enabled},
+      </if>
+      <if test="requirePasswordChange != null" >
+        REQUIRE_PASSWORD_CHANGE = #{requirePasswordChange},
+      </if>
+      <if test="lastLocale != null" >
+        LAST_LOCALE = #{lastLocale},
+      </if>
+      <if test="lastTimeZone != null" >
+        LAST_TIME_ZONE = #{lastTimeZone},
+      </if>
+      <if test="disabledDateTime != null" >
+        DISABLED_DATE_TIME = #{disabledDateTime},
+      </if>
+      <if test="successiveFailedLogins != null" >
+        SUCCESSIVE_FAILED_LOGINS = #{successiveFailedLogins},
+      </if>
+      <if test="succeedLogins != null" >
+        SUCCEED_LOGINS = #{succeedLogins},
+      </if>
+      <if test="externalAuthId != null" >
+        EXTERNAL_AUTH_ID = #{externalAuthId},
+      </if>
+      <if test="userLdapDn != null" >
+        USER_LDAP_DN = #{userLdapDn},
+      </if>
+      <if test="userLoginMethod != null" >
+        USER_LOGIN_METHOD = #{userLoginMethod},
+      </if>
+      <if test="userLoginCatalog != null" >
+        USER_LOGIN_CATALOG = #{userLoginCatalog},
+      </if>
+      <if test="creator != null" >
+        CREATOR = #{creator},
+      </if>
+      <if test="createdDate != null" >
+        CREATED_DATE = #{createdDate},
+      </if>
+      <if test="lastUpdateUser != null" >
+        LAST_UPDATE_USER = NOW(),
+      </if>
+      <if test="lastUpdateDate != null" >
+        LAST_UPDATE_DATE = #{lastUpdateDate},
+      </if>
+      <if test="pwdStrength != null" >
+        PWD_STRENGTH = #{pwdStrength},
+      </if>
+    </set>
+    where PARTY_ID = #{party.id}
+  </update>	 
+
+  <update id="updateAccount" parameterType="com.yikuyi.party.login.model.UserLogin" >
+    update USER_LOGIN
+    <set >
+      <if test="id != null" >
+        USER_LOGIN_ID = #{id},
+      </if>
+      <if test="enabled != null" >
+        ENABLED = #{enabled},
+      </if>
+    </set>
+    where PARTY_ID = #{party.id} and USER_LOGIN_METHOD = #{userLoginMethod}
+  </update>
+
+  <select id="findCustomerUser" resultType="com.yikuyi.party.contact.vo.UserExtendVo" parameterType="com.yikuyi.party.contact.vo.EnterpriseParamVo">
+      <!--  SELECT
+  	        t2.MAIL AS mail,
+			t2.`TEL` AS tel,
+			t2.LAST_NAME_LOCAL AS name,
+			t.STATUS_ID AS statusId,
+			t2.CREATED_DATE AS regTime,
+			t2.PARTY_ID AS partyId,
+            tt.lastLoginTime as lastLoginTime
+		FROM PERSON t2 LEFT JOIN (SELECT t1.`PARTY_ID` ,MAX(t1.`LAST_UPDATE_DATE` ) AS lastLoginTime FROM `USER_LOGIN` t1 WHERE t1.`ENABLED` ='Y' GROUP BY t1.`PARTY_ID` ) AS tt ON t2.party_id = tt.party_id
+		LEFT JOIN `PARTY` t  ON t2.PARTY_ID = t.PARTY_ID 
+		LEFT JOIN PARTY_ROLE t6 ON t2.PARTY_ID = t6.PARTY_ID
+		WHERE t6.ROLE_TYPE_ID='INDIVIDUAL_CUST'    -->
+		
+		SELECT  tt.`LAST_UPDATE_DATE` AS lastLoginTime,tt.CREATED_DATE AS regTime,tt.`MAIL`  AS mail,tt.`TEL` AS tel ,tt.`LAST_NAME_LOCAL` AS NAME,tt.`PARTY_ID` AS partyId,tt.`STATUS_ID` AS statusId,tt.`CREATED_DATE`  FROM (	
+		SELECT 
+		  t.`LAST_UPDATE_DATE`,t1.`MAIL`,t1.`TEL`,t1.`LAST_NAME_LOCAL`,t.`PARTY_ID`,t3.`STATUS_ID`,t.`CREATED_DATE` 
+		FROM
+		  USER_LOGIN t 
+		  LEFT JOIN PERSON t1 
+		    ON t.`PARTY_ID` = t1.`PARTY_ID` 
+		  LEFT JOIN PARTY_ROLE t2 
+		    ON t.`PARTY_ID` = t2.`PARTY_ID` 
+		  LEFT JOIN PARTY t3 
+		    ON t.`PARTY_ID` = t3.`PARTY_ID` 
+		WHERE t.`ENABLED` = 'Y' 
+		  AND t2.`ROLE_TYPE_ID` = 'INDIVIDUAL_CUST' 
+		GROUP BY t.`PARTY_ID` 
+		ORDER BY t.`LAST_UPDATE_DATE` DESC ) tt 
+		where 1=1 
+	<if test="phone != null  and phone !=''">
+		AND tt.`TEL` LIKE CONCAT(#{phone}, '%')  
+	</if>
+	<if test="mail != null and mail !=''">
+		AND tt.MAIL LIKE CONCAT(#{mail}, '%')  
+	</if>
+	<if test="name != null and name !=''">
+		AND tt.LAST_NAME_LOCAL LIKE CONCAT(#{name}, '%')  
+	</if>
+	<if test="status != null">
+		AND tt.STATUS_ID = #{status}
+	</if>
+	<if test="registerStart != null and registerStart !=''">
+		 <![CDATA[ AND tt.CREATED_DATE >= DATE_FORMAT(#{registerStart},'%Y/%m/%d')]]>
+	</if>
+	<if test="registerEnd != null and registerEnd !=''">
+		<![CDATA[ AND tt.CREATED_DATE <= DATE_FORMAT(#{registerEnd},'%Y/%m/%d 23:59:59')]]>
+	</if>
+	<if test="lastLoginStart != null and lastLoginStart !=''">
+		<![CDATA[ AND tt.LAST_UPDATE_DATE >= DATE_FORMAT(#{lastLoginStart},'%Y/%m/%d')]]>
+	</if>
+	<if test="lastLoginEnd != null and lastLoginEnd !=''">
+		<![CDATA[ AND tt.LAST_UPDATE_DATE <= DATE_FORMAT(#{lastLoginEnd},'%Y/%m/%d 23:59:59')]]>
+	</if>
+	<!-- order by t2.CREATED_DATE desc -->
+	ORDER BY tt.`CREATED_DATE` DESC
+  </select>
+  
+  <select id="findUserBypartyid" resultMap="BaseResultMap1">
+  	SELECT 
+	  USER_LOGIN_ID,
+	  CURRENT_PASSWORD,
+	  PASSWORD_HINT,
+	  IS_SYSTEM,
+	  ENABLED,
+	  REQUIRE_PASSWORD_CHANGE,
+	  LAST_LOCALE,
+	  LAST_TIME_ZONE,
+	  DISABLED_DATE_TIME,
+	  SUCCESSIVE_FAILED_LOGINS,
+	  SUCCEED_LOGINS,
+	  EXTERNAL_AUTH_ID,
+	  USER_LDAP_DN,
+	  PARTY_ID,
+	  CREATOR,
+	  CREATED_DATE,
+	  LAST_UPDATE_USER,
+	  LAST_UPDATE_DATE,
+	  PWD_STRENGTH,
+	  USER_LOGIN_METHOD,
+	  USER_LOGIN_CATALOG 
+	from
+	  USER_LOGIN
+	WHERE PARTY_ID IN
+	<foreach item="item" index="index" collection="list" open="("
+            separator="," close=")">
+            #{item}  
+    </foreach>
+  </select>
+  <!-- 查询用户登录信息 -->
+	<select id="findUserLogin" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT USER_LOGIN_ID FROM `USER_LOGIN`  WHERE PARTY_ID= #{id} AND USER_LOGIN_METHOD=#{type} AND ENABLED='Y'
+	</select>
+	
+	<select id="findUserInfo" resultType="com.yikuyi.party.contact.vo.User" parameterType="java.lang.String">
+		 SELECT a.party_id AS  id,
+			per.mail as  mail,MAX(CASE a.user_login_method WHEN 'MOBILE' THEN a.user_login_id ELSE NULL END ) mobile,MAX(CASE a.user_login_method WHEN 'LOGIN_NAME' THEN a.user_login_id ELSE NULL END ) AS NAME,
+			c.party_id AS enterpriseId,c.group_name AS enterprisename
+			FROM USER_LOGIN  a
+		LEFT JOIN PERSON per on per.party_id = a.party_id
+	    LEFT JOIN  `PARTY_RELATIONSHIP` b ON a.party_id = b.party_id_from AND b.role_type_id_from = 'EMPLOYEE' AND b.role_type_id_to= 'CORPORATION'  AND (b.`THRU_DATE` > NOW() OR b.`THRU_DATE` IS NULL )
+	    LEFT JOIN  PARTY_GROUP  c ON c.party_id = b.party_id_to
+	    WHERE a.party_id = #{userId}
+	    GROUP BY a.party_id,c.party_id ,c.group_name   LIMIT 0,1
+	</select>
+	
+	<select id="getUserIdsByName" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT 
+		  u.`PARTY_ID`
+		FROM
+		  USER_LOGIN u 
+		  INNER JOIN PERSON p 
+		    ON u.`PARTY_ID` = p.`PARTY_ID` 
+		  INNER JOIN PARTY t ON u.`PARTY_ID`=t.`PARTY_ID`
+		    AND u.`USER_LOGIN_METHOD` = 'EMAIL' 
+		    <if test="name != null and name != ''">
+		    	AND (u.`USER_LOGIN_ID`=#{name} or p.`LAST_NAME_LOCAL`=#{name})
+		    </if>
+	</select>
+	
+	<select id="getUserLoginsByIds" resultType="com.yikuyi.party.contact.vo.UserVo">
+		SELECT 
+		    u.`USER_LOGIN_ID`as mail,
+  			u.`PARTY_ID`as id,
+			p.`LAST_NAME_LOCAL`as name,
+            t.`STATUS_ID`as status
+		FROM
+		  USER_LOGIN u 
+		  INNER JOIN PERSON p 
+		    ON u.`PARTY_ID` = p.`PARTY_ID` 
+		  INNER JOIN PARTY t ON u.`PARTY_ID`=t.`PARTY_ID`
+		    AND u.`USER_LOGIN_METHOD` = 'EMAIL' 
+		    AND u.`PARTY_ID` IN
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">#{item}</foreach>
+           ORDER BY FIELD(u.`PARTY_ID`,
+           <foreach item="item" index="index" collection="ids" open="" separator="," close="">#{item}</foreach>
+           )
+	</select>
+	
+	<select id="getPerson" resultType="com.yikuyi.party.contact.vo.UserVo">
+		SELECT 
+		    u.`USER_LOGIN_ID`as mail,
+  			u.`PARTY_ID`as id,
+			p.`LAST_NAME_LOCAL`as name,
+			u.`CURRENT_PASSWORD` AS password,
+            p.`TEL`as telNumber
+		FROM
+		  USER_LOGIN u 
+		  INNER JOIN PERSON p ON u.`PARTY_ID` = p.`PARTY_ID` 
+		    AND u.`USER_LOGIN_METHOD` = 'EMAIL' 
+		    AND u.`ENABLED`='Y'
+		    AND u.`PARTY_ID` = #{id}
+	</select>
+	<select id="getRegNumToday" resultType="java.lang.Long">
+		   SELECT 
+			  COUNT(t.`USER_LOGIN_ID`) 
+			FROM
+			  `USER_LOGIN` t 
+			  LEFT JOIN PARTY_ROLE t1 
+			    ON t.`PARTY_ID` = t1.`PARTY_ID` 
+			WHERE t.`ENABLED` = 'Y' 
+			  AND t1.`ROLE_TYPE_ID` IN ('ENTERPRISE_CUST') 
+			  AND DATE(t.`CREATED_DATE`) = CURDATE()
+	</select>
+	<select id="getLoginNumToday" resultType="java.lang.Long">
+		SELECT COUNT(1) FROM USER_LOGIN t WHERE DATE(t.`LAST_UPDATE_DATE`)= CURDATE()
+	</select>
+	
+	<select id="getUserDetail" resultMap="BaseResultMap2">
+		SELECT t1.`PARTY_ID`,t2.`LAST_NAME_LOCAL`,t2.`GENDER`,t2.`TEL`,t3.`USER_LOGIN_ID`,t4.`PARTY_ID_TO`,t4.`ROLE_TYPE_ID_FROM`,t4.PARTY_RELATIONSHIP_TYPE_ID,t5.`ROLE_TYPE_ID`,t2.`MAIL` FROM 
+		PARTY t1 INNER JOIN PERSON t2 ON t1.`PARTY_ID`=t2.`PARTY_ID`
+		INNER JOIN USER_LOGIN t3 ON t1.`PARTY_ID` = t3.`PARTY_ID`
+		LEFT JOIN PARTY_RELATIONSHIP t4 ON t1.`PARTY_ID`=t4.`PARTY_ID_FROM`AND (t4.`THRU_DATE` > NOW() OR t4.`THRU_DATE` IS NULL )
+		AND t4.`PARTY_RELATIONSHIP_TYPE_ID`IN('USER_DEPT_REL','EXECUTIVE_DEPT_REL')
+		LEFT JOIN PARTY_ROLE t5 ON t1.`PARTY_ID`=t5.`PARTY_ID`
+		WHERE  t1.`PARTY_ID`=#{partyId}
+	</select>
+	
+	<!-- 查询个人会员当天/所有个人会员总数 -->
+	<select id="getPersonalData" resultType="java.lang.Long" parameterType="java.lang.String">
+		SELECT 
+		  COUNT(tt.`PARTY_ID`) 
+		FROM
+		  (SELECT 
+		    t.`PARTY_ID`,t1.`CREATED_DATE` 
+		  FROM
+		    USER_LOGIN t 
+		    LEFT JOIN PARTY_ROLE t1 
+		      ON t.`PARTY_ID` = t1.`PARTY_ID` 
+		  WHERE t.`ENABLED` = 'Y' 
+		    AND t1.`ROLE_TYPE_ID` IN ('INDIVIDUAL_CUST') 
+		  GROUP BY t.`PARTY_ID` 
+		    ORDER BY t.`LAST_UPDATE_DATE` DESC) tt 
+		    where 1=1
+	     <if test="flag != null and flag != ''">
+		     AND DATE(tt.`CREATED_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+		 </if>
+		 
+	</select>
+ <!-- 获取认证会员当天数或者总数 -->
+	<select id="getAuthenticationData" resultType="java.lang.Long" parameterType="java.lang.String">
+		SELECT 
+		  COUNT(tt.PARTY_ID) 
+		FROM
+		  (SELECT 
+		    t.`PARTY_ID`,t.`CREATED_DATE` 
+		  FROM
+		    PARTY t 
+		    INNER JOIN PARTY_RELATIONSHIP t1 
+		      ON t.`PARTY_ID` = t1.`PARTY_ID_TO` 
+		  WHERE t.`PARTY_TYPE_ID` = 'VIP_CORPORATION' 
+		    AND t1.`PARTY_RELATIONSHIP_TYPE_ID` = 'ENTERPRISE_CERTIFIED' 
+		    AND (
+		      t1.`THRU_DATE` IS NULL 
+		      OR t1.`THRU_DATE` > NOW()
+		    ) 
+		  GROUP BY t.`PARTY_ID`) tt where 1=1
+		   <if test="flag != null and flag != ''">
+		    and  DATE(tt.`CREATED_DATE`) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+		 </if>
+	</select>
+	
+	<select id="getLoginNumYesterday" resultType="java.lang.Long">
+		SELECT COUNT(1) FROM USER_LOGIN t WHERE DATE(t.`LAST_UPDATE_DATE`)= DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+	</select>
+</mapper>

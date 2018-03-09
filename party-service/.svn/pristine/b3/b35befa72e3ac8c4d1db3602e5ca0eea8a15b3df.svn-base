@@ -1,0 +1,75 @@
+package com.yikuyi.party.user.api.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.yikuyi.party.user.api.IUserResourceV8;
+import com.yikuyi.party.user.bll.UserManager;
+import com.yikuyi.party.v8.message.vo.MessageCodeVo;
+import com.yikuyi.party.v8.message.vo.PartyVo;
+
+
+@RestController
+@RequestMapping("v8/users")
+public class UserResourceV8 implements IUserResourceV8{
+
+	@Autowired
+	private UserManager userManager;
+
+	/**
+	 * 根据id查找用户基本信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	@Override
+	@RequestMapping(value = "/{userId}/simple", method = RequestMethod.GET)
+	public PartyVo getUserByUserId(@PathVariable String userId) {
+		return userManager.getUserByUserId(userId);
+	}
+	
+	/**
+	 * 根据id查找用户基本信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	@Override
+	@RequestMapping(value = "/{userId}/basic", method = RequestMethod.GET)
+	public PartyVo getAllUserByUserId(@PathVariable String userId) {
+		return  userManager.getAllUserByUserId(userId);
+	}
+	
+	
+	/**
+	 * 修改账号信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	@Override
+	@RequestMapping(value = "/{userId}/basic", method = RequestMethod.PUT)
+	public MessageCodeVo editUserInfo(@RequestBody PartyVo partyVo) {
+		return  userManager.editUserInfo(partyVo);
+	}
+	
+	/**
+	 * 根据id查找用户基本信息
+	 * @param id
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.helinmei@yikuyi.com  
+	 */
+	@Override
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public PartyVo login(@PathVariable String userId) {
+		return userManager.getUserByUserId(userId);
+	}
+}

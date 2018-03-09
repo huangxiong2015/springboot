@@ -1,0 +1,106 @@
+package com.yikuyi.party.contact.vo;
+
+public class EnterpriseParamVo {
+	
+	private String entId;
+	
+	private String mail;
+	
+	private String name;
+	
+	private String status;
+	
+	private String verifyStatus;
+	
+	private String registerStart;
+	
+	private String registerEnd;
+	
+	private String lastLoginStart;
+	
+	private String lastLoginEnd;
+	
+	private String phone;
+	
+	public String getEntId() {
+		return entId;
+	}
+
+	public void setEntId(String entId) {
+		this.entId = entId;
+	}
+
+	public String getMail() {
+		return mail;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getRegisterStart() {
+		return registerStart;
+	}
+
+	public void setRegisterStart(String registerStart) {
+		this.registerStart = registerStart;
+	}
+
+	public String getRegisterEnd() {
+		return registerEnd;
+	}
+
+	public void setRegisterEnd(String registerEnd) {
+		this.registerEnd = registerEnd;
+	}
+
+	public String getLastLoginStart() {
+		return lastLoginStart;
+	}
+
+	public void setLastLoginStart(String lastLoginStart) {
+		this.lastLoginStart = lastLoginStart;
+	}
+
+	public String getLastLoginEnd() {
+		return lastLoginEnd;
+	}
+
+	public void setLastLoginEnd(String lastLoginEnd) {
+		this.lastLoginEnd = lastLoginEnd;
+	}
+
+	public String getVerifyStatus() {
+		return verifyStatus;
+	}
+
+	public void setVerifyStatus(String verifyStatus) {
+		this.verifyStatus = verifyStatus;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	
+	
+}

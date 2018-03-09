@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<c:set var="ctx" value="${pageContext.request.contextPath }" scope="request" />
+
+<!--[if IE 8 ]>    <html class="ie8" lang="zh-CN"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie9" lang="zh-CN"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!-->
+<html lang="zh-CN">
+<!--<![endif]-->
+
+<head>
+	<!-- jQuery 1.11.3 -->
+  <c:import url ="/WEB-INF/jsp/include/main/constants.jsp"/>
+  <title>代金券详情</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="http://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="${ctx}/css/app/setCouponInfo.css">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <style>
+  	.mt15{margin-top:15px;}
+  	.coupon_info .list li{
+  		clear:left;
+  		color: #333;
+  		margin-bottom:13px;
+  	}
+  	.coupon_info .span_label{
+  		float:left;
+  		height: 20px;
+  		color:#919191;
+  	}
+  	.span_r_wrap{
+  		float:left;
+  		max-width:700px;
+  		margin-bottom: 10px;
+  		position: relative;
+    	top: -3px;	
+  	}
+  	.span_r_wrap p{
+    	word-break: break-all;
+    	line-height:20px;
+  	}
+  	.c_detail_cont .panel{
+  		min-width:980px;
+  		margin: 0 auto 20px auto;
+  	}
+  	.btn_bar{
+  		margin: 0 200px 20px 200px;
+  		text-align: center;
+  		padding-bottom: 40px;
+  	}
+  	.export_btn{
+		display:inline-block;
+		width: 118px;
+		height:31px;
+		line-height: 31px;
+		background:#c11f2d;
+		color:#fff;
+		text-align:center;
+		cursor: pointer;
+		border-radius:3px;
+	}
+	.export_btn:hover{
+		background: #b1191a;
+	}
+	.export_btn:active{
+		background: #c11f2d;
+	}
+	.proof_img img{
+		width: 80px;
+		height: 80px;
+	}
+	.proof_img .big_img{
+		width: 800px;
+		height: auto;
+	}
+	.panel-default>.panel-heading{
+		border:0;
+		padding: 10px 20px;
+	}
+	.panel-default>.panel-heading{
+		border:0;
+	}
+	.panel{
+		border: 0;
+		padding: 0 18px;
+	}
+	.panel-body{
+		padding:0;
+	}
+	.content-wrapper .content-header .header_tab{background:#f7f7f7;}
+  </style>
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+  <!---index header  start   ---->
+	<jsp:directive.include file="../include/main/header.jsp" />
+	<!---index header  end   ---->
+	 <!---index nav  start   ---->
+	<jsp:directive.include file="../include/main/menu.jsp" />
+	<!---index nav  end   ---->
+
+  
+  <!-- 右边内容显示 -->
+  <div class="content-wrapper">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<span class="header_tab">代金券详情</span>
+	</section>
+    <!-- Main content -->
+	<section class="content c_detail_cont pt20" ms-controller="data">
+		<div class="panel panel-default coupon_info ">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">
+		    	<span :if="@detail.couponCate=='PLATFORM_PROMO'">[ 平台推广券 ] </span >
+				<span :if="@detail.couponCate=='EXACT_PROMO'">[ 定向推广券 ] </span >
+				<span :if="@detail.couponCate=='OFFLINE_PROMO'">[ 地推券 ] </span >
+				<span ms-text="@detail.name"></span>
+		    </h3>
+		  </div>
+		  <div class="panel-body mt15">
+	    	<div class="row">
+			  <div class="col-md-12">
+			  	<ul class="list ml20">
+			  		<li><span class="span_label">&ensp;&ensp;有效期：</span><span :if="(@detail.thruTypeId=='EXACT_DATE_ZONE')||(@detail.thruTypeId=='exact_date_zone')"><em ms-text="@detail.fromDateFormat"></em>至<em ms-text="@detail.thruDateFormat"></em></span><span :if="(@detail.thruTypeId=='FROM_GET_DATE')||(@detail.thruTypeId=='from_get_date')">领取后<em ms-text="@detail.limitMonth"></em>个月内有效</span></li>
+			  		<li><span class="span_label">总发行量：</span><span ms-text="@detail.totalQty"></span><span>张</span></li>
+			  		<li><span class="span_label">单张面值：</span><span ms-text="@detail.unitAmount"></span><span :if="@detail.couponCurrency=='CNY'">元</span><span :if="@detail.couponCurrency=='USD'">美元</span></li>
+			  		<li>
+			  			<span class="span_label">可用货品：</span>
+			  			<div class="span_r_wrap">
+			  				<p ms-html="@getAvailbleProduct()"></p>
+			  			</div>
+			  		</li>
+			  		<li><span class="span_label">使用限额：</span><span>单笔订单指定货品金额满<em ms-text="@detail.consumeLimitAmount"></em></span><span :if="@detail.couponCurrency=='CNY'">元</span><span :if="@detail.couponCurrency=='USD'">美元</span>使用</li>
+			  		<li><span class="span_label">推广方式：</span><span :if="@detail.couponMethodType=='CONSUME_REFUND'">满额返现</span><span :if="(@detail.couponMethodType=='FREE_WGET')||(@detail.couponMethodType=='free_wget')">自助领取</span><span :if="(@detail.couponMethodType=='EXACT_SEND')||(@detail.couponMethodType=='exact_send')">定向发放</span></li>
+			  		<li>
+			  			<span class="span_label">推广对象：</span>
+			  			<span :if="(@detail.couponPartyType=='UNLIMIT')||(@detail.couponPartyType=='unlimit')">不限</span><span :if="(@detail.couponPartyType=='PARTY_GROUP')||(@detail.couponPartyType=='party_group')">企业用户</span><span :if="(@detail.couponPartyType=='PERSON')||(@detail.couponPartyType=='person')">个人用户</span>
+			  		</li>
+			  	</ul>
+			  </div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<ul class="list ml20">
+				  		<li style="margin-bottom:20px;"><span class="span_label">代金券申请凭证：</span><span class="proof_img"><img  id="proofImg" ms-attr="{src:@detail.approvedProof}" alt="" onerror="this.src='${ctx}/images/static/defaultProof.png'" ms-click="@showBigImage();"/></span><img src="" class="big_img" style="display:none;" ms-attr="{src:@detail.approvedProof}"/></li>
+				  	</ul>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<ul class="list ml20">
+				  		<li><span class="span_label">&ensp;&ensp;&ensp;&ensp;备注：</span>
+				  		<div>
+			  				<p style="word-break: break-all;" :text="@detail.couponText"></p>
+			  			</div></li>
+				  	</ul>
+				</div>
+			</div>
+		  </div>
+		</div>
+		<div class="panel panel-default" :if="@logListNull">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">操作日志</h3>
+		  </div>
+		  <div class="panel-body">
+		    <table class="table mt10">
+		      <thead>
+		        <tr>
+		          <th>序号</th>
+		          <th>操作人</th>
+		          <th>时间</th>
+		          <th>操作记录</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        <tr ms-for="($i, item) in @logList">
+			 		<td>{{$i+1}}</td>
+			 		<td>{{item.partyName}}</td>
+			 		<td>{{item.createdDate}}</td>
+			 		<td :attr="{title:item.comment}">{{item.comment}}</td>
+				</tr>
+		      </tbody>
+			 </table>
+		  </div>
+		</div>
+		<div class="panel panel-default" :if="@offListNull==true">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">地推券密码</h3>
+		  </div>
+		  <div class="panel-body">
+		    <table class="table mt10">
+		      <thead>
+		        <tr>
+		          <th>序号</th>
+		          <th>姓名</th>
+		          <th>已领取代金券数量</th>
+		          <th>地推券密码</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        <tr ms-for="($i, item) in @offList">
+			 		<td>{{$i+1}}</td>
+			 		<td>
+			 			<span :if="item.partyName!=undefined">{{item.partyName}}</span>
+			 			<span :if="item.partyName==undefined">{{item.partyId}}</span>
+			 		</td>
+			 		<td>{{item.offlinePromoNum}}</td>
+			 		<td>{{item.couponCodeId}}</td>
+				</tr>
+		      </tbody>
+			 </table>
+		  </div>
+		</div>
+		<section class="btn_bar" :if="@offListNull==true">
+			<span class="export_btn" ms-click="@exportInfo">导出地推券密码</span>
+		</section>
+	</section>
+	<!-- /.content -->
+  </div>
+	
+</div>
+<!-- ./wrapper -->
+<script type="text/javascript">
+	var selectCatid = "242,250";
+</script>
+<!---footer  start   ---->
+<jsp:directive.include file="../include/main/footer.jsp" />
+<!---footer  end   ----> 
+  
+<script src="${ctx}/js/app/couponDetail.js"></script> 
+</body>
+</html>

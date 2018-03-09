@@ -1,0 +1,41 @@
+package com.yikuyi.party.resource;
+
+import com.yikuyi.party.login.model.UserLogin;
+
+import feign.Headers;
+import feign.Param;
+import feign.RequestLine;
+
+/**
+ * 权限相关的接口调用定义
+ * 
+ * @author jik.shu@yikuyi.com
+ */
+@Headers({ "Content-Type: application/json;charset=UTF-8" })
+public interface UserLoginResource {
+
+
+	/**
+	 * 根据用户账户查找用户信息
+	 * @param account
+	 * @param authToken
+	 * @return
+	 * @since 2017年6月29日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@RequestLine("GET /v1/account/id?account={account}")
+	@Headers({ "Authorization: Basic {authToken}" })
+	public UserLogin getAccountById(@Param("account") String account,@Param("authToken") String authToken);
+	/**
+	 * 根据账号判断是否存在（手机、邮箱）
+	 * 
+	 * @param account
+	 * @return
+	 * @since 2017年1月12日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@RequestLine("GET /v1/account/mail?account={account}")
+	@Headers({ "Authorization: Basic {authToken}" })
+	public Boolean getAccount(@Param("account") String account,@Param("authToken") String authToken);
+
+}

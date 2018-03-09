@@ -1,0 +1,164 @@
+package com.yikuyi.party.vendors.bll;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.match.MockRestRequestMatchers;
+import org.springframework.test.web.client.response.MockRestResponseCreators;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.framework.springboot.model.LoginUser;
+import com.framewrok.springboot.web.LoginUserInjectionInterceptor;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.vo.FacilityVo;
+import com.yikuyi.party.vo.VendorVo;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+		TransactionDbUnitTestExecutionListener.class })
+@Transactional
+@Rollback
+public class VendorsManagerTest {
+	
+	@Autowired
+	private VendorsManager vendorsManager;
+	
+	@Value("${api.basedata.serverUrlPrefix}")
+	private String basedataServerUrlPrefix;
+	
+	@Value("${api.basedata.serverUrlPrefix}")
+	private String serverUrl;
+	
+	@Before
+	public void init() {
+		LoginUser loginUser = new LoginUser("9999999901", "admin", "9999999901", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));		
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(new MockHttpServletRequest()));;
+		RequestContextHolder.currentRequestAttributes().setAttribute(LoginUserInjectionInterceptor.LOGIN_USER_KEY, loginUser, RequestAttributes.SCOPE_REQUEST);
+	}
+	
+	@Autowired
+	private RestTemplate restTemplateMock;
+
+	public MockRestServiceServer mockRestServiceServer() {
+		return  MockRestServiceServer.createServer(restTemplateMock);
+	}
+	
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "partyrelactionship_sampledata.xml")
+	public void deleteTest() throws Exception {
+		List<String> list = new ArrayList<>();
+		list.add("1001");
+		list.add("1002");
+		
+		
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/facility/ownerParty/1001")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.DELETE)).andRespond(MockRestResponseCreators
+						.withSuccess("".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/facility/ownerParty/1002")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.DELETE)).andRespond(MockRestResponseCreators
+						.withSuccess("".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		vendorsManager.delete(list, "9999999901");
+	}
+	
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "partyrelactionship_sampledata.xml")
+	public void saveTest() throws UnsupportedEncodingException{
+		VendorVo vo = new VendorVo();
+		vo.setIsShowName("Y");
+		vo.setVendorId("123456789");
+		vo.setLogoUrl("www.baidu.com");
+		vo.setVendorName("腾讯QQ");
+		FacilityVo facilityVo = new FacilityVo();
+		facilityVo.setName("腾讯QQ");
+		List<FacilityVo> vos = new ArrayList<>();
+		vos.add(facilityVo);
+		vo.setItem(vos);
+
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/facility")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.POST)).andRespond(MockRestResponseCreators
+						.withSuccess("", MediaType.APPLICATION_JSON_UTF8));
+//		server.expect(ExpectedCount.manyTimes(),
+//				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/facility/ownerParty/1002")))
+//				.andExpect(MockRestRequestMatchers.method(HttpMethod.DELETE)).andRespond(MockRestResponseCreators
+//						.withSuccess("".getBytes("UTF-8"), MediaType.APPLICATION_JSON_UTF8));
+		
+		vendorsManager.save(vo, "123456789");
+	}
+	
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "partyrelactionship_sampledata.xml")
+	public void getUserTest(){
+		vendorsManager.getUser("770876471316054016");
+	}
+	
+	@Test
+	public void getFacilityByPartyIdTest(){
+		
+		MockRestServiceServer server = this.mockRestServiceServer();
+		// 创建另一个search 的模拟rest服务，设定其响应url以及返回（要求同上）
+		server.expect(ExpectedCount.manyTimes(),
+				MockRestRequestMatchers.requestTo(serverUrl.concat("/v1/facility?id=").concat("770876471316054016")))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET)).andRespond(MockRestResponseCreators
+						.withSuccess("", MediaType.APPLICATION_JSON_UTF8));
+		
+		vendorsManager.getFacilityByPartyId("770876471316054016");
+	}
+	
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "partyrelactionship_sampledata.xml")
+	public void saveSupplierShareTest(){
+		UserVo userVo = new UserVo();
+		userVo.setId("10001,10002");
+		userVo.setName("张无忌，张三丰");
+		vendorsManager.saveSupplierShare("", userVo);
+		vendorsManager.saveSupplierShare("9999999901", userVo);
+		
+	}
+	
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "partyrelactionship_sampledata.xml")
+	public void findSupplierShareTest(){
+		vendorsManager.findSupplierShare("9999999902");
+	}
+	
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "partyrelactionship_sampledata.xml")
+	public void getVendorListTest(){
+		vendorsManager.getVendorList("1003", 1, 10);
+	}
+
+}

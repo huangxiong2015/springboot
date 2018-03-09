@@ -1,0 +1,172 @@
+/*
+ * Created: 2017年4月1日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2017 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+package com.yikuyi.party.shipAddress.api.impl;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+
+import com.yikuyi.party.base.PartyApplicationTestBase;
+import com.yikuyi.party.contact.model.ContactMech;
+import com.yikuyi.party.contact.model.ContactMech.MechType;
+import com.yikuyi.party.contact.model.PostalAddress;
+import com.yikuyi.party.contact.model.TelecomNumber;
+import com.yikuyi.party.contact.model.TelecomNumber.MobileTelecomNumber;
+import com.yikuyi.party.contact.model.TelecomNumber.PhoneTelecomNumber;
+import com.yikuyi.party.contact.model.TelecomNumber.QqTelecomNumber;
+import com.yikuyi.party.model.PartyContactMech;
+import com.yikuyi.party.model.PartyContactMech.PurposeType;
+
+public class PartyAddressResourceTest extends PartyApplicationTestBase{
+	private static final Logger logger = LoggerFactory.getLogger(PartyAddressResourceTest.class);
+	private String host;
+
+	@Autowired
+	private TestRestTemplate restTemplate; 
+	
+	@Before
+	public void setUpBefore() throws Exception {
+		this.host = "http://localhost" + ":" + this.getPort();
+	}
+	
+	@Test
+	public void testGetShipAddressList() {
+		String url = host + "/v1/address?purposeType=REGISTER_LOCATION";
+		ResponseEntity<List<PartyContactMech>> responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<PartyContactMech>>(){});
+		@SuppressWarnings("unused")
+		List<PartyContactMech> list = responseEntity.getBody();
+	}
+	@Test
+	public void testGetShipAddressById() {
+		String url = host + "/v1/address/111?addressType=REGISTER_LOCATION";
+		ResponseEntity<PartyContactMech> responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<PartyContactMech>(){});
+		@SuppressWarnings("unused")
+		PartyContactMech list = responseEntity.getBody();
+	}
+	
+	@Test
+	public void testDelete() {
+		String url = host + "/v1/address/111";
+		restTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
+	}
+	@Test
+	public void testSave() {
+		String url = host + "/v1/address";
+		PartyContactMech partyContactMech = new PartyContactMech();
+		partyContactMech.setPartyId("888888");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			partyContactMech.setFromDate(formatter.parse("2016-12-05"));
+			partyContactMech.setThruDate(formatter.parse("2016-12-05"));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		partyContactMech.setPurposeType(PurposeType.BILLING_LOCATION);
+
+		ContactMech contactMech = new ContactMech();
+		// 邮箱地址
+		contactMech.setId("837220512026329088");
+		contactMech.setAlias("易库易公司地址");
+		contactMech.setEmail("1044867128@qq.com");
+		contactMech.setVerified("Y");
+
+		PostalAddress postalAddress = new PostalAddress();
+		postalAddress.setToName("张伟");
+		postalAddress.setAttnName("前台代收");
+		postalAddress.setAddress1("中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼");
+		postalAddress.setAddress2("中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼");
+		postalAddress.setPostalCode("0755425");
+		postalAddress.setCountryGeoName("中国");
+		postalAddress.setCountryGeoId("china");
+		postalAddress.setProvinceGeoName("1001");
+		postalAddress.setProvinceGeoId("广东省");
+		postalAddress.setCountyGeoName("深圳");
+		postalAddress.setCountyGeoId("2001");
+		postalAddress.setCityGeoName("宝安区");
+		postalAddress.setCityGeoId("3001");
+		postalAddress.setVerified("Y");
+		contactMech.setPostalAddress(postalAddress);
+
+		TelecomNumber telecomNumber = new TelecomNumber();
+
+		MobileTelecomNumber mobileTelecomNumber = new MobileTelecomNumber();
+		mobileTelecomNumber.setAreaCode("45");
+		mobileTelecomNumber.setCountryCode("86");
+		mobileTelecomNumber.setAreaCode("1614655");
+		mobileTelecomNumber.setContactNumber("15813723723");
+		mobileTelecomNumber.setAskForName("张伟");
+		mobileTelecomNumber.setVerified("Y");
+		mobileTelecomNumber.setMechType(MechType.MOBILE);
+		telecomNumber.setMobileTelecomNumber(mobileTelecomNumber);
+
+		PhoneTelecomNumber phoneTelecomNumber = new PhoneTelecomNumber();
+		phoneTelecomNumber.setAreaCode("45");
+		phoneTelecomNumber.setCountryCode("86");
+		phoneTelecomNumber.setAreaCode("1614655");
+		phoneTelecomNumber.setContactNumber("13066939619");
+		phoneTelecomNumber.setAskForName("张伟");
+		phoneTelecomNumber.setVerified("Y");
+		phoneTelecomNumber.setMechType(MechType.TELEPHONE);
+
+		QqTelecomNumber qqTelecomNumber = new QqTelecomNumber();
+		qqTelecomNumber.setContactNumber("1044867128");
+		qqTelecomNumber.setAskForName("张伟");
+		qqTelecomNumber.setVerified("Y");
+		qqTelecomNumber.setMechType(MechType.QQ);
+		telecomNumber.setQqTelecomNumber(qqTelecomNumber);
+
+		telecomNumber.setPhoneTelecomNumber(phoneTelecomNumber);
+
+		contactMech.setTelecomNumber(telecomNumber);
+
+		partyContactMech.setContactMech(contactMech);
+		try{
+			HttpEntity<PartyContactMech> requestEntity = new HttpEntity<>(partyContactMech);
+			ResponseEntity<PartyContactMech> rosponse = restTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<PartyContactMech>(){});
+			rosponse.getBody();
+		}catch(Exception e){
+			logger.error("错误信息{}",e);
+		}
+
+	}
+	@Test
+	public void testUpdate() {
+		String url = host + "/v1/address/111";
+		PartyContactMech partyContactMech = new PartyContactMech();
+		partyContactMech.setPartyId("77777");
+		ContactMech contactMech = new ContactMech();
+		// 邮箱地址
+		contactMech.setId("837220512026329088");
+		contactMech.setAlias("易库易公司地址");
+		contactMech.setEmail("1044867128@qq.com");
+		contactMech.setVerified("Y");
+		partyContactMech.setContactMech(contactMech);
+		try{
+			HttpEntity<PartyContactMech> requestEntity = new HttpEntity<>(partyContactMech);
+			ResponseEntity<PartyContactMech> rosponse = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<PartyContactMech>(){});
+			rosponse.getBody();
+		}catch(Exception e){
+			logger.error("错误信息{}",e);
+		}
+
+	}
+}

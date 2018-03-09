@@ -1,0 +1,309 @@
+var vm;
+var addData;
+var recommendationId = getQueryString("recommendationId");
+var validate= false;
+vm = new Vue({
+	    el: '#advertise_edit',
+	    data: {
+	    	initData: {
+	    		category: [{categoryId: '6001', categoryName: '图片广告'}],
+	    		page: [{pageId: '7001', pageName: '首页'}, {pageId: '7002', pageName: '登录页'}],	//广告页面
+	    		position: [{positionId: '8001', positionName: '顶部'}]
+	    	},
+	    	pageTitle: '新增',
+	    	title: '',	//广告标题
+	    	categoryId: '6001', //广告类型
+	    	pageId: '7001',	//广告页面
+	    	positionId: '8001', //广告位置
+	    	startDate: '',  //开始时间
+	    	expiryDate: '', //结束时间
+			proportion: '', //曝光占比
+			image: '',	//广告效果图
+			background: '',	//背景色
+			linkUrl: '',	//广告链接
+			categoryName: '图片广告',	//广告类型Value
+			pageName: '首页',	//广告页面Value
+			positionName: '顶部' //广告位置Value
+		},
+		mounted: function() {
+			datetimeInit();
+			uploadPic();
+			
+			this.startDate = moment().format('YYYY-MM-DD H:00:00');
+			this.expiryDate = moment().format('YYYY-MM-DD H:00:00');
+			
+			if(recommendationId) {
+				this.pageTitle = '编辑';
+				queryInfo();
+				$('#pageId').attr('disabled', true);
+				$('.breadcrumb .active').text('广告位编辑');
+				$('title').text('广告位-编辑');
+			}
+		},
+		watch: {
+			pageId: function(val, oldVal) {
+				var $this = this;
+				$.each(this.initData.page, function(i, item) {
+					if(item.pageId == val) {
+						
+						if(item.pageId == '7002') {
+							$this.positionName = '';
+						}
+						
+						$this.pageName = item.pageName;
+					}
+				}) 
+			}
+		},
+		methods : {
+			//广告链接格式化
+			linkUrlFormat: function() {
+				if(!this.linkUrl) return;
+				
+				if(this.linkUrl.indexOf('http://') == 0 || this.linkUrl.indexOf('https://') == 0) {
+					this.linkUrl = this.linkUrl.replace(/^(http:)|(https:)/, '');
+				}else if(this.linkUrl.indexOf('//') != 0) {
+					this.linkUrl = '//' + this.linkUrl;
+				}
+			},
+			//取消
+			cancel: function() {
+				history.go(-1);
+			},
+			//保存
+			save: function() {
+				save();
+			}
+		}
+	});
+
+	//时间控件初始化
+	function datetimeInit() {
+		$('#startDate').datetimepicker({
+		    language:  config.language, 
+		    minView: 'day',   //设置只显示到小时
+		    format: "yyyy-mm-dd hh:00:00",
+		    autoclose: true
+		}).on('change',function(ev){
+		    var startDate = $('#startDate').val();
+		    $("#expiryDate").val(startDate);
+		    vm.expiryDate = startDate;
+		    vm.startDate = startDate;
+		});
+		
+		$('#expiryDate').datetimepicker({
+			 language:  config.language, 
+			 minView: 'day',   //设置只显示到小时
+		     format: "yyyy-mm-dd hh:00:00",
+		     autoclose: true
+		}).on('change',function(ev){
+		    var expiryDate = $('#expiryDate').val();
+		    vm.expiryDate = expiryDate;
+		});
+	}
+	
+
+	//上传图片组件
+	function uploadPic() {
+		var uploader1 = createUploader({
+			buttonId: "uploadback", 
+			uploadType: "notice.publicRead",   //文件夹地址要后台给
+			url:  ykyUrl.webres,
+			types: "jpg,png,jpeg,gif",
+			fileSize: "5mb",
+			isImage: true, 
+			init:{
+				FileUploaded : function(up, file, info) { 
+		            layer.close(index);
+					if (info.status == 200 || info.status == 203) {
+						console.log(_fileUrl);
+						console.log(file); 
+						vm.image = _fileUrl;
+					} else {
+						layer.msg("上传文件失败,请重新上传！",{icon:2,offset:120}); 
+					}
+					up.files=[];
+				}
+			}
+		}); 
+		uploader1.init();
+	}
+
+	//请求获取初始数据 ，赋值
+	function queryInfo() {
+		$.aAjax({
+			url:ykyUrl.info + '/v1/recommendations/' + recommendationId,
+			type:'GET',
+			success:function(data){	
+				vm.startDate = data.startDate || moment().format('YYYY-MM-DD H:00:00');
+				vm.expiryDate = data.expiryDate || moment().format('YYYY-MM-DD H:00:00');
+				vm.linkUrl = data.contentMap.url || '';
+				vm.title = data.contentMap.title || '';
+				vm.categoryId = data.categoryId || '',
+				vm.pageId = data.extend1 || '',
+				vm.positionId = data.extend2 || '8001',
+				vm.proportion = data.contentMap.proportion || '',
+				vm.image = data.contentMap.image || '',
+				vm.background = data.contentMap.background || '';
+			},
+			error:function(){
+				console.log("error")
+			}
+		})
+	}
+	
+	//保存数据
+	function save() {
+		//广告标题校验 
+		if(!vm.title){
+			layer.msg("请输入广告标题！",{
+				skin:"c_tip"
+			});
+			$('#title').focus();
+			return;
+		}
+		
+		if(vm.pageId != '7002') {
+
+			//投放时间校验
+			var startDate= $("#startDate").val();
+			var expiryDate= $("#expiryDate").val();
+		    var currentTime = new Date();
+		    
+			if(!startDate){
+				layer.msg("请输入开始时间！",{
+					skin:"c_tip"
+				});
+				$('#startDate').focus();
+				return;
+			}
+			
+			if(!expiryDate){
+				layer.msg("请输入结束时间！",{
+					skin:"c_tip"
+				});
+				$('#expiryDate').focus();
+				return;
+			}
+			
+		   var expiryTimer = Date.parse(expiryDate);
+		   var startTimer = Date.parse( startDate );
+		   
+		   if( currentTime  >=  startTimer ){
+			   layer.msg("活动时间必须大于当前时间！",{
+					skin:"c_tip"
+				});
+			   $('#startDate').focus();
+			   return;
+		   }
+		   if( expiryTimer  <=  startTimer ){
+			   layer.msg("结束时间必须大于开始时间！",{
+					skin:"c_tip"
+				});
+			   $('#expiryDate').focus();
+			   return;
+		   }
+			
+			//曝光占比校验
+			if(vm.proportion==""){
+				layer.msg("曝光占比不能为空！",{
+					skin:"c_tip"
+				});
+				$('#proportion').focus();
+			   return;
+		    }
+			
+			if(!/^[123456789]$/.test(vm.proportion)) {
+				layer.msg("曝光占比位1-9的数字！",{
+					skin:"c_tip"
+				});
+				$('#proportion').focus();
+			   return;
+			}
+		}
+		
+		
+		//上传图片
+		if(vm.image==""){
+			layer.msg("请上传图片！",{
+				skin:"c_tip"
+			});
+		   return;
+	    }
+		
+		//广告背景色
+		if(!vm.background){
+			layer.msg("请输入背景色！",{
+				skin:"c_tip"
+			});
+			$("#background").focus();
+			return;
+		}
+		
+		if(vm.pageId != '7002') {
+			if(!vm.linkUrl) {
+				//活动链接
+				layer.msg("请输入广告链接！",{
+					skin:"c_tip"
+				});
+				$("#url").focus();
+				return;
+			}
+		}
+		
+	   
+	   var contentData = {
+		    title: vm.title,
+			proportion: vm.pageId != 7002 ? vm.proportion : '',  //曝光占比
+			image: vm.image,     		//图片路径
+			url: vm.linkUrl,      		//链接地址
+			background: vm.background,   //背景色
+			pageName: vm.pageName,
+			positionName: vm.positionName	
+	   }
+	   
+	   var listData;
+	   if(vm.pageId == '7002') {
+		   listData = {
+			    "categoryTypeId": "advertisement",    //固定要传类型为广告
+				categoryId: vm.categoryId,  //广告类型
+				"content": JSON.stringify(contentData),
+				extend1: vm.pageId,    			//广告页面
+		   }
+	   }else {
+		   listData = {
+			    "categoryTypeId": "advertisement",    //固定要传类型为广告
+				categoryId: vm.categoryId,  //广告类型
+				"content": JSON.stringify(contentData),
+				"expiryDate": vm.expiryDate,    	 //结束时间
+				"startDate": vm.startDate,   		//开始时间
+				extend1: vm.pageId,    			//广告页面
+				extend2: vm.positionId,			//广告位置
+		   }
+	   }
+	   
+		
+		$.aAjax({
+			url: ykyUrl.info + '/v1/recommendations/' + (recommendationId ? recommendationId : ''),
+			type:recommendationId ? 'PUT':'POST',		
+			data:JSON.stringify(listData),
+			success:function(data){
+				layer.msg("保存成功！",{
+					skin:"c_tip"
+				});
+				setTimeout(function(){
+				   location.href = ykyUrl._this + "/advertisement.htm";  //保存成功跳转列表页
+					
+				},2000)				
+			},
+			error:function(data){
+				if(data.responseJSON.errCode == "ADVERTISEMENTTITLE_EXIST"){
+					layer.msg("广告名称已存在！",{
+						skin:"c_tip"
+					});
+				}
+			}
+		})
+		
+	}
+

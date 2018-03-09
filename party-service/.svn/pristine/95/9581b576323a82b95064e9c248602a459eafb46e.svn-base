@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.credit.dao.PartyCreditDao">
+   <resultMap id="BaseResultMap" type="com.yikuyi.party.credit.model.PartyCredit">
+		<id column="PARTY_CREDIT_ID" property="partyCreditId" jdbcType="VARCHAR" />
+		<result column="PARTY_ID" property="partyId" jdbcType="VARCHAR" />
+		<result column="CURRENCY" property="currency" jdbcType="VARCHAR" />
+		<result column="CREDIT_QUOTA" property="creditQuota"/>
+		<result column="REALTIME_CREDIT_QUOTA" property="realtimeCreditQuota"/>
+		<result column="CREDIT_DEADLINE" property="creditDeadline" jdbcType="VARCHAR" />
+		<result column="CHECK_DATE" property="checkDate" jdbcType="VARCHAR" />
+		<result column="CHECK_CYCLE" property="checkCycle" jdbcType="VARCHAR" />
+		<result column="PAY_DATE" property="payDate" jdbcType="VARCHAR" />
+		<result column="COMMON" property="common" jdbcType="VARCHAR" />
+		<result column="CREATED_DATE" property="createdDate" jdbcType="TIMESTAMP" />
+		<result column="CREATOR" property="creator" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+		
+		<result column="APPLY_USER" property="applyUser" jdbcType="VARCHAR" />
+		<result column="APPLY_MAIL" property="applyMail" jdbcType="VARCHAR" />
+		<result column="APPLY_INFORMATION" property="applyInformation" jdbcType="VARCHAR" />
+		<result column="FROM_DATE" property="fromDate" jdbcType="TIMESTAMP" />
+		<result column="THRU_DATE" property="thruDate" jdbcType="TIMESTAMP" />
+		<result column="SETTLEMENT_METHOD" property="settlementMethod"/>
+		<result column="PAYMENT_TERMS" property="paymentTerms"/>
+		
+	</resultMap>
+	
+	
+	 
+	<resultMap id="PartyCreditVoMap" type="com.yikuyi.party.credit.vo.PartyCreditVo">
+		<id column="PARTY_CREDIT_ID" property="partyCreditId" jdbcType="VARCHAR" />
+		<result column="PARTY_ID" property="partyId" jdbcType="VARCHAR" />
+		<result column="CURRENCY" property="currency" jdbcType="VARCHAR" />
+		<result column="CREDIT_QUOTA" property="creditQuota"/>
+		<result column="REALTIME_CREDIT_QUOTA" property="realtimeCreditQuota" />
+		<result column="CREDIT_DEADLINE" property="creditDeadline" jdbcType="VARCHAR" />
+		<result column="CHECK_DATE" property="checkDate" jdbcType="VARCHAR" />
+		<result column="CHECK_CYCLE" property="checkCycle" jdbcType="VARCHAR" />
+		<result column="PAY_DATE" property="payDate" jdbcType="VARCHAR" />
+		<result column="COMMON" property="common" jdbcType="VARCHAR" />
+		<result column="CREATED_DATE" property="createdDate" jdbcType="TIMESTAMP" />
+		<result column="CREATOR" property="creator" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser" jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+		
+		<result column="APPLY_USER" property="applyUser" jdbcType="VARCHAR" />
+		<result column="APPLY_MAIL" property="applyMail" jdbcType="VARCHAR" />
+		<result column="APPLY_INFORMATION" property="applyInformation" jdbcType="VARCHAR" />
+		<result column="FROM_DATE" property="fromDate" jdbcType="TIMESTAMP" />
+		<result column="THRU_DATE" property="thruDate" jdbcType="TIMESTAMP" />
+		
+		<result column="PARTY_TYPE_ID" property="partyType" jdbcType="VARCHAR" />
+		<result column="PARTY_CODE" property="partyCode" jdbcType="VARCHAR" />
+		<result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+		<result column="ACCOUNT_PERIOD_STATUS" property="accountPeriodStatus" jdbcType="VARCHAR" />	
+		<result column="SETTLEMENT_METHOD" property="settlementMethod"/>
+		<result column="PAYMENT_TERMS" property="paymentTerms"/>	
+	</resultMap>
+
+
+	<resultMap type="com.yikuyi.party.credit.model.PartyAttachment" id="PartyAttrchmentMap">
+		<id column="PARTY_ATTACHMENT_ID" property="partyCreditId"/>
+		<result column="PARTY_ID" property="partyId"/>
+		<result column="ATTACHMENT_NAME" property="attachmentName"/>
+		<result column="ATTACHMENT_URL" property="attachmentUrl"/>
+		<result column="ATTACHMENT_TYPE" property="attachmentType"/>
+		<result column="PARTY_ATTACHMENT_ID" property="partyCreditId"/>
+	</resultMap>
+
+
+
+	<select id="getPartyCredit" resultMap="BaseResultMap" >
+		SELECT c.`PARTY_CREDIT_ID`,
+			 c.`PARTY_ID`,
+			 c.`CURRENCY`,
+			 c.`CREDIT_QUOTA`,
+			 c.`REALTIME_CREDIT_QUOTA`,
+		     c.`CREDIT_DEADLINE`,
+		     c.`CHECK_CYCLE`,
+		     c.`PAY_DATE`,
+		     c.`COMMON`,
+		     c.`CREATOR`,
+		     c.`CREATED_DATE`,
+			 c.`LAST_UPDATE_USER`,
+			 c.`LAST_UPDATE_DATE`,
+			 c.`THRU_DATE`,
+			 c.`FROM_DATE`,
+			 c.`APPLY_USER`,
+			 c.`APPLY_MAIL`,
+			 c.`APPLY_INFORMATION`,
+			 c.CHECK_DATE,
+			 c.PAYMENT_TERMS,
+			 c.SETTLEMENT_METHOD
+			 FROM PARTY_CREDIT c WHERE (c.`THRU_DATE` > NOW() or c.THRU_DATE is null) AND c.`PARTY_ID` = #{partyId} 
+		<if test="currency != null">
+			AND c.`CURRENCY` = #{currency}
+		</if>
+			
+	</select>
+	
+
+	<!--   添加账期信息 -->
+  <insert id="insert" parameterType="com.yikuyi.party.credit.model.PartyCredit" >
+    insert into PARTY_CREDIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="partyCreditId != null" >
+        PARTY_CREDIT_ID,
+      </if>
+      <if test="partyId != null" >
+        PARTY_ID,
+      </if>
+      <if test="currency != null" >
+        CURRENCY,
+      </if>
+      <if test="creditQuota != null" >
+        CREDIT_QUOTA,
+      </if>
+      <if test="realtimeCreditQuota != null" >
+        REALTIME_CREDIT_QUOTA,
+      </if>
+      <if test="creditDeadline != null" >
+        CREDIT_DEADLINE,
+      </if>
+      
+     <if test="checkDate != null" >
+        CHECK_DATE,
+      </if>
+       <if test="checkCycle != null" >
+        CHECK_CYCLE,
+      </if>
+      <if test="payDate != null" >
+        PAY_DATE,
+      </if>
+      <if test="common != null" >
+        COMMON,
+      </if>
+      <if test="creator != null" >
+        CREATOR,
+      </if>
+     <if test="createdDate != null" > 
+        CREATED_DATE,
+      </if>
+       <if test="lastUpdateUser != null" >
+       LAST_UPDATE_USER, 
+      </if>
+     <if test="lastUpdateDate != null" > 
+      LAST_UPDATE_DATE,
+      </if>
+      
+      <if test="paymentTerms != null" > 
+      PAYMENT_TERMS,
+      </if>
+      <if test="settlementMethod != null" > 
+      SETTLEMENT_METHOD,
+      </if>
+    
+      <if test="applyUser != null" > 
+      APPLY_USER,
+      </if>
+      <if test="applyMail != null" > 
+      APPLY_MAIL,
+      </if>
+        <if test="applyInformation != null" > 
+      APPLY_INFORMATION,
+      </if>
+        <if test="fromDate != null" > 
+      FROM_DATE,
+      </if>
+      <if test="thruDate != null" > 
+      THRU_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="partyCreditId != null" >
+        #{partyCreditId,jdbcType=VARCHAR},
+      </if>
+      <if test="partyId != null" >
+        #{partyId,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+        #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="creditQuota != null" >
+        #{creditQuota,jdbcType=VARCHAR},
+      </if>
+      <if test="realtimeCreditQuota != null" >
+        #{realtimeCreditQuota},
+      </if>
+      <if test="creditDeadline != null" >
+        #{creditDeadline,jdbcType=VARCHAR},
+      </if>
+       <if test="checkDate != null" >
+           #{checkDate,jdbcType=VARCHAR},
+      </if>
+       <if test="checkCycle != null" >
+        #{checkCycle,jdbcType=VARCHAR},
+      </if>
+      <if test="payDate != null" >
+         #{payDate,jdbcType=VARCHAR},
+      </if>
+      <if test="common != null" >
+       #{common,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        #{creator,jdbcType=VARCHAR},
+      </if>
+     <if test="createdDate != null" > 
+       #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+       <if test="lastUpdateUser != null" >
+        #{lastUpdateUser,jdbcType=VARCHAR},
+      </if>
+     <if test="lastUpdateDate != null" > 
+       #{lastUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      
+      <if test="paymentTerms != null" > 
+      #{paymentTerms,jdbcType=VARCHAR},
+      </if>
+      <if test="settlementMethod != null" > 
+      #{settlementMethod,jdbcType=VARCHAR},
+      </if>
+      
+      <if test="applyUser != null" > 
+       #{applyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="applyMail != null" > 
+       #{applyMail,jdbcType=VARCHAR},
+      </if>
+        <if test="applyInformation != null" > 
+      #{applyInformation,jdbcType=VARCHAR},
+      </if>
+        <if test="fromDate != null" > 
+        #{fromDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="thruDate != null" > 
+       #{thruDate,jdbcType=TIMESTAMP},
+      </if>
+      
+    </trim>
+  </insert>
+
+
+  <update id="update" parameterType="com.yikuyi.party.credit.model.PartyCredit" >
+    update PARTY_CREDIT 
+     <set >
+      <if test="partyId != null" >
+       PARTY_ID = #{partyId,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+       CURRENCY = #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="creditQuota != null" >
+       CREDIT_QUOTA =#{creditQuota},
+      </if>
+      <if test="realtimeCreditQuota != null" >
+       REALTIME_CREDIT_QUOTA = #{realtimeCreditQuota},
+      </if>
+      <if test="creditDeadline != null" >
+       CREDIT_DEADLINE = #{creditDeadline,jdbcType=VARCHAR},
+      </if>
+       <if test="checkDate != null" >
+        CHECK_DATE = #{checkDate,jdbcType=VARCHAR},
+      </if>
+       <if test="checkCycle != null" >
+       CHECK_CYCLE = #{checkCycle,jdbcType=VARCHAR},
+      </if>
+      <if test="payDate != null" >
+        PAY_DATE = #{payDate,jdbcType=VARCHAR},
+      </if>
+      <if test="common != null" >
+      COMMON = #{common,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdateUser != null" >
+       LAST_UPDATE_USER =  #{lastUpdateUser,jdbcType=VARCHAR},
+      </if>
+     <if test="lastUpdateDate != null" > 
+      LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      
+       <if test="paymentTerms != null" > 
+      PAYMENT_TERMS = #{paymentTerms,jdbcType=VARCHAR},
+      </if>
+      <if test="settlementMethod != null" > 
+      SETTLEMENT_METHOD = #{settlementMethod,jdbcType=VARCHAR},
+      </if>
+      
+       <if test="applyUser != null" > 
+       APPLY_USER = #{applyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="applyMail != null" > 
+      APPLY_MAIL = #{applyMail,jdbcType=VARCHAR},
+      </if>
+       <if test="applyInformation != null" > 
+       APPLY_INFORMATION = #{applyInformation,jdbcType=VARCHAR},
+      </if>
+      <if test="fromDate != null" > 
+        FROM_DATE = #{fromDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="thruDate != null" > 
+       THRU_DATE = #{thruDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where  PARTY_CREDIT_ID = #{partyCreditId,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updatePartyCreditByPartyId" parameterType="com.yikuyi.party.credit.model.PartyCredit" >
+    update PARTY_CREDIT 
+     <set >
+      <if test="currency != null" >
+       CURRENCY = #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="creditQuota != null " >
+       CREDIT_QUOTA = #{creditQuota},
+      </if>
+      <if test="realtimeCreditQuota != null " >
+       REALTIME_CREDIT_QUOTA = #{realtimeCreditQuota},
+      </if>
+      <if test="creditDeadline != null" >
+       CREDIT_DEADLINE = #{creditDeadline,jdbcType=VARCHAR},
+      </if>
+       <if test="checkDate != null" >
+        CHECK_DATE = #{checkDate,jdbcType=VARCHAR},
+      </if>
+       <if test="checkCycle != null" >
+       CHECK_CYCLE = #{checkCycle,jdbcType=VARCHAR},
+      </if>
+      <if test="payDate != null" >
+        PAY_DATE = #{payDate,jdbcType=VARCHAR},
+      </if>
+      <if test="common != null" >
+      COMMON = #{common,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdateUser != null" >
+       LAST_UPDATE_USER =  #{lastUpdateUser,jdbcType=VARCHAR},
+      </if>
+     <if test="lastUpdateDate != null" > 
+      LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+       <if test="applyUser != null" > 
+       APPLY_USER = #{applyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="applyMail != null" > 
+      APPLY_MAIL = #{applyMail,jdbcType=VARCHAR},
+      </if>
+       <if test="applyInformation != null" > 
+       APPLY_INFORMATION = #{applyInformation,jdbcType=VARCHAR},
+      </if>
+      <if test="fromDate != null" > 
+        FROM_DATE = #{fromDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="thruDate != null" > 
+       THRU_DATE = #{thruDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where  PARTY_ID = #{partyId,jdbcType=VARCHAR}
+    AND ( THRU_DATE > NOW() or THRU_DATE is null)
+  </update>
+   
+   <insert id="insertAttrchment">
+    INSERT INTO `PARTY_ATTACHMENT`(PARTY_ATTACHMENT_ID,ATTACHMENT_NAME,ATTACHMENT_URL,CREATOR,CREATED_DATE,LAST_UPDATE_USER,LAST_UPDATE_DATE,ATTACHMENT_TYPE,PARTY_ID)  
+    VALUES(#{id},#{attachmentName},#{attachmentUrl},#{userId},NOW(),#{userId},NOW(),#{attachmentType},#{partyId})
+   </insert>
+   <delete id="deleteAttrchment">
+		DELETE FROM `PARTY_ATTACHMENT` WHERE `PARTY_ATTACHMENT_ID`=#{id,jdbcType=VARCHAR} and ATTACHMENT_TYPE=#{attachmentType,jdbcType=VARCHAR}
+   </delete>
+
+   
+      <!--账期订单列表查询  -->
+   <select id="getPartyCreditVoList" resultMap="PartyCreditVoMap" parameterType="com.yikuyi.party.credit.vo.PartyCreditParamVo">
+   		SELECT 
+			c.`PARTY_CREDIT_ID`,c.`PARTY_ID`,c.`CURRENCY`,c.`CREDIT_QUOTA`,
+			c.`REALTIME_CREDIT_QUOTA`,c.`CREDIT_DEADLINE`,c.`CHECK_DATE`,c.`CHECK_CYCLE`,
+			c.`PAY_DATE`,c.`COMMON`,c.`CREATOR`,c.`CREATED_DATE`,c.`LAST_UPDATE_USER`,c.`LAST_UPDATE_DATE`,
+			c.`FROM_DATE`,c.`THRU_DATE`,c.`APPLY_USER`,c.`APPLY_MAIL`,c.`APPLY_INFORMATION`,
+			p.`PARTY_TYPE_ID`,
+			p.`PARTY_CODE`,
+			g.`GROUP_NAME`,
+			g.`ACCOUNT_PERIOD_STATUS`
+   		FROM PARTY_CREDIT c LEFT JOIN PARTY p ON c.`PARTY_ID` = p.`PARTY_ID`
+   		AND p.`PARTY_TYPE_ID` = 'VIP_CORPORATION'  
+		LEFT JOIN PARTY_GROUP g ON c.`PARTY_ID` = g.`PARTY_ID`
+   		WHERE (c.`THRU_DATE` > NOW() OR c.THRU_DATE IS NULL)
+   		AND (g.`ACCOUNT_PERIOD_STATUS` = 'PERIOD_VERIFIED' OR g.`ACCOUNT_PERIOD_STATUS`='PERIOD_DISABLED')
+       <if test="partyCode != null and partyCode !=''" >
+	   		AND p.`PARTY_CODE` LIKE CONCAT('%',#{partyCode},'%')
+	   </if>
+	   <if test="groupName != null and groupName !=''" >
+		   AND g.`GROUP_NAME` LIKE CONCAT('%',#{groupName},'%')
+	   </if>
+   	   <if test="accountPeriodStatus !=null ">
+   	   	   AND g.`ACCOUNT_PERIOD_STATUS` = #{accountPeriodStatus}
+   	   </if>
+   	   ORDER BY c.`CREATED_DATE` DESC
+   </select>
+   
+   
+   
+   <resultMap id="BaseResultPartyRelationshipMap" type="com.yikuyi.party.model.PartyRelationship">
+   
+   </resultMap>
+    
+  <select id="getPartyIdTo" resultType="java.lang.String">
+  	SELECT p.`PARTY_ID_TO` FROM PARTY_RELATIONSHIP  p WHERE p.`PARTY_ID_FROM` = #{partyIdFrom}
+  	  <if test="partyRelationshipTypeId !=null ">
+  	  	AND p.`PARTY_RELATIONSHIP_TYPE_ID` =#{partyRelationshipTypeId}
+  	  </if>
+  	  ORDER BY p.`CREATED_DATE` DESC
+	  LIMIT 1
+  </select>
+  
+   <select id="getPartyIdFrom" resultType="java.lang.String">
+  	SELECT p.`PARTY_ID_FROM` FROM PARTY_RELATIONSHIP  p WHERE p.`PARTY_ID_TO` = #{partyIdTo}
+  	  <if test="partyRelationshipTypeId !=null ">
+  	  	AND p.`PARTY_RELATIONSHIP_TYPE_ID` =#{partyRelationshipTypeId}
+  	  </if>
+  	  ORDER BY p.`CREATED_DATE` DESC
+	  LIMIT 1
+  </select> 
+  
+   
+   <insert id="insertVendorRel" parameterType="com.yikuyi.party.model.PartyRelationship" >
+    insert into PARTY_RELATIONSHIP
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="partyIdFrom != null" >
+        PARTY_ID_FROM,
+      </if>
+      <if test="partyIdTo != null" >
+        PARTY_ID_TO,
+      </if>
+      <if test="roleTypeIdFrom != null" >
+        ROLE_TYPE_ID_FROM,
+      </if>
+      <if test="roleTypeIdTo != null" >
+        ROLE_TYPE_ID_TO,
+      </if>
+      <if test="fromDate != null" >
+        FROM_DATE,
+      </if>
+      <if test="relationshipName != null" >
+        RELATIONSHIP_NAME,
+      </if>      
+     <if test="partyRelationshipTypeId != null" >
+        PARTY_RELATIONSHIP_TYPE_ID,
+      </if>  
+       <if test="statusId != null" >
+        STATUS_ID,
+      </if>   
+      <if test="creator != null" >
+        CREATOR,
+      </if>
+     <if test="createdDate != null" > 
+        CREATED_DATE,
+      </if>
+       <if test="lastUpdateUser != null" >
+       LAST_UPDATE_USER, 
+      </if>
+     <if test="lastUpdateDate != null" > 
+      LAST_UPDATE_DATE,
+      </if>         
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+       <if test="partyIdFrom != null" >
+       #{partyIdFrom},
+      </if>
+      <if test="partyIdTo != null" >
+        #{partyIdTo},
+      </if>
+      <if test="roleTypeIdFrom != null" >
+         #{roleTypeIdFrom},
+      </if>
+      <if test="roleTypeIdTo != null" >
+        #{roleTypeIdTo},
+      </if>
+      <if test="fromDate != null" >
+       #{fromDate},
+      </if>
+      <if test="relationshipName != null" >
+       #{relationshipName},
+      </if>      
+     <if test="partyRelationshipTypeId != null" >
+       #{partyRelationshipTypeId},
+      </if>    
+      <if test="statusId != null" >
+        #{statusId},
+      </if>
+      <if test="creator != null" >
+        #{creator},
+      </if>
+     <if test="createdDate != null" > 
+       #{createdDate},
+      </if>
+       <if test="lastUpdateUser != null" >
+        #{lastUpdateUser},
+      </if>
+     <if test="lastUpdateDate != null" > 
+       #{lastUpdateDate},
+      </if>  
+    </trim>
+  </insert>
+  
+  
+  <insert id="insertVo" parameterType="com.yikuyi.party.credit.model.PartyAttachment" >
+    insert into PARTY_ATTACHMENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="partyAttachmentId != null" >
+        PARTY_ATTACHMENT_ID,
+      </if>
+      <if test="partyId != null" >
+        PARTY_ID,
+      </if>
+      <if test="attachmentName != null" >
+        ATTACHMENT_NAME,
+      </if>
+      <if test="attachmentUrl != null" >
+        ATTACHMENT_URL,
+      </if>
+      <if test="attachmentType != null" >
+        ATTACHMENT_TYPE,
+      </if>     
+      <if test="creator != null" >
+        CREATOR,
+      </if>
+     <if test="createdDate != null" > 
+        CREATED_DATE,
+      </if>
+       <if test="lastUpdateUser != null" >
+       LAST_UPDATE_USER, 
+      </if>
+     <if test="lastUpdateDate != null" > 
+      LAST_UPDATE_DATE,
+      </if>         
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="partyAttachmentId != null" >
+       #{partyAttachmentId},
+      </if>
+      <if test="partyId != null" >
+        #{partyId},
+      </if>
+      <if test="attachmentName != null" >
+        #{attachmentName},
+      </if>
+      <if test="attachmentUrl != null" >
+       #{attachmentUrl},
+      </if>
+      <if test="attachmentType != null" >
+        #{attachmentType},
+      </if>     
+      <if test="creator != null" >
+        #{creator},
+      </if>
+     <if test="createdDate != null" > 
+       #{createdDate},
+      </if>
+       <if test="lastUpdateUser != null" >
+        #{lastUpdateUser},
+      </if>
+     <if test="lastUpdateDate != null" > 
+       #{lastUpdateDate},
+      </if>  
+    </trim>
+  </insert>
+  
+  <update id="updateByPartyId" parameterType="com.yikuyi.party.vendor.vo.VendorCreditVo" >
+    update PARTY_CREDIT 
+     <set >
+
+      <if test="currency != null" >
+       CURRENCY = #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="creditQuota != null" >
+       CREDIT_QUOTA =#{creditQuota},
+      </if>
+      <if test="realtimeCreditQuota != null" >
+       REALTIME_CREDIT_QUOTA = #{realtimeCreditQuota},
+      </if>
+      <if test="creditDeadline != null" >
+       CREDIT_DEADLINE = #{creditDeadline,jdbcType=VARCHAR},
+      </if>
+       <if test="checkDate != null" >
+        CHECK_DATE = #{checkDate,jdbcType=VARCHAR},
+      </if>
+       <if test="checkCycle != null" >
+       CHECK_CYCLE = #{checkCycle,jdbcType=VARCHAR},
+      </if>
+      <if test="payDate != null" >
+        PAY_DATE = #{payDate,jdbcType=VARCHAR},
+      </if>
+      <if test="common != null" >
+      COMMON = #{common,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdateUser != null" >
+       LAST_UPDATE_USER =  #{lastUpdateUser,jdbcType=VARCHAR},
+      </if>
+     <if test="lastUpdateDate != null" > 
+      LAST_UPDATE_DATE = #{lastUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      
+       <if test="paymentTerms != null" > 
+      PAYMENT_TERMS = #{paymentTerms,jdbcType=VARCHAR},
+      </if>
+      <if test="settlementMethod != null" > 
+      SETTLEMENT_METHOD = #{settlementMethod,jdbcType=VARCHAR},
+      </if>
+      
+       <if test="applyUser != null" > 
+       APPLY_USER = #{applyUser,jdbcType=VARCHAR},
+      </if>
+      <if test="applyMail != null" > 
+      APPLY_MAIL = #{applyMail,jdbcType=VARCHAR},
+      </if>
+       <if test="applyInformation != null" > 
+       APPLY_INFORMATION = #{applyInformation,jdbcType=VARCHAR},
+      </if>
+      <if test="fromDate != null" > 
+        FROM_DATE = #{fromDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="thruDate != null" > 
+       THRU_DATE = #{thruDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where  PARTY_ID = #{partyId,jdbcType=VARCHAR}
+  </update>  
+  
+  <delete id="delByPartyId" parameterType="java.lang.String">
+      delete from PARTY_ATTACHMENT where PARTY_ID=#{partyId} and ATTACHMENT_TYPE =#{attachmentType}
+  </delete>
+  
+  
+   <delete id="deleteByPartyId" parameterType="java.lang.String"> 
+         DELETE FROM PARTY_CREDIT WHERE PARTY_ID = #{partyId}
+  </delete>
+
+</mapper>

@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.vendor.dao.PartyProductLineDao">
+   <resultMap id="BaseResultVendorInfoMap" type="com.yikuyi.party.vendor.vo.PartyProductLine">
+		<id column="PARTY_PRODUCT_LINE_ID" property="partyProductLineId"/>
+		<result column="PARTY_ID" property="partyId"/>
+		<result column="BRAND_ID" property="brandId"/>
+		<result column="BRAND_NAME" property="brandName"/>
+		<result column="CATEGORY_1_ID" property="category1Id"/>
+		<result column="CATEGORY_2_ID" property="category2Id"/>
+		<result column="CATEGORY_3_ID" property="category3Id"/>
+		<result column="CATEGORY_1_NAME" property="category1Name"/>
+		<result column="CATEGORY_2_NAME" property="category2Name"/>
+		<result column="CATEGORY_3_NAME" property="category3Name"/>
+		<result column="STATUS" property="status"/>
+		<result column="TYPE" property="type"/>
+		<result column="CREATOR" property="creator"/>
+		<result column="CREATED_DATE" property="createdDate"/>
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser"/>
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate"/>
+	</resultMap>
+	
+	<resultMap id="BaseResultModelMap" type="com.yikuyi.party.vendor.vo.PartyProductLineModel">
+		<id column="PARTY_PRODUCT_LINE_ID" property="partyProductLineId"/>
+		<result column="PARTY_ID" property="partyId"/>
+		<result column="BRAND_ID" property="brandId"/>
+		<result column="BRAND_NAME" property="brandName"/>
+		<result column="CATEGORY_1_ID" property="category1Id"/>
+		<result column="CATEGORY_2_ID" property="category2Id"/>
+		<result column="CATEGORY_3_ID" property="category3Id"/>
+		<result column="CATEGORY_1_NAME" property="category1Name"/>
+		<result column="CATEGORY_2_NAME" property="category2Name"/>
+		<result column="CATEGORY_3_NAME" property="category3Name"/>
+		<result column="STATUS" property="status"/>
+		<result column="TYPE" property="type"/>
+		<result column="CREATOR" property="creator"/>
+		<result column="CREATED_DATE" property="createdDate"/>
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser"/>
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate"/>
+	</resultMap>
+	
+   	<resultMap id="BaseResultProductLineMap" type="com.yikuyi.party.vendor.vo.PartyProductLineVo">
+		<id column="BRAND_ID" property="brandId" jdbcType="VARCHAR" />
+		<result column="BRAND_NAME" property="brandName" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type"/>
+	</resultMap>
+
+  <select id="findById" resultMap="BaseResultVendorInfoMap" parameterType="java.lang.String">
+	    select * from PARTY_PRODUCT_LINE p
+		where p.`PARTY_PRODUCT_LINE_ID` = #{partyProductLineId} 
+  </select>
+  
+  <select id="findByEntity" resultMap="BaseResultVendorInfoMap" parameterType="com.yikuyi.party.vendor.vo.PartyProductLine">
+	    select 
+	        PARTY_PRODUCT_LINE_ID,
+	        PARTY_ID,
+	        BRAND_ID,
+	        BRAND_NAME,
+	        CATEGORY_1_ID,
+	        CATEGORY_2_ID,
+	        CATEGORY_3_ID,
+	        CATEGORY_1_NAME,
+	        CATEGORY_2_NAME,
+	        CATEGORY_3_NAME,
+	        STATUS,
+	        TYPE,
+	        CREATOR,
+	        CREATED_DATE,
+	        LAST_UPDATE_USER,
+	        LAST_UPDATE_DATE   
+	     from PARTY_PRODUCT_LINE p
+	    <where>
+	        <if test="partyProductLineId != null" >
+			  and p.`PARTY_PRODUCT_LINE_ID` = #{partyProductLineId} 
+		    </if>
+		    <if test="partyId != null" >
+			  and p.`PARTY_ID` = #{partyId} 
+		    </if>	
+		    <if test="type != null" >
+			  and p.`TYPE` = #{type} 
+		    </if>
+		</where>    	    
+  </select>
+  
+  <insert id="insertLineList" parameterType="com.yikuyi.party.vendor.vo.PartyProductLine" >
+  	INSERT INTO PARTY_PRODUCT_LINE(
+	  `PARTY_PRODUCT_LINE_ID`,
+	  `PARTY_ID`,
+	  `BRAND_ID`,
+	  `BRAND_NAME`,
+	  `CATEGORY_1_ID`,
+	  `CATEGORY_1_NAME`,
+	  `CATEGORY_2_ID`,
+	  `CATEGORY_2_NAME`,
+	  `CATEGORY_3_ID`,
+	  `CATEGORY_3_NAME`,
+	  `STATUS`,
+	   TYPE,
+	  `CREATOR`,
+	  `CREATED_DATE`,
+	  `LAST_UPDATE_USER`,
+	  `LAST_UPDATE_DATE`
+	)
+	VALUES                
+	 <foreach collection="pList" item="item" index="index" separator="," >  
+       (#{item.partyProductLineId},
+        #{item.partyId},
+        #{item.brandId},
+        #{item.brandName},
+        #{item.category1Id},
+        #{item.category1Name},
+        #{item.category2Id},
+        #{item.category2Name},
+        #{item.category3Id},
+        #{item.category3Name},
+        #{item.status},
+        #{item.type},
+        #{item.creator},
+        #{item.createdDate},
+        #{item.lastUpdateUser},
+        #{item.lastUpdateDate})  
+    </foreach> 
+  </insert>
+  
+  <select id="findByPartyId" resultMap="BaseResultVendorInfoMap" parameterType="java.lang.String">
+	    select * from PARTY_PRODUCT_LINE p
+		where p.`PARTY_PRODUCT_LINE_ID` = #{partyProductLineId} 
+  </select>
+  
+  <insert id="insert" parameterType="com.yikuyi.party.vendor.vo.PartyProductLineJS" >
+  	INSERT INTO PARTY_PRODUCT_LINE
+  	<trim prefix="(" suffix=")" suffixOverrides="," >	
+  		<if test="partyProductLineId !=null">
+  			`PARTY_PRODUCT_LINE_ID`,
+  		</if>
+  		<if test="partyId !=null">
+  			`PARTY_ID`,
+  		</if>
+  		<if test="brandId !=null">
+  			`BRAND_ID`,
+  		</if>
+  		<if test="brandName !=null">
+  			`BRAND_NAME`,
+  		</if>
+  		<if test="category1Id !=null">		
+	        `CATEGORY_1_ID`,
+  		</if>
+  		<if test="category1Name !=null">		
+	        `CATEGORY_1_NAME`,
+  		</if>
+  		<if test="category2Id !=null">		
+	        `CATEGORY_2_ID`,
+  		</if>
+  		<if test="category2Name !=null">		
+	        `CATEGORY_2_NAME`,
+  		</if>
+  		<if test="category3Id !=null">		
+	         `CATEGORY_3_ID`,
+  		</if>
+  		<if test="category3Name !=null">		
+	         `CATEGORY_3_NAME`,
+  		</if>
+  		<if test="status !=null">		
+	         `STATUS`,
+  		</if>
+  		<if test="type !=null">		
+	         `TYPE`,
+  		</if>
+  		<if test="creator !=null">		
+	         `CREATOR`,
+  		</if>
+  		<!-- <if test="createdDate !=null">		
+	         `CREATED_DATE`,
+  		</if> -->
+  		<if test="lastUpdateUser !=null">		
+	         `LAST_UPDATE_USER`,
+  		</if>
+  		<!-- <if test="lastUpdateDate !=null">		
+	         `LAST_UPDATE_DATE`,
+  		</if> -->
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides="," >	                
+	 <if test="partyProductLineId !=null">
+  			#{partyProductLineId},
+  		</if>
+  		<if test="partyId !=null">
+  			#{partyId},
+  		</if>
+  		<if test="brandId !=null">
+  			#{brandId},
+  		</if>
+  		<if test="brandName !=null">
+  			#{brandName},
+  		</if>
+  		<if test="category1Id !=null">		
+	        #{category1Id},
+  		</if>
+  		<if test="category1Name !=null">		
+	        #{category1Name},
+  		</if>
+  		<if test="category2Id !=null">		
+	        #{category2Id},
+  		</if>
+  		<if test="category2Name !=null">		
+	        #{category2Name},
+  		</if>
+  		<if test="category3Id !=null">		
+	        #{category3Id},
+  		</if>
+  		<if test="category3Name !=null">		
+	        #{category3Name},
+  		</if>
+  		<if test="status !=null">		
+	        #{status},
+  		</if>
+  		<if test="type !=null">		
+	        #{type},
+  		</if>
+  		<if test="creator !=null">		
+	        #{creator},
+  		</if>
+  		<!-- <if test="createdDate !=null">		
+	        #{createdDate},
+  		</if> -->
+  		<if test="lastUpdateUser !=null">		
+	        #{lastUpdateUser},
+  		</if>
+  		<!-- <if test="lastUpdateDate !=null">		
+	        #{lastUpdateDate},
+  		</if> -->
+  	</trim>
+  </insert>
+  
+  <delete id="deleteById" parameterType="java.lang.String">
+  		delete from PARTY_PRODUCT_LINE where PARTY_PRODUCT_LINE_ID = #{partyProductLineId}
+  </delete>
+  
+  <delete id="deleteByPartyId" parameterType="java.lang.String"> 
+         DELETE FROM PARTY_PRODUCT_LINE WHERE PARTY_ID = #{partyId}
+  </delete>
+
+  <select id="onlyProductLine" resultMap="BaseResultProductLineMap" parameterType="com.yikuyi.party.vendor.vo.PartyProductLine">
+	     SELECT DISTINCT
+	        BRAND_ID,
+	        BRAND_NAME,
+	        TYPE
+	     FROM PARTY_PRODUCT_LINE p LEFT JOIN `PARTY_GROUP` t1 ON p.`PARTY_ID` = t1.`PARTY_ID` 
+	     WHERE t1.`ACCOUNT_STATUS`='VALID'
+		 <if test="partyId != null and partyId != ''" >
+			and p.`PARTY_ID` = #{partyId} 
+		 </if>	
+		 <if test="type != null" >
+			and p.`TYPE` = #{type} 
+		 </if>	
+		 AND p.`BRAND_NAME`!='*'  AND p.`BRAND_NAME` IS NOT NULL AND p.`BRAND_NAME` != ''
+		 ORDER BY p.`LAST_UPDATE_DATE` DESC 	    
+  </select>
+
+  
+  <!-- 查询【分销商/供应商】产品线类别去掉重复的数据 -->
+  <select id="onlyProductCategoryList" resultMap="BaseResultModelMap" 
+  		parameterType="com.yikuyi.party.vendor.vo.PartyProductLineModel">
+	 	SELECT DISTINCT
+			p.`CATEGORY_1_ID` AS category1Id,
+			p.`CATEGORY_1_NAME` AS category1Name,
+			p.`CATEGORY_2_ID` AS category2Id,
+			p.`CATEGORY_2_NAME` AS category2Name,
+			p.`CATEGORY_3_ID` AS category3Id,
+			p.`CATEGORY_3_NAME` AS category3Name
+	    FROM PARTY_PRODUCT_LINE p LEFT JOIN `PARTY_GROUP` t1 ON p.`PARTY_ID` = t1.`PARTY_ID` 
+	     WHERE  t1.`ACCOUNT_STATUS`='VALID'
+		 <if test="partyId != null" >
+			 AND p.`PARTY_ID` = #{partyId} 
+		 </if>	
+		 AND  p.`CATEGORY_1_NAME` != '*' AND p.`CATEGORY_1_NAME` != ''  AND p.`CATEGORY_1_NAME` IS NOT NULL
+  </select>
+  
+
+  
+  <select id="listSupplierByBrandId" resultType="com.yikuyi.party.vendor.vo.PartyProductLineVo" parameterType="java.lang.String">
+	 SELECT DISTINCT 
+	        t.`PARTY_ID` as partyId,
+	        t2.`GROUP_NAME` as groupName 
+	 FROM PARTY_PRODUCT_LINE  t  
+     LEFT JOIN PARTY t1 ON t.`PARTY_ID` = t1.`PARTY_ID` AND t1.`PARTY_TYPE_ID`='SUPPLIER'
+	 LEFT JOIN PARTY_GROUP t2 ON t.`PARTY_ID` = t2.`PARTY_ID`
+	 WHERE t2.`ACCOUNT_STATUS`='VALID' AND t.`BRAND_ID` = #{brandId}
+	  
+	 ORDER BY t.`CREATED_DATE` DESC
+  </select>
+   <select id="listCategoryByBrandId" resultMap="BaseResultVendorInfoMap" parameterType="java.lang.String">
+	SELECT DISTINCT 
+	       t.`CATEGORY_1_ID`,
+	       t.`CATEGORY_1_NAME`,
+	       t.`CATEGORY_2_ID`,
+	       t.`CATEGORY_2_NAME`,
+	       t.`CATEGORY_3_ID`,
+	       t.`CATEGORY_3_NAME` 
+	FROM `PARTY_PRODUCT_LINE`  t LEFT JOIN `PARTY_GROUP` t1 ON t.`PARTY_ID` = t1.`PARTY_ID` 
+	      WHERE t.`CATEGORY_1_NAME` != '*' AND t.`CATEGORY_1_NAME` != ''  AND t.`CATEGORY_1_NAME` IS NOT NULL
+	     AND  t1.`ACCOUNT_STATUS`='VALID'
+	     AND  t.`BRAND_ID` = #{brandId}
+	     ORDER BY t.`CREATED_DATE` DESC
+	     
+  </select>
+  
+    <select id="findByPage" resultMap="BaseResultVendorInfoMap">
+	    select 
+	        PARTY_PRODUCT_LINE_ID,
+	        PARTY_ID,
+	        BRAND_ID,
+	        BRAND_NAME,
+	        CATEGORY_1_ID,
+	        CATEGORY_2_ID,
+	        CATEGORY_3_ID,
+	        CATEGORY_1_NAME,
+	        CATEGORY_2_NAME,
+	        CATEGORY_3_NAME,
+	        STATUS,
+	        TYPE,
+	        CREATOR,
+	        CREATED_DATE,
+	        LAST_UPDATE_USER,
+	        LAST_UPDATE_DATE   
+	     from PARTY_PRODUCT_LINE p
+	    <where>
+	        <if test="partyProductLineId != null" >
+			  and p.`PARTY_PRODUCT_LINE_ID` = #{partyProductLineId} 
+		    </if>
+		    <if test="partyId != null" >
+			  and p.`PARTY_ID` = #{partyId} 
+		    </if>	
+		    <if test="type != null" >
+			  and p.`TYPE` = #{type} 
+		    </if>
+		</where>    
+		ORDER BY p.CREATED_DATE	    
+  </select>
+  
+</mapper>

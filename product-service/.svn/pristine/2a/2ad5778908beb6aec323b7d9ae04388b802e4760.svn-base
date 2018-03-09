@@ -1,0 +1,16 @@
+package com.yikuyi.product;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.yikuyi.category.model.ProductCategory;
+
+public class CategoriesResourceTest extends BaseTest {
+
+	
+	@Test
+	public void findAll(){
+		ProductCategory cate = super.productClient.categoryResource().findById(103,"YWRtaW46OTk5OTk5OTkwMQ==");
+		Assert.assertTrue(cate != null);
+	}
+}

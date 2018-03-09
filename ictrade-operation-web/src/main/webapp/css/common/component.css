@@ -1,0 +1,179 @@
+@import "../common/base.css";
+/* 变量 */
+input[type=radio] {
+  width: auto;
+  height: auto;
+}
+/* 组件基本单元 */
+/* 下拉列表 */
+.ui-select {
+  position: relative;
+  box-sizing: border-box;
+  width: 170px;
+  height: 32px;
+  line-height: 32px;
+  text-indent: 16px;
+  border: 1px solid #e6e6e6;
+  font-size: 14px;
+  color: #999999;
+  cursor: pointer;
+  -moz-user-select: none;
+  background: #fff;
+}
+.ui-select .ico {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  border: 4px solid #000;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+}
+.ui-select .ico-down {
+  border-bottom: none;
+}
+.ui-select .ico-up {
+  border-top: none;
+}
+.ui-select .ui-select-list {
+  display: none;
+  position: absolute;
+  left: -1px;
+  top: 100%;
+  width: 100%;
+  max-height: 170px;
+  overflow-y: auto;
+  border: 1px solid #e6e6e6;
+  color: #333333;
+  background: #fff;
+  z-index: 2;
+}
+.ui-select .ui-select-item {
+  height: 24px;
+  line-height: 24px;
+}
+.ui-select .ui-select-item:hover {
+  color: #b1191a;
+}
+.ui-area:after {
+  display: block;
+  content: '';
+  clear: both;
+}
+.ui-area .ui-select {
+  float: left;
+}
+.ui-area .city,
+.ui-area .county {
+  margin-left: 10px;
+}
+.radio-item {
+  display: block;
+  margin-right: 15px;
+}
+.radio-item input {
+  display: none;
+}
+.radio-item .radio {
+  display: inline-block;
+  margin-right: 5px;
+  width: 17px;
+  height: 17px;
+  vertical-align: -2px;
+  background: url("../../images/static/sprite.png") no-repeat -20px -378px;
+}
+.radio-item .radio-selected {
+  background-position: 0 -378px;
+}
+.ui-qual .input-group {
+  margin-top: 15px;
+  *zoom: 1;
+}
+.ui-qual .input-group:after {
+  display: block;
+  content: '';
+  clear: both;
+}
+.ui-qual .input-group .input-text,
+.ui-qual .input-group .input-content {
+  float: left;
+  line-height: 30px;
+}
+.ui-qual .input-text {
+  margin-right: 10px;
+  width: 130px;
+  text-align: right;
+  color: #666;
+}
+.ui-qual .input-text .must {
+  margin-right: 5px;
+  color: #b1191a;
+}
+.ui-qual .input-content {
+  color: #999;
+  *zoom: 1;
+}
+.ui-qual .input-content:after {
+  display: block;
+  content: '';
+  clear: both;
+}
+.ui-qual .qual-item {
+  *zoom: 1;
+}
+.ui-qual .qual-item:after {
+  display: block;
+  content: '';
+  clear: both;
+}
+.ui-qual .qual-item .uploadImg {
+  position: relative;
+  float: left;
+  width: 163px;
+  height: 108px;
+  border: 1px solid #e4e4e4;
+  background: url(../../images/zizi-default.png) no-repeat center 20px;
+}
+.ui-qual .qual-item .uploadImg img {
+  width: 163px;
+  height: 108px;
+  /* background: #fff; */
+}
+.ui-qual .qual-item .uploadImg img[data-type=pdf] {
+	width: 72px;
+	height: auto;
+}
+.ui-qual .qual-item .uploadImg .upload-btn {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 0;
+  font-size: 14px;
+  color: #fff;
+  background: #666;
+}
+.ui-qual .qual-item .uploadCz {
+  position: relative;
+  float: left;
+  margin-left: 15px;
+  height: 110px;
+}
+.ui-qual .qual-item .uploadCz .tips {
+  line-height: 22px;
+}
+.ui-qual .qual-item .uploadCz .ck-btn {
+  position: absolute;
+  bottom: 0;
+  width: 64px;
+  height: 22px;
+  line-height: 20px;
+  color: #999;
+  border: 1px solid #e4e4e4;
+  border-radius: 3px;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+}

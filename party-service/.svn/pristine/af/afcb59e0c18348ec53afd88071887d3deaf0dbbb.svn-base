@@ -1,0 +1,187 @@
+package com.yikuyi.party.model;
+
+import java.util.Date;
+
+import com.ykyframework.model.AbstractEntity;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+/**
+ * 会员关系表
+ * @author 张伟
+ *
+ */
+@ApiModel("PartyRelationship")
+public class PartyRelationship extends AbstractEntity {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 500152128340994090L;
+	@ApiModelProperty(value = "from 会员ID")
+	private String partyIdFrom;
+	@ApiModelProperty(value = "to 会员ID")
+	private String partyIdTo;
+	@ApiModelProperty(value = "rom 会员的角色")
+	private String roleTypeIdFrom;
+	@ApiModelProperty(value = "to 会员的角色")
+	private String roleTypeIdTo;
+	@ApiModelProperty(value = "有效日期")
+	private Date fromDate;
+	@ApiModelProperty(value = "失效日期")
+	private Date thruDate;
+	@ApiModelProperty(value = "状态")
+	private String statusId;
+	@ApiModelProperty(value = "关系名称")
+	private String relationshipName;
+	@ApiModelProperty(value = "安全组名称")
+	private String securityGroupId;
+	@ApiModelProperty(value = "优先级类型")
+	private String priorityTypeId;
+	@ApiModelProperty(value = "关系类型")
+	private PartyRelationshipType partyRelationshipTypeId;
+	@ApiModelProperty(value = "权限枚举")
+	private String permissionsEnumId;
+	@ApiModelProperty(value = "职位名称")
+	private String positionTitle;
+	@ApiModelProperty(value = "备注")
+	private String comments;
+	
+	
+	
+	/**
+	 * 关系类型定义
+	 * @author 张伟
+	 */
+	public enum PartyRelationshipType {
+		AGENT, // 代理
+		COS_PLAY, // 角色代表
+		CUSTOMER_REL, // 客户
+		DEVELOPMENT_BY, // 开发
+		DISTRIBUTION_CHANNEL, // 分销商
+		EMPLOYMENT, // 雇佣关系
+		MAINTENANCE, // 维护
+		REPORTS_TO, // 汇报给
+		SUPPLIER_REL,// 供应商
+		REGISTED,//注册用户与企业用户的关联关系
+        ENTERPRISE_CERTIFIED,//从普通企业到认证企业
+        DEPT_CORPORATION_REL,//部门与公司的关系
+        EXECUTIVE_DEPT_REL,//部门主管
+		DEPT_DEPT_REL,//部门与部门的关系
+		USER_DEPT_REL,//人与部门的关系
+		ROLE_DEPT_REL//角色与部门的关系
+	}
+
+	public String getPartyIdFrom() {
+		return partyIdFrom;
+	}
+
+	public void setPartyIdFrom(String partyIdFrom) {
+		this.partyIdFrom = partyIdFrom == null ? null : partyIdFrom.trim();
+	}
+
+	public String getPartyIdTo() {
+		return partyIdTo;
+	}
+
+	public void setPartyIdTo(String partyIdTo) {
+		this.partyIdTo = partyIdTo == null ? null : partyIdTo.trim();
+	}
+
+	public String getRoleTypeIdFrom() {
+		return roleTypeIdFrom;
+	}
+
+	public void setRoleTypeIdFrom(String roleTypeIdFrom) {
+		this.roleTypeIdFrom = roleTypeIdFrom;
+	}
+
+	public String getRoleTypeIdTo() {
+		return roleTypeIdTo;
+	}
+
+	public void setRoleTypeIdTo(String roleTypeIdTo) {
+		this.roleTypeIdTo = roleTypeIdTo;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getThruDate() {
+		return thruDate;
+	}
+
+	public void setThruDate(Date thruDate) {
+		this.thruDate = thruDate;
+	}
+
+	public String getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(String statusId) {
+		this.statusId = statusId == null ? null : statusId.trim();
+	}
+
+	public String getRelationshipName() {
+		return relationshipName;
+	}
+
+	public void setRelationshipName(String relationshipName) {
+		this.relationshipName = relationshipName == null ? null : relationshipName.trim();
+	}
+
+	public String getSecurityGroupId() {
+		return securityGroupId;
+	}
+
+	public void setSecurityGroupId(String securityGroupId) {
+		this.securityGroupId = securityGroupId == null ? null : securityGroupId.trim();
+	}
+
+	public String getPriorityTypeId() {
+		return priorityTypeId;
+	}
+
+	public void setPriorityTypeId(String priorityTypeId) {
+		this.priorityTypeId = priorityTypeId == null ? null : priorityTypeId.trim();
+	}
+
+	public PartyRelationshipType getPartyRelationshipTypeId() {
+		return partyRelationshipTypeId;
+	}
+
+	public void setPartyRelationshipTypeId(PartyRelationshipType partyRelationshipTypeId) {
+		this.partyRelationshipTypeId = partyRelationshipTypeId;
+	}
+
+	public String getPermissionsEnumId() {
+		return permissionsEnumId;
+	}
+
+	public void setPermissionsEnumId(String permissionsEnumId) {
+		this.permissionsEnumId = permissionsEnumId == null ? null : permissionsEnumId.trim();
+	}
+
+	public String getPositionTitle() {
+		return positionTitle;
+	}
+
+	public void setPositionTitle(String positionTitle) {
+		this.positionTitle = positionTitle == null ? null : positionTitle.trim();
+	}
+
+	public String getComments() {
+		return comments;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments == null ? null : comments.trim();
+	}
+
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.product.activity.dao.ActivityPeriodsDao" >
+  <resultMap id="BaseResultMap" type="com.yikuyi.activity.model.ActivityPeriods" >
+    <id column="PERIODS_ID" property="periodsId" jdbcType="VARCHAR" />
+    <result column="ACTIVITY_ID" property="activityId" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PERIODS_ID, ACTIVITY_ID, START_TIME, END_TIME, STATUS
+  </sql>
+  
+  
+	<select id="getPeriodsByInterval" parameterType="com.yikuyi.activity.model.ActivityPeriods" resultType="int">
+		SELECT COUNT(1) FROM ACTIVITY_PERIODS  
+	        WHERE STATUS = 'ENABLE' and ( 
+	                                              <if test="startTime != null">
+	                                                (START_TIME <![CDATA[<]]> #{startTime} and END_TIME > #{startTime}) 
+	                                               </if> 
+	                                               <if test="endTime != null">
+	                                                  or (START_TIME <![CDATA[<]]> #{endTime} and END_TIME > #{endTime})
+	                                               </if>
+	                                               <if test="startTime != null and endTime != null">
+	                                                  or (START_TIME >= #{startTime} and END_TIME <![CDATA[<=]]> #{endTime})
+	                                               </if>
+	                                               ) 
+	                                               <if test="activityId != null">
+	                                               	   AND ACTIVITY_ID = #{activityId}
+	                                               </if>
+	</select>
+  <delete id="deleteByActivityId">
+  	DELETE FROM ACTIVITY_PERIODS WHERE ACTIVITY_ID = #{activityId}
+  </delete>
+  <insert id="save" parameterType="com.yikuyi.activity.model.ActivityPeriods" >
+    insert into ACTIVITY_PERIODS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="periodsId != null" >
+        PERIODS_ID,
+      </if>
+      <if test="activityId != null" >
+        ACTIVITY_ID,
+      </if>
+      <if test="startTime != null" >
+        START_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="periodsId != null" >
+        #{periodsId,jdbcType=VARCHAR},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <!-- 根据活动id查询活动区间 -->
+  <select id="findActivityPeriods" parameterType="java.lang.String" resultMap="BaseResultMap">
+  		select PERIODS_ID, ACTIVITY_ID, START_TIME, END_TIME, STATUS from ACTIVITY_PERIODS where
+  		ACTIVITY_ID = #{activityId}
+  </select>
+</mapper>

@@ -1,0 +1,249 @@
+/**
+ * Created archivingAudit.js by zr.xieyuanpeng@yikuyi.com on 2017年8月21日.
+ */
+
+var vm = new Vue({
+	el: '#detailVendor',
+	data: {
+		id: getQueryString('partyId'),
+		applyId:getQueryString('applyId'),
+		tabValue: 'baseData', //baseData,product,credit,sales
+		baseData: [],
+		productLines: [],
+		creditInfo: [],
+		salesInfo: [],
+		vendorLogo: '',
+		auditInfo:{},
+		auditApplyContent:{},
+		applyContentJsonObj:{}
+
+	},
+	created: function(){
+		var _this =this;
+		/*getApplyInfo(function(){
+			getBaseData(_this.id)
+			getProductLine(_this.id)
+			getCreditInfo(_this.id);
+			getSalesInfo(_this.id)
+		});*/
+		syncData(ykyUrl.workflow + "/v2/apply", 'GET', {'applyId':_this.applyId}, function(res,err) {
+			if (!err && res !== '') {
+				var data = res;
+				var bigData = data.list[0] || {};
+				data = JSON.parse(data.list[0].applyContent) || {};
+				//to do，麻烦后台把格式给我
+				_this.auditInfo = bigData;
+				_this.applyContentJsonObj = bigData.applyContentJsonObj;
+				_this.auditApplyContent = data;
+				if(bigData.processId=='ORG_SUPPLIER_ARCHIVES_REVIEW'){
+					getBaseData(_this.id);
+					getProductLine(_this.id);
+					getCreditInfo(_this.id);
+					getSalesInfo(_this.id);
+				}
+			}
+		},false);  
+		
+	},
+	methods: {
+		examineEvent:function(type){
+    		var that = this;
+    		var applyType, backUrl, map;
+    		var operPrefix = 'http:' + operationWebUrl.replace("/main","") + ykyUrl.party;
+    		var qzInfo = that.qzInfo;
+    		//账期审核
+			backUrl = operPrefix+"/v1/enterprises/accountPeriodAudit";    			
+			map = {
+				
+			}
+    		var listData = {
+    				applyContent: JSON.stringify(map),
+    				approvePartyId: $("#userId").val(),
+    				id: that.id ,  //企业ID
+    				callBackUrl: backUrl,  //回调url
+    				remark:  '',   //审核意见
+    			};
+    		if(type == 'yes'){
+    			applyType = 'APPROVED'; //通过        			
+    			layer.confirm("<p style='font-weight:bold;'>确定审核通过？</p><p>审核通过后，该用户可以认证企业身份采购</p>",{
+    				offset: "auto",
+    				btn: ['确      认','取      消'], //按钮
+    				title: " ",
+    				area: 'auto',
+    				maxWidth:'500px',
+    				move: false,
+    				skin: "up_skin_class",
+    				yes:function(){
+    					that.dyAjax(applyType,listData);
+    				}
+    			})
+    		}else{
+    			applyType = 'REJECT'; //驳回
+    			layer.confirm($('.reason-wrap').html(),{
+    				offset: "auto",
+    				btn: ['确      认','取      消'], //按钮
+    				title: " ",
+    				area: 'auto',
+    				maxWidth:'500px',
+    				move: false,
+    				skin: "up_skin_class",
+    				yes:function(){
+    					var reason = $.trim($('.up_skin_class #remark').val());
+    					if(reason == ''){
+    						$('.up_skin_class #remark').attr('placeholder','审核不通过的原因不能为空');
+    						return;
+    					}
+    					listData.remark = reason;
+    					that.dyAjax(applyType,listData);
+    				}
+    			})        			
+    		}        		
+    	},
+    	dyAjax:function(type,postObj){//审核接口调用
+    		var that = this;
+    		var alertTxt = '';
+    		if(type === 'APPROVED') {
+				alertTxt = '审核通过';
+			}else {
+				alertTxt = '驳回成功';
+			}
+    		syncData(ykyUrl.workflow +"/v1/task/" + type + "/" + that.applyId,'PUT',postObj,function(res,err){
+    			if(err == null){
+    				layer.msg(alertTxt);
+        			setTimeout(function(){
+        				layer.closeAll()
+        				location.href = location.origin + location.pathname;
+        			}, 2000)
+    			}
+    		})
+    	},
+	},
+	watch: {
+		
+	}
+})
+
+function getBaseData(id){
+	syncData(ykyUrl.party + "/v1/vendors/vendorInfo/"+id, 'GET', null, function(res, err) {
+		if (!err) {
+			vm.baseData = res;
+			getPrivateUrl(vm.baseData.logoImageUrl);
+		}
+	});
+}
+
+function getProductLine(id){
+	syncData(ykyUrl.party + "/v1/vendors/productLine/"+id, 'GET', null, function(res, err) {
+		if (!err) {
+			vm.productLines = res;
+		}
+	});
+}
+
+function getCreditInfo(id){
+	syncData(ykyUrl.party + "/v1/vendors/vendorCredit/"+id, 'GET', null, function(res, err) {
+		if (!err) {
+			vm.creditInfo = res;
+		}
+	});
+}
+
+function getSalesInfo(id){
+	syncData(ykyUrl.party + "/v1/vendors/vendorSaleInfo/"+id, 'GET', null, function(res, err) {
+		if (!err) {
+			vm.salesInfo = res;
+		}
+	});
+}
+
+var getPrivateUrl =  function(url){
+	$.aAjax({
+		url: ykyUrl.party + "/v1/enterprises/getImgUrl",
+     	type:"POST",
+     	data:JSON.stringify({"id":url}),
+     	success: function(data) {
+     		if(null !=data || data == ""){
+     			vm.vendorLogo = data;
+     		}
+     	},
+     	error:function(e){
+	    	console.log("系统错误，审批失败，请联系系统管理员："+e.responseText);
+	    }
+ 	});
+}
+
+
+//获取所属分类数据
+function getCategoryList(){
+	syncData(ykyUrl.database + "/v1/category/companylist?categoryTypeId=VENDOR_THE_TYPE", 'GET', null, function(res, err) {
+		if (!err) {
+			vm.categoryList = res;
+		}
+	});
+}
+
+//获取所属地区数据
+function getRegionList(){
+	syncData(ykyUrl.database + "/v1/category/companylist?categoryTypeId=VENDOR_THE_REGION", 'GET', null, function(res, err) {
+		if (!err) {
+			vm.regionList = res;
+		}
+	});
+}
+
+//获取公司类型数据
+function getCompanyType(){
+	syncData(ykyUrl.database + "/v1/category/companylist?categoryTypeId=VENDOR_COMPANY_TYPE", 'GET', null, function(res, err) {
+		if (!err) {
+			vm.companyTypeList = res;
+		}
+	});
+}
+
+//获取分管部门数据
+function getDeptList(){
+	syncData(ykyUrl.party + "/v1/dept/list", 'GET', null, function(res, err) {
+		if (!err) {
+			vm.deptList = res;
+			if(vm.deptList.length > 0){
+				vm.baseData.department = vm.deptList[0].id;
+			}
+		}
+	});
+}
+
+//获取负责人、询价员数据
+function getUserList(id){
+	syncData(ykyUrl.party + "/v1/dept/findCustomerByDeptId?page=1&size=100&deptId="+id, 'GET', null, function(res, err) {
+		if (!err) {
+			vm.userList = res.list;
+			if(vm.userList && vm.userList.length > 0){
+				vm.baseData.principalId = vm.userList[0].partyId;
+				vm.baseData.enquiryId = vm.userList[0].partyId;
+			}
+		}
+	});
+}
+
+/*统计textarea字数*/
+function setLetterNum(e){
+	var num = $(e).val().length;
+	$(e).parent().find('.letter-num').text(num);
+}
+
+/*function getApplyInfo(fn){
+	var applyId = getQueryString("applyId");
+	syncData(ykyUrl.workflow + "/v2/apply", 'GET', {'applyId':applyId}, function(res,err) {
+		if (!err && res !== '') {
+			var data = res;
+			var bigData = data.list[0] || {};
+			data = JSON.parse(data.list[0].applyContent) || {};
+			//to do，麻烦后台把格式给我
+			vm.auditInfo = bigData;
+			vm.auditApplyContent = data;
+			if(bigData.processId=='ORG_SUPPLIER_ARCHIVES_REVIEW'&&fn){
+				fn();
+			}
+		}
+	},false);  
+}*/

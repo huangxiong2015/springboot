@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- logback.xml的配置，如果有logback-test.xml则优先读取logback-test.xml的文件 具体配置参见： http://logback.qos.ch/manual/configuration.html, 
+	http://aub.iteye.com/blog/1101260 Author: liaoke@yikuyi.com -->
+
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+	<!-- spring profile 管理，分环境进行相应设置 -->
+	<!-- 引入springboot 的配置文件 -->
+	<property resource="config/application.properties" />
+	<property resource="config/application-${spring.profiles.active}.properties" />
+
+	<property name="appName" value="party-api-${spring.profiles.active}"/>
+	<property name="client.logRoot" value="/applog/mqserver" scope="context"/>
+	<property name="loggingDir" value="/applog/yikuyi"/>
+	<!-- 控制台输出日志 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoder 默认配置为PatternLayoutEncoder -->
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M %L: %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 文件输出日志 (文件大小策略进行文件输出，超过指定大小对文件备份) -->
+	<appender name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${loggingDir}/${appName}-debug.log</File>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}: %msg%n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>${loggingDir}/${appName}-debug.log.%i.bak</FileNamePattern>
+			<MinIndex>1</MinIndex>
+			<MaxIndex>5</MaxIndex>
+		</rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>10MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	
+	<appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${loggingDir}/${appName}-info.log</File>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}: %msg%n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>${loggingDir}/${appName}-info.log.%i.bak</FileNamePattern>
+			<MinIndex>1</MinIndex>
+			<MaxIndex>5</MaxIndex>
+		</rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>10MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	
+	<appender name="WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${loggingDir}/${appName}-warn.log</File>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}: %msg%n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>${loggingDir}/${appName}-warn.log.%i.bak</FileNamePattern>
+			<MinIndex>1</MinIndex>
+			<MaxIndex>5</MaxIndex>
+		</rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>10MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	
+	<appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${loggingDir}/${appName}-error.log</File>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}: %msg%n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<FileNamePattern>${loggingDir}/${appName}-error.log.%i.bak</FileNamePattern>
+			<MinIndex>1</MinIndex>
+			<MaxIndex>5</MaxIndex>
+		</rollingPolicy>
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>10MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+	
+	
+	<!-- 声明异步的文件Appender，提升性能 -->
+	<appender name="ASYNC_DEBUG" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="DEBUG"/>
+	</appender>
+	<appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="INFO"/>
+	</appender>
+	<appender name="ASYNC_WARN" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="WARN"/>
+	</appender>
+	<appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="ERROR"/>
+	</appender>
+	<!--这里指定logger name 是为jmx设置日志级别做铺垫 -->
+	<include resource="config/logback-include-redis.xml"/>
+	<springProfile name="dev">	
+		<logger name="de.idealo.logback.appender">
+			<level value="DEBUG" />		
+			<appender-ref ref="ASYNC_DEBUG"/>
+			<appender-ref ref="ASYNC_INFO"/>
+			<appender-ref ref="ASYNC_WARN"/>
+			<appender-ref ref="ASYNC_ERROR"/>
+		</logger>
+		<root level="DEBUG">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="ASYNC_DEBUG"/>
+			<appender-ref ref="ASYNC_INFO"/>
+			<appender-ref ref="ASYNC_WARN"/>
+			<appender-ref ref="ASYNC_ERROR"/>
+		</root>	
+	</springProfile>
+	<springProfile name="sit, sit1, hz-uat, prod">	
+		<logger name="de.idealo.logback.appender">
+			<level value="WARN" />		
+			<appender-ref ref="ASYNC_DEBUG"/>
+			<appender-ref ref="ASYNC_INFO"/>
+			<appender-ref ref="ASYNC_WARN"/>
+			<appender-ref ref="ASYNC_ERROR"/>
+		</logger>
+		<root level="INFO">
+			<appender-ref ref="ASYNC_DEBUG"/>
+			<appender-ref ref="ASYNC_INFO"/>
+			<appender-ref ref="ASYNC_WARN"/>
+			<appender-ref ref="ASYNC_ERROR"/>
+			<appender-ref ref="REDIS_APPENDER" />
+		</root>	
+	</springProfile>
+</configuration>

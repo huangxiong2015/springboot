@@ -1,0 +1,172 @@
+package com.yikuyi.party.customer.api.impl;
+
+import java.io.IOException;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yikuyi.party.PartyApplication;
+import com.yikuyi.party.contact.vo.UserExtendVo;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.login.model.UserLogin;
+import com.yikuyi.party.model.Party.PartyStatus;
+import com.yikuyi.party.person.model.Person;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = { PartyApplication.class })
+public class CustomerResourceTest {
+	
+	@Autowired
+	private TestRestTemplate restTemplate; // = new TestRestTemplate();	
+	
+	@LocalServerPort
+	private int port;
+	
+	private String host;
+	
+	
+	@Before
+	public void setUpBefore() throws Exception {
+		this.host = "http://localhost" + ":" + this.port;
+		
+		RestTemplate rt = this.restTemplate.getRestTemplate();
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		ObjectMapper om = new ObjectMapper();
+		om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		converter.setObjectMapper(om);
+		rt.setMessageConverters(Arrays.asList(new HttpMessageConverter[]{converter}));
+		rt.setRequestFactory(new SimpleClientHttpRequestFactory() {
+			@Override
+        	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+        		ClientHttpRequest request = super.createRequest(uri, httpMethod);
+        		HttpHeaders header = request.getHeaders();
+        		header.add("Authorization", "Basic " + Base64Utils.encodeToString(("admin"+":"+"9999999901").getBytes()));
+        		return request;
+        	}
+		});
+	}
+	
+	@Test
+	public void getBaseInfoDetailTest(){
+		String url = host+"v1/customers/709035037445586944?loginId=malan";
+		ResponseEntity<UserExtendVo> response = restTemplate.exchange(url, HttpMethod.GET, null, UserExtendVo.class);
+		response.getBody();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void getUserByNameTest(){
+		String url = host+"v1/customers/username?username=malan";
+		ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, null, List.class);
+		response.getBody();
+		url = host+"v1/customers/name?name=malan";
+		ResponseEntity<UserVo> response1=restTemplate.exchange(url, HttpMethod.GET, null, UserVo.class);
+		response1.getBody();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void getPersonsTest(){
+		String url = host+"v1/customers/status?relationSratus=RELATED";
+		ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, null, List.class);
+		response.getBody();
+	}
+	
+	@Test
+	public void saveTest(){
+		String url = host+"v1/customers";
+		UserExtendVo user = new UserExtendVo();
+		user.setAddress("中国深圳市南山区高新技术产业园麻雀岭工业区M-8栋4楼");
+		user.setPartyId("709035037445586944");
+		user.setCity("10001");
+		user.setCityName("深圳市");
+		user.setCountry("10002");
+		user.setCountryName("南山区");
+		user.setAddressLevel("1");
+		user.setCreatedDate(new Date());
+		user.setId("1");
+		user.setLogoUrl("http://www.baidu.com");
+		user.setLoginCount(1);
+		user.setMail("12345@qq.com");
+		user.setMobile("13066939619");
+		user.setName("叶良辰");
+		user.setPostcode("11111");
+		user.setProvince("10000");
+		user.setProvinceName("广东省");
+		user.setSex("1");
+		user.setStatus(PartyStatus.PARTY_ENABLED);
+		
+		HttpEntity<UserExtendVo> entity = new HttpEntity<>(user);
+		 restTemplate.exchange(url, HttpMethod.POST, entity, new ParameterizedTypeReference<Void>(){});
+	}
+	
+	@Test
+	public void updateByIdTest(){
+		String url = host+"v1/customers/709035037445586944?relationSratus=NOT_RELATED";
+//		HttpEntity<UserExtendVo> entity = new HttpEntity<>(user);
+		restTemplate.exchange(url, HttpMethod.PUT, null, new ParameterizedTypeReference<Void>(){});
+	}
+	
+	@Test
+	public void updateTest(){
+		String url = host+"v1/customers";
+		UserExtendVo userInfoVo = new UserExtendVo();
+		userInfoVo.setId("9999999901");
+		userInfoVo.setLogoUrl("www.baidu.com");
+		HttpEntity<UserExtendVo> entity = new HttpEntity<>(userInfoVo);
+		 restTemplate.exchange(url, HttpMethod.PUT, entity, new ParameterizedTypeReference<Void>(){});
+	}
+	
+//	@Test
+//	public void getUserInfoListTest(){
+//		String url = host+"v1/customers";
+//		ResponseEntity<PageInfo<UserExtendVo>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<PageInfo<UserExtendVo>>(){});
+//		response.getBody();
+//	}
+	
+	@Test
+	public void getInfoLevelTest(){
+		String url = host+"v1/customers/infoLevel";
+		ResponseEntity<UserExtendVo> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<UserExtendVo>(){});
+		response.getBody();
+	}
+	
+	@Test
+	public void findPersonInfoByPartyIdTest(){
+		String url = host+"v1/customers/709035037445586944/username";
+		ResponseEntity<Person> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<Person>(){});
+		response.getBody();
+	}
+	
+	@Test
+	public void findUserLoginTest(){
+		String url = host+"v1/customers/709035037445586944/login";
+		ResponseEntity<UserLogin> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<UserLogin>(){});
+		response.getBody();
+	}
+	
+}

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>主界面</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../css/lib/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="http://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Theme style -->
+<!--   <link rel="stylesheet" href="../css/common/base.css"> -->
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../css/common/common.css">
+  <link rel="stylesheet" href="../js/lib/jquery-ui-1.20.0/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="../js/lib/layer/skin/layer.css"/>
+<link rel="stylesheet" type="text/css" href="../js/lib/laydate/need/laydate.css"/>
+  <link rel="stylesheet" href="../css/app/setCouponInfo.css">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <style>
+  	.coupon_info .list li{
+  		line-height: 22px;
+  		height: 22px;
+  		color: #333;
+  	}
+  	.c_detail_cont .panel{
+  		margin: 0 200px 20px 200px;
+  	}
+  	.btn_bar{
+  		margin: 0 200px 20px 200px;
+  		text-align: center;
+  		padding-bottom: 40px;
+  	}
+  	.export_btn{
+		display:inline-block;
+		width: 120px;
+		height: 32px;
+		line-height: 32px;
+		text-align:center;
+		color:#b1191a;
+		border: 1px solid #b1191a;
+		cursor: pointer;
+	}
+  </style>
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+  <!-- 首部导航 -->
+  <header class="main-header">
+    <!-- Logo -->
+    <a href="#" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>YKY</b></span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><b>YKY</b><p>运营管理后台</p></span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <a href="#" class="icon-switch" data-toggle="offcanvas" role="button"></a>
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+              <span>欢迎您,11222231</span>
+          </li>       
+          <li class="dropdown"> 
+              <a href="#" class="rel"><i class="icon-out f16"></i>退出</a>
+		  </li>  
+        </ul>
+      </div>
+    </nav>
+  </header>
+  
+  
+  <!-- 左边导航  -->
+  <aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu">
+		<li>
+			<a href="#">
+				<i class="fa icon-home"></i> <span>首<span style="margin-left:24px;">页</span></span>
+			</a>
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-vip"></i> <span class="first-menu">会员管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">注册用户</a></li>
+				<li><a href="#">初级会员</a></li>
+				<li><a href="#">认证会员</a></li>
+			</ul>
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-audit"></i> <span class="first-menu">审核管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">认证会员管理</a></li>
+				<li><a href="#">初级会员审核</a></li>
+				<li><a href="#">公司名称变更审核</a></li>
+			</ul>				
+		</li>
+		<li class="treeview pitch-on active">
+			<a href="#">
+				<i class="fa icon-commodity"></i> <span class="first-menu">商品管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li class="selected"><a href="#">商品管理</a></li>
+				<li><a href="#">商品运营</a></li>
+				<li><a href="#">库存管理</a></li>
+			</ul>			
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-deal"></i> <span class="first-menu">交易管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">库存管理</a></li>
+				<li><a href="#">采购需求管理</a></li>
+				<li><a href="#">询报价管理</a></li>
+			</ul>
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-dingdan"></i> <span class="first-menu">订单管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">订单管理</a></li>
+			</ul>
+		</li>	
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-operation"></i> <span class="first-menu">运营管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">广告咨询管理</a></li>
+				<li><a href="#">招聘管理</a></li>
+				<li><a href="#">帮助中心管理</a></li>
+				<li><a href="#">意见反馈管理</a></li>
+				<li><a href="#">分类目录管理</a></li>
+			</ul>
+		</li>	
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-popularize"></i> <span class="first-menu">推广管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">物料展示位管理</a></li>
+				<li><a href="#">广告位管理</a></li>
+				<li><a href="#">排行榜管理</a></li>
+				<li><a href="#">活动管理</a></li>
+				<li><a href="#">热词库管理</a></li>
+				<li><a href="#">站内信推送管理</a></li>
+				<li><a href="#">邮件推送管理</a></li>
+			</ul>
+		</li>	
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-basedata"></i> <span class="first-menu">基础数据库管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">品牌库管理</a></li>
+				<li><a href="#">物料库管理</a></li>
+				<li><a href="#">分类及参数管理</a></li>
+			</ul>			
+		</li>
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-baobiao"></i> <span class="first-menu">报表统计</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">注册会员总量统计</a></li>
+				<li><a href="#">注册会员增量统计</a></li>
+				<li><a href="#">月订单数量统计</a></li>
+				<li><a href="#">月订单总金额统计</a></li>
+				<li><a href="#">月询报价订单量对比</a></li>
+			</ul>				
+		</li>	
+		<li class="treeview">
+			<a href="#">
+				<i class="fa icon-system"></i> <span class="first-menu">系统管理</span><i class="fa fa-angle-left pull-right"></i>
+			</a>
+			<ul class="treeview-menu">
+				<li><a href="#">用户授权</a></li>
+				<li><a href="#">权限角色管理</a></li>
+			</ul>			
+		</li>			
+      </ul>
+    </section>
+    <!-- /.sidebar -->
+  </aside>
+
+  
+  <!-- 右边内容显示 -->
+  <div class="content-wrapper">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<span class="header_tab">优惠券详情</span>
+	</section>
+    <!-- Main content -->
+	<section class="content c_detail_cont pt20">
+		<div class="panel panel-default coupon_info">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">【地推券】企业用户注册</h3>
+		  </div>
+		  <div class="panel-body">
+	    	<div class="row">
+			  <div class="col-md-4">
+			  	<ul class="list">
+			  		<li><span class="span_label"></span>有效期：<span>领取后3个月内有效</span></li>
+			  		<li><span class="span_label"></span>可用货品：<span>不限</span></li>
+			  		<li><span class="span_label"></span>推广方式：<span>自助领取</span></li>
+			  	</ul>
+			  </div>
+			  <div class="col-md-4">
+			  	<ul class="list">
+			  		<li><span class="span_label"></span>总发行量：<span>领取后3个月内有效</span></li>
+			  		<li><span class="span_label"></span>使用限额：<span>不限</span></li>
+			  		<li><span class="span_label"></span>推广对象：<span>自助领取</span></li>
+			  	</ul>
+			  </div>
+			  <div class="col-md-4">
+			  	<ul class="list">
+			  		<li><span class="span_label"></span>单张面值：<span>100元</span></li>
+			  	</ul>
+			  </div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<ul class="list">
+				  		<li><span class="span_label"></span>优惠券申请凭证：<span><img src="" alt="" /></span></li>
+				  	</ul>
+				</div>
+			</div>
+		  </div>
+		</div>
+		<div class="panel panel-default">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">操作日志</h3>
+		  </div>
+		  <div class="panel-body">
+		    <table class="table">
+		      <thead>
+		        <tr>
+		          <th>序号</th>
+		          <th>操作人</th>
+		          <th>时间</th>
+		          <th>操作记录</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        <tr>
+		          <th >1</th>
+		          <td>小易</td>
+		          <td>2017.02.29</td>
+		          <td>创建优惠券</td>
+		        </tr>
+		        <tr>
+		          <th >1</th>
+		          <td>小易</td>
+		          <td>2017.02.29</td>
+		          <td>创建优惠券</td>
+		        </tr>
+		        <tr>
+		          <th >1</th>
+		          <td>小易</td>
+		          <td>2017.02.29</td>
+		          <td>创建优惠券</td>
+		        </tr>
+		      </tbody>
+			 </table>
+		  </div>
+		</div>
+		<div class="panel panel-default">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">地推券密码</h3>
+		  </div>
+		  <div class="panel-body">
+		    <table class="table">
+		      <thead>
+		        <tr>
+		          <th>序号</th>
+		          <th>姓名</th>
+		          <th>已领取优惠券数量</th>
+		          <th>地推券密码</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        <tr>
+		          <th >1</th>
+		          <td>Peter.Liu</td>
+		          <td>100</td>
+		          <td>10030B57</td>
+		        </tr>
+		        <tr>
+		          <th >1</th>
+		          <td>Peter.Liu</td>
+		          <td>100</td>
+		          <td>10030B57</td>
+		        </tr>
+		        <tr>
+		          <th >1</th>
+		          <td>Peter.Liu</td>
+		          <td>100</td>
+		          <td>10030B57</td>
+		        </tr>
+		      </tbody>
+			 </table>
+		  </div>
+		</div>
+		<section class="btn_bar">
+			<span class="export_btn">导出地推券密码</span>
+		</section>
+	</section>
+	<!-- /.content -->
+  </div>
+	
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 1.11.3 -->
+<script src="../js/lib/jquery-1.11.3.min.js"></script>
+<!-- jQuery UI -->
+<script src="../js/lib/jquery-ui-1.20.0/jquery-ui.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script src="../js/lib/bootstrap.min.js"></script>
+<script src="../js/component/leftMenu.js"></script>
+</body>
+</html>

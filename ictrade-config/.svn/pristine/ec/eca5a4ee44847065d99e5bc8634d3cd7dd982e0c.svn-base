@@ -1,0 +1,28 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+		default-lazy-init="false">
+	<!-- 此配置主要用于spring client的配置，用于解决分布式集群环境下的cas session 问题 -->
+	<!-- 此配置文件依赖于 spring-cache.xml的redisTemplate的定义 -->
+	<bean class="org.jasig.cas.client.session.SessionMappingStorageConfig">
+		<property name="sessionMappingStorage" ref="sessionMappingStorage"/>
+	</bean>
+	
+	<bean id="sessionMappingStorage" class="org.jasig.cas.client.session.RedisBackedSessionMappingStorage">
+		<property name="redisTemplate" ref="redisTemplate"/>
+	</bean>
+	
+	<!-- 开发环境无需redis支持，本地调试即可 -->
+	<beans profile="dev">
+		<bean id="sessionMappingStorage" class="org.jasig.cas.client.session.HashMapBackedSessionMappingStorage"/>
+	</beans>
+	
+	
+
+
+</beans>

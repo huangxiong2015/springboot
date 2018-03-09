@@ -1,0 +1,290 @@
+/*
+ * Created: 2016年11月28日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2016 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+package com.yikuyi.party.address.bll;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.framewrok.springboot.web.RequestHelper;
+import com.yikuyi.basedata.common.model.Currency;
+import com.yikuyi.party.address.vo.AddressVo;
+import com.yikuyi.party.address.vo.BasicAddress;
+import com.yikuyi.party.contact.model.ContactMech;
+import com.yikuyi.party.contact.model.ContactMechAttribute;
+import com.yikuyi.party.contact.model.ContactMechAttributes;
+import com.yikuyi.party.contact.model.PostalAddress;
+import com.yikuyi.party.contact.model.TelecomNumber;
+import com.yikuyi.party.contact.model.TelecomNumber.MobileTelecomNumber;
+import com.yikuyi.party.model.PartyContactMech;
+import com.yikuyi.party.model.PartyContactMech.PurposeType;
+import com.yikuyi.party.model.PartyProfileDefault;
+import com.yikuyi.party.profiles.bll.PartyProfileDefaultManager;
+import com.yikuyi.party.profiles.dao.PartyProfileDefaultDao;
+import com.yikuyi.party.shipAddress.bll.PartyContactMechManager;
+import com.ykyframework.model.IdGen;
+
+@Service
+@Transactional
+public class AddressManagerV8 {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AddressManagerV8.class);
+	
+	@Autowired
+	private PartyContactMechManager partyContactMechManager;
+	
+	@Autowired
+	private PartyProfileDefaultDao partyProfileDefaultDao;
+		
+	@Autowired
+	private PartyProfileDefaultManager partyProfileDefaultManager;
+	
+
+	
+	/**
+	 * 查询用户的所有收货地址
+	 * @param partyId
+	 * @return
+	 * @since 2018年1月3日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public List<AddressVo> getAddressShipingList(String partyId,Currency currency) {
+		List<AddressVo> addressVoList = new ArrayList<>();
+		List<PartyContactMech> mechList = partyContactMechManager.selectPartyContactMechByType(PurposeType.SHIPPING_LOCATION, partyId, currency);
+		if(CollectionUtils.isNotEmpty(mechList)){
+			for (PartyContactMech partyContactMech : mechList) {
+				AddressVo addressVo = getAddressVoInfo(partyContactMech, currency, partyId);
+				addressVoList.add(addressVo);
+			}
+		}
+		return addressVoList; 
+	}
+
+	
+	/**
+	 * 新增收货地址
+	 * @param addressVo
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public AddressVo saveAddressVo(AddressVo addressVo) {
+		Long id = IdGen.getInstance().nextId();
+		PartyContactMech partyContactMech = getPartyContactMech(null, addressVo);
+		PartyContactMech contactMech = partyContactMechManager.insert(partyContactMech);
+		if(contactMech!=null){//添加地址id
+			addressVo.setAddressId(contactMech.getContactMech().getId());
+		}
+	    return addressVo;
+	}
+
+	/**
+	 * 处理列表与详情的数据
+	 * @param partyContactMech
+	 * @return
+	 * @since 2018年1月18日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public AddressVo getAddressVoInfo(PartyContactMech partyContactMech,Currency currency,String partyId){
+		AddressVo addressVo = new AddressVo();
+		addressVo.setAddressId(partyContactMech.getContactMech().getId());//地址id
+		addressVo.setToName(partyContactMech.getContactMech().getPostalAddress().getToName());
+		addressVo.setPhoneNumber(partyContactMech.getContactMech().getTelecomNumber().getMobileTelecomNumber().getContactNumber());
+		Map<String, String> param=new HashMap<>();
+		param.put("partyId", partyId);
+		PartyProfileDefault partyProfileDefault =partyProfileDefaultDao.selectProfileDefault(param);
+		if(partyProfileDefault!=null){
+			ContactMech addrCNY = partyProfileDefault.getDefaultShipAddrCNY();
+			ContactMech addrUSD = partyProfileDefault.getDefaultShipAddrHK();
+			if((addrCNY!=null && addrCNY.getId().equals(partyContactMech.getContactMech().getId()))
+					|| (addrUSD!=null && addrUSD.getId().equals(partyContactMech.getContactMech().getId()))){//大陆默认地址或者香港默认收货地址
+				addressVo.setDefaultFlag(true);
+			}else{
+				addressVo.setDefaultFlag(false);
+			}
+		}
+		if(currency!=null){
+			addressVo.setCurrency(com.yikuyi.party.address.vo.AddressVo.Currency.valueOf(currency.toString()));
+		}
+		BasicAddress basicAddress = new BasicAddress();
+		basicAddress.setProvince(partyContactMech.getContactMech().getPostalAddress().getProvinceGeoId());
+		basicAddress.setProvinceName(partyContactMech.getContactMech().getPostalAddress().getProvinceGeoName());
+		basicAddress.setCity(partyContactMech.getContactMech().getPostalAddress().getCityGeoId());
+		basicAddress.setCityName(partyContactMech.getContactMech().getPostalAddress().getCityGeoName());
+		basicAddress.setCounty(partyContactMech.getContactMech().getPostalAddress().getCountyGeoId());
+		basicAddress.setCountyName(partyContactMech.getContactMech().getPostalAddress().getCountyGeoName());
+		basicAddress.setAddress(partyContactMech.getContactMech().getPostalAddress().getAddress1());
+		addressVo.setAddressInfo(basicAddress);
+		
+		return addressVo;
+	}
+	
+	
+	/**
+	 * 查询收货地址详情
+	 * @param addressId
+	 * @param currency
+	 * @return
+	 * @since 2018年1月17日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public AddressVo getAddressVo(String addressId) {
+		AddressVo addressVo = new AddressVo();
+		try {
+			PartyContactMech partyContactMech = partyContactMechManager.selectPartyContactMechByIdAndType(addressId, PurposeType.SHIPPING_LOCATION, null,"mobile");
+			if(partyContactMech!=null){
+				String partyId = RequestHelper.getLoginUserId();	
+				addressVo = getAddressVoInfo(partyContactMech, null, partyId);
+			}else{
+				return null;
+			}
+		} catch (IOException e) {
+			logger.error("查询地址详情：{}", e);
+		}
+		return addressVo;
+	}
+	
+	
+	/**
+	 * 处理新增与编辑的数据
+	 * @param addressId
+	 * @param addressVo
+	 * @return
+	 * @since 2018年1月18日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public PartyContactMech getPartyContactMech(String addressId,AddressVo addressVo){
+		PartyContactMech partyContactMech = new PartyContactMech();
+		partyContactMech.setPurposeType(PurposeType.SHIPPING_LOCATION);//默认值
+		if(Optional.ofNullable(addressVo.getPurposeType()).isPresent()){
+			partyContactMech.setPurposeType(addressVo.getPurposeType());
+		}
+		ContactMech contactMechs = new ContactMech();
+//		contactMechs.setId(addressId);
+		partyContactMech.setContactMech(contactMechs);
+		//添加地址信息
+		PostalAddress postalAddress = new PostalAddress();
+		postalAddress.setToName(addressVo.getToName());
+		postalAddress.setProvinceGeoId(String.valueOf(addressVo.getAddressInfo().getProvince()));
+		postalAddress.setProvinceGeoName(addressVo.getAddressInfo().getProvinceName());
+		postalAddress.setCityGeoId(String.valueOf(addressVo.getAddressInfo().getCity()));
+		postalAddress.setCityGeoName(addressVo.getAddressInfo().getCityName());
+		postalAddress.setCountyGeoId(String.valueOf(addressVo.getAddressInfo().getCounty()));
+		postalAddress.setCountyGeoName(addressVo.getAddressInfo().getCountyName());
+		postalAddress.setAddress1(addressVo.getAddressInfo().getAddress());
+		partyContactMech.getContactMech().setPostalAddress(postalAddress);
+		//添加手机号信息
+		TelecomNumber number = new TelecomNumber();
+		MobileTelecomNumber mobileTelecomNumber = new MobileTelecomNumber();
+		mobileTelecomNumber.setContactNumber(addressVo.getPhoneNumber());
+		number.setMobileTelecomNumber(mobileTelecomNumber);
+		partyContactMech.getContactMech().setTelecomNumber(number);
+		//添加类别信息
+		ContactMechAttributes attributes = new ContactMechAttributes();
+		ContactMechAttribute attribute = new ContactMechAttribute();
+		attribute.setKey("USED_CURRUNCY");
+		attribute.setValue(addressVo.getCurrency().toString());
+		attributes.setUsedCurruncy(attribute);
+		partyContactMech.getContactMech().setContactMechAttributes(attributes);
+		return partyContactMech;
+	}
+	
+	/**
+	 * 编辑收货信息(移动端)
+	 * @param addressId
+	 * @param addressVo
+	 * @return
+	 * @since 2018年1月4日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public AddressVo updateAddressVo(String addressId, AddressVo addressVo) {
+		PartyContactMech partyContactMech = getPartyContactMech(addressId, addressVo);
+		PartyContactMech contactMech = partyContactMechManager.updateDueTime(addressId, partyContactMech);
+		if(addressVo.isDefaultFlag()){//如果为默认地址,重新设置地址信息
+			Map<String, String> param=new HashMap<>();
+			String partyId = RequestHelper.getLoginUserId();
+			param.put("partyId", partyId);
+			PartyProfileDefault partyProfileDefault =partyProfileDefaultDao.selectProfileDefault(param);
+			if(partyProfileDefault!=null){
+				ContactMech addrCNY = partyProfileDefault.getDefaultShipAddrCNY();
+				ContactMech addrUSD = partyProfileDefault.getDefaultShipAddrHK();
+				if(Currency.CNY.toString().equals(addressVo.getCurrency().toString())){
+					ContactMech mech = new ContactMech();
+					BeanUtils.copyProperties(addrCNY, mech);
+					mech.setId(contactMech.getContactMech().getId());
+					partyProfileDefault.setDefaultShipAddrCNY(mech);
+					partyProfileDefaultDao.updateProfileDefault(partyProfileDefault);
+				}
+			   if(Currency.USD.toString().equals(addressVo.getCurrency().toString())){
+				   ContactMech mech = new ContactMech();
+				   BeanUtils.copyProperties(addrUSD, mech);
+				   mech.setId(contactMech.getContactMech().getId());
+				   partyProfileDefault.setDefaultShipAddrHK(mech);
+				   partyProfileDefaultDao.updateProfileDefault(partyProfileDefault);
+			   }	
+			}
+		}
+		if(contactMech!=null){
+			addressVo.setAddressId(contactMech.getContactMech().getId());
+		}
+		return addressVo;
+	}
+
+
+	/**
+	 * 删除收货地址(移动端)
+	 * @param addressId
+	 * @since 2018年1月4日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public void deleteAddressVo(String addressId) {
+		partyContactMechManager.deletePartyContactMech(addressId);
+	}
+
+	/**
+	 * 设置默认收货地址
+	 * @param addressId
+	 * @since 2018年1月4日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public void setDefaultAddress(String addressId,AddressVo addressVo) {
+		String partyId = RequestHelper.getLoginUserId();		
+		PartyProfileDefault entity = new PartyProfileDefault();
+		entity.setPartyId(partyId);
+		if(addressVo!=null && addressVo.getCurrency()!=null){
+			if (Currency.CNY.toString().equals(addressVo.getCurrency().toString())) {
+				ContactMech defaultShipAddr = new ContactMech();
+				defaultShipAddr.setId(addressId);
+				entity.setDefaultShipAddrCNY(defaultShipAddr);
+			} else if (Currency.USD.toString().equals(addressVo.getCurrency().toString())) {
+				ContactMech defaultBillAddr = new ContactMech();
+				defaultBillAddr.setId(addressId);
+				entity.setDefaultShipAddrHK(defaultBillAddr);
+			}
+		}
+		partyProfileDefaultManager.insertProfileDefault(entity);
+	}
+
+
+
+	
+}

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.contact.dao.TelecomNumberDao">
+   <resultMap id="ResultAll" type="com.yikuyi.party.contact.model.ContactMech">
+            <id column="CONTACT_MECH_ID" property="id" jdbcType="VARCHAR" />
+   	        <association property="telecomNumber"
+				javaType="com.yikuyi.party.contact.model.TelecomNumber">
+		            <!--手机 -->
+					<association property="mobileTelecomNumber"
+						javaType="com.yikuyi.party.contact.model.TelecomNumber$MobileTelecomNumber">
+						<id column="MOBILE_TYPE" property="mechType" jdbcType="VARCHAR" />
+						<result column="MOBILE_COUNTRY_CODE" property="countryCode"
+							jdbcType="VARCHAR" />
+						<result column="MOBILE_AREA_CODE" property="areaCode"
+							jdbcType="VARCHAR" />
+						<result column="MOBILE_CONTACT_NUMBER" property="contactNumber"
+							jdbcType="VARCHAR" />
+						<result column="MOBILE_ASK_FOR_NAME" property="askForName"
+							jdbcType="VARCHAR" />
+					</association>
+					<!-- 座机 -->
+					<association property="phoneTelecomNumber"
+						javaType="com.yikuyi.party.contact.model.TelecomNumber$PhoneTelecomNumber">
+						<id column="TELEPHONE_TYPE" property="mechType" jdbcType="VARCHAR" />
+						<result column="TELEPHONE_COUNTRY_CODE" property="countryCode"
+							jdbcType="VARCHAR" />
+						<result column="TELEPHONE_AREA_CODE" property="areaCode"
+							jdbcType="VARCHAR" />
+						<result column="TELEPHONE_CONTACT_NUMBER" property="contactNumber"
+							jdbcType="VARCHAR" />
+						<result column="TELEPHONE_ASK_FOR_NAME" property="askForName"
+							jdbcType="VARCHAR" />
+					</association>
+					
+					<!-- QQ -->
+					<association property="qqTelecomNumber"
+						javaType="com.yikuyi.party.contact.model.TelecomNumber$QqTelecomNumber">
+						<id column="QQ_TYPE" property="mechType" jdbcType="VARCHAR" />
+						<result column="QQ_COUNTRY_CODE" property="countryCode"
+							jdbcType="VARCHAR" />
+						<result column="QQ_AREA_CODE" property="areaCode"
+							jdbcType="VARCHAR" />
+						<result column="QQ_CONTACT_NUMBER" property="contactNumber"
+							jdbcType="VARCHAR" />
+						<result column="QQ_ASK_FOR_NAME" property="askForName"
+							jdbcType="VARCHAR" />
+					</association>
+					
+					<!-- 传真 -->
+					<association property="faxTelecomNumber"
+						javaType="com.yikuyi.party.contact.model.TelecomNumber$FaxTelecomNumber">
+						<id column="FAX_TYPE" property="mechType" jdbcType="VARCHAR" />
+						<result column="FAX_COUNTRY_CODE" property="countryCode"
+							jdbcType="VARCHAR" />
+						<result column="FAX_AREA_CODE" property="areaCode"
+							jdbcType="VARCHAR" />
+						<result column="FAX_CONTACT_NUMBER" property="contactNumber"
+							jdbcType="VARCHAR" />
+						<result column="FAX_ASK_FOR_NAME" property="askForName"
+							jdbcType="VARCHAR" />
+					</association>
+		  </association>
+	</resultMap>
+	
+	<!-- 添加手机号码 -->
+	<insert id="insertMobile" parameterType="com.yikuyi.party.contact.model.ContactMech">
+		insert into TELECOM_NUMBER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				CONTACT_MECH_ID,
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.mechType != null">
+				CONTACT_MECH_TYPE_ID,
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.countryCode != null">
+				COUNTRY_CODE,
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.areaCode != null">
+				AREA_CODE,
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.contactNumber != null">
+				CONTACT_NUMBER,
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.askForName != null">
+				ASK_FOR_NAME,
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.verified != null">
+				VERIFIED,
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.creator != null">
+				CREATOR,
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.createdDate != null">
+				CREATED_DATE,
+			</if>
+
+			<if test="telecomNumber.mobileTelecomNumber.lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.lastUpdateDate != null">
+				LAST_UPDATE_DATE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.mechType != null">
+				#{telecomNumber.mobileTelecomNumber.mechType,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.countryCode != null">
+				#{telecomNumber.mobileTelecomNumber.countryCode,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.areaCode != null">
+				#{telecomNumber.mobileTelecomNumber.areaCode,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.contactNumber != null">
+				#{telecomNumber.mobileTelecomNumber.contactNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.askForName != null">
+				#{telecomNumber.mobileTelecomNumber.askForName,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.verified != null">
+				#{telecomNumber.mobileTelecomNumber.verified,jdbcType=CHAR},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.creator != null">
+				#{telecomNumber.mobileTelecomNumber.creator,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.createdDate != null">
+				#{telecomNumber.mobileTelecomNumber.createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.lastUpdateUser != null">
+				#{telecomNumber.mobileTelecomNumber.lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.mobileTelecomNumber.lastUpdateDate != null">
+				#{telecomNumber.mobileTelecomNumber.lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 添加移动电话 -->
+	<insert id="insertPhone" parameterType="com.yikuyi.party.contact.model.ContactMech">
+		insert into TELECOM_NUMBER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				CONTACT_MECH_ID,
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.mechType != null">
+				CONTACT_MECH_TYPE_ID,
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.countryCode != null">
+				COUNTRY_CODE,
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.areaCode != null">
+				AREA_CODE,
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.contactNumber != null">
+				CONTACT_NUMBER,
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.askForName != null">
+				ASK_FOR_NAME,
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.verified != null">
+				VERIFIED,
+			</if>
+
+			<if test="telecomNumber.phoneTelecomNumber.creator != null">
+				CREATOR,
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.createdDate != null">
+				CREATED_DATE,
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.lastUpdateDate != null">
+				LAST_UPDATE_DATE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.mechType != null">
+				#{telecomNumber.phoneTelecomNumber.mechType,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.countryCode != null">
+				#{telecomNumber.phoneTelecomNumber.countryCode,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.areaCode != null">
+				#{telecomNumber.phoneTelecomNumber.areaCode,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.contactNumber != null">
+				#{telecomNumber.phoneTelecomNumber.contactNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.askForName != null">
+				#{telecomNumber.phoneTelecomNumber.askForName,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.verified != null">
+				#{telecomNumber.phoneTelecomNumber.verified,jdbcType=CHAR},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.creator != null">
+				#{telecomNumber.phoneTelecomNumber.creator,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.createdDate != null">
+				#{telecomNumber.phoneTelecomNumber.createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.lastUpdateUser != null">
+				#{telecomNumber.phoneTelecomNumber.lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.phoneTelecomNumber.lastUpdateDate != null">
+				#{telecomNumber.phoneTelecomNumber.lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 添加移动qq -->
+	<insert id="insertQQ" parameterType="com.yikuyi.party.contact.model.ContactMech">
+		insert into TELECOM_NUMBER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				CONTACT_MECH_ID,
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.mechType != null">
+				CONTACT_MECH_TYPE_ID,
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.countryCode != null">
+				COUNTRY_CODE,
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.areaCode != null">
+				AREA_CODE,
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.contactNumber != null">
+				CONTACT_NUMBER,
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.askForName != null">
+				ASK_FOR_NAME,
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.verified != null">
+				VERIFIED,
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.creator != null">
+				CREATOR,
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.createdDate != null">
+				CREATED_DATE,
+			</if>
+
+			<if test="telecomNumber.qqTelecomNumber.lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.lastUpdateDate != null">
+				LAST_UPDATE_DATE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.mechType != null">
+				#{telecomNumber.qqTelecomNumber.mechType,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.countryCode != null">
+				#{telecomNumber.qqTelecomNumber.countryCode,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.areaCode != null">
+				#{telecomNumber.qqTelecomNumber.areaCode,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.contactNumber != null">
+				#{telecomNumber.qqTelecomNumber.contactNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.askForName != null">
+				#{telecomNumber.qqTelecomNumber.askForName,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.verified != null">
+				#{telecomNumber.qqTelecomNumber.verified,jdbcType=CHAR},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.creator != null">
+				#{telecomNumber.qqTelecomNumber.creator,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.createdDate != null">
+				#{telecomNumber.qqTelecomNumber.createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.lastUpdateUser != null">
+				#{telecomNumber.qqTelecomNumber.lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.qqTelecomNumber.lastUpdateDate != null">
+				#{telecomNumber.qqTelecomNumber.lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 添加传真 -->
+	<insert id="insertFax" parameterType="com.yikuyi.party.contact.model.ContactMech">
+		insert into TELECOM_NUMBER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				CONTACT_MECH_ID,
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.mechType != null">
+				CONTACT_MECH_TYPE_ID,
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.countryCode != null">
+				COUNTRY_CODE,
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.areaCode != null">
+				AREA_CODE,
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.contactNumber != null">
+				CONTACT_NUMBER,
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.askForName != null">
+				ASK_FOR_NAME,
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.verified != null">
+				VERIFIED,
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.creator != null">
+				CREATOR,
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.createdDate != null">
+				CREATED_DATE,
+			</if>
+
+			<if test="telecomNumber.faxTelecomNumber.lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.lastUpdateDate != null">
+				LAST_UPDATE_DATE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.mechType != null">
+				#{telecomNumber.faxTelecomNumber.mechType,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.countryCode != null">
+				#{telecomNumber.faxTelecomNumber.countryCode,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.areaCode != null">
+				#{telecomNumber.faxTelecomNumber.areaCode,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.contactNumber != null">
+				#{telecomNumber.faxTelecomNumber.contactNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.askForName != null">
+				#{telecomNumber.faxTelecomNumber.askForName,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.verified != null">
+				#{telecomNumber.faxTelecomNumber.verified,jdbcType=CHAR},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.creator != null">
+				#{telecomNumber.faxTelecomNumber.creator,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.createdDate != null">
+				#{telecomNumber.faxTelecomNumber.createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.lastUpdateUser != null">
+				#{telecomNumber.faxTelecomNumber.lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="telecomNumber.faxTelecomNumber.lastUpdateDate != null">
+				#{telecomNumber.faxTelecomNumber.lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	
+
+    <!--根据ID查找地址的各种联系方式 -->
+	<select id="getTelecomNumberByIds" resultMap="ResultAll">
+		SELECT
+		b.CONTACT_MECH_ID,
+		
+		c.CONTACT_MECH_TYPE_ID AS MOBILE_TYPE,
+		c.COUNTRY_CODE AS MOBILE_COUNTRY_CODE,
+		c.AREA_CODE AS MOBILE_AREA_CODE,
+		c.CONTACT_NUMBER AS MOBILE_CONTACT_NUMBER,
+		c.ASK_FOR_NAME AS MOBILE_ASK_FOR_NAME,
+
+		d.CONTACT_MECH_TYPE_ID AS TELEPHONE_TYPE,
+		d.COUNTRY_CODE AS TELEPHONE_COUNTRY_CODE,
+		d.AREA_CODE AS TELEPHONE_AREA_CODE,
+		d.CONTACT_NUMBER AS TELEPHONE_CONTACT_NUMBER,
+		d.ASK_FOR_NAME AS TELEPHONE_ASK_FOR_NAME,
+
+		e.CONTACT_MECH_TYPE_ID AS QQ_TYPE,
+		e.COUNTRY_CODE AS QQ_COUNTRY_CODE,
+		e.AREA_CODE AS QQ_AREA_CODE,
+		e.CONTACT_NUMBER AS QQ_CONTACT_NUMBER,
+		e.ASK_FOR_NAME AS QQ_ASK_FOR_NAME,
+		
+		f.CONTACT_MECH_TYPE_ID AS FAX_TYPE,
+		f.COUNTRY_CODE AS FAX_COUNTRY_CODE,
+		f.AREA_CODE AS FAX_AREA_CODE,
+		f.CONTACT_NUMBER AS FAX_CONTACT_NUMBER,
+		f.ASK_FOR_NAME AS FAX_ASK_FOR_NAME
+		
+		FROM
+		CONTACT_MECH b 
+		LEFT JOIN 
+		TELECOM_NUMBER c
+		ON b.`CONTACT_MECH_ID` = c.`CONTACT_MECH_ID` AND c.CONTACT_MECH_TYPE_ID = 'MOBILE'
+		LEFT JOIN
+		TELECOM_NUMBER d
+		ON b.`CONTACT_MECH_ID` = d.`CONTACT_MECH_ID` AND d.CONTACT_MECH_TYPE_ID = 'TELEPHONE'
+		LEFT JOIN
+		TELECOM_NUMBER e
+		ON b.`CONTACT_MECH_ID` = e.`CONTACT_MECH_ID` AND e.CONTACT_MECH_TYPE_ID = 'QQ'
+		LEFT JOIN
+		TELECOM_NUMBER f
+		ON b.`CONTACT_MECH_ID` = f.`CONTACT_MECH_ID` AND f.CONTACT_MECH_TYPE_ID = 'FAX'
+		WHERE b.CONTACT_MECH_ID  in 
+        <foreach collection="ids" item="id" index="index"  open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+	</select>
+	
+
+</mapper>

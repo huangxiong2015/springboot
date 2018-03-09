@@ -1,0 +1,121 @@
+package com.yikuyi.product.specialoffer.manager;
+
+import java.text.SimpleDateFormat;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.framework.springboot.model.LoginUser;
+import com.framewrok.springboot.web.RequestHelper;
+import com.yikuyi.product.specialoffer.repository.SpecialOfferRepository;
+import com.yikuyi.specialoffer.model.SpecialOffer;
+import com.yikuyi.specialoffer.model.SpecialOffer.RuleStatus;
+
+/**
+ * 专属特价
+ * @author zr.wuxiansheng@yikuyi.com
+ * @version 1.0.0
+ */
+@Service
+public class SpecialOfferManager {
+	
+	
+	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
+	private static final String success = "success";
+
+	@Autowired
+	private SpecialOfferRepository specialOfferRepository;
+
+	/**
+	 * 专属特价详情
+	 * @param id
+	 * @return
+	 * @since 2017年12月19日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public SpecialOffer getSpecialOffer(String id) {
+		return specialOfferRepository.findOne(id);
+	}
+	
+	/**
+	 * 编辑文案内容
+	 * @param id
+	 * @param ruleText
+	 * @return
+	 * @since 2017年12月15日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public String editRuleText(String id, String ruleText) {
+		String result = "fail";
+		SpecialOffer specialOfferOld = specialOfferRepository.findOne(id);
+		if(specialOfferOld!=null){
+			SpecialOffer entity = new SpecialOffer();
+			entity.setId(id);
+			entity.setRuleStatus(specialOfferOld.getRuleStatus());
+			entity.setRuleText(ruleText);
+			entity.setCreator(specialOfferOld.getCreator());
+			entity.setCreatorName(specialOfferOld.getCreatorName());
+			entity.setUpdatedTimeMillis(String.valueOf(System.currentTimeMillis()));
+			entity.setCreatedTimeMillis(specialOfferOld.getCreatedTimeMillis());
+			entity.setLastUpdateUser(specialOfferOld.getLastUpdateUser());
+			entity.setLastUpdateUserName(specialOfferOld.getLastUpdateUserName());
+			SpecialOffer specialOffer = specialOfferRepository.save(entity);
+			if(specialOffer!=null){
+				result = success;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 编辑状态
+	 * @param id
+	 * @param ruleStatus
+	 * @return
+	 * @since 2017年12月15日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public String editRuleStatus(String id, RuleStatus ruleStatus) {
+		String result = "fail";
+		LoginUser userInfo = RequestHelper.getLoginUser();
+		SpecialOffer specialOfferOld = specialOfferRepository.findOne(id);
+		if(specialOfferOld!=null){
+			SpecialOffer entity = new SpecialOffer();
+			entity.setId(id);
+			entity.setRuleStatus(ruleStatus);
+			entity.setRuleText(specialOfferOld.getRuleText());
+			entity.setCreator(specialOfferOld.getCreator());
+			entity.setCreatorName(specialOfferOld.getCreatorName());
+			entity.setUpdatedTimeMillis(String.valueOf(System.currentTimeMillis()));
+			entity.setCreatedTimeMillis(specialOfferOld.getCreatedTimeMillis());
+			entity.setLastUpdateUser(specialOfferOld.getLastUpdateUser());
+			entity.setLastUpdateUserName(specialOfferOld.getLastUpdateUserName());
+			SpecialOffer specialOffer = specialOfferRepository.save(entity);
+			if(specialOffer!=null){
+				result = success;
+			}
+		}else{
+			SpecialOffer entity = new SpecialOffer();
+			entity.setId(id);
+			entity.setRuleStatus(ruleStatus);
+			entity.setRuleText("专属特价");
+			entity.setCreator(userInfo.getId());
+			entity.setCreatorName(userInfo.getUsername());
+			entity.setUpdatedTimeMillis(String.valueOf(System.currentTimeMillis()));
+			entity.setCreatedTimeMillis(String.valueOf(System.currentTimeMillis()));
+			entity.setLastUpdateUser(userInfo.getId());
+			entity.setLastUpdateUserName(userInfo.getUsername());
+		    specialOfferRepository.save(entity);
+		    result = success;
+		}
+		return result;
+	}
+
+
+
+	
+	
+	
+			 
+}

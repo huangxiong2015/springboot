@@ -1,0 +1,18 @@
+package com.yikuyi.party.partycode.dao;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.yikuyi.party.partycode.model.PartyCode;
+
+@Mapper
+public interface PartyCodeDao {
+	
+	/**
+	 * 新生成PartyCode
+	 * @param entity
+	 * @return
+	 * @since 2017年5月9日
+	 * @author zr.shuzuo@yikuyi.com
+	 */
+	int insertPartyCode(PartyCode entity);
+}

@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.customer.dao.PersonDao">
+	<resultMap id="BaseResultMap" type="com.yikuyi.party.model.Party">
+		<id column="PARTY_ID" property="id" jdbcType="VARCHAR" />
+	   <association property="person" javaType="com.yikuyi.party.person.model.Person"> 
+          <result column="GENDER" property="gender" jdbcType="VARCHAR" />
+          <result column="RELATION_STATUS_ID" property="relationSratus"/>
+          <result column="LAST_NAME_LOCAL" property="lastNameLocal" jdbcType="VARCHAR" />
+          <result column="CREATED_DATE" property="createdDate" jdbcType="TIMESTAMP" />
+          <result column="CREATOR" property="creator" jdbcType="VARCHAR" />
+          <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+          <result column="LAST_UPDATE_USER" property="lastUpdateUser" jdbcType="VARCHAR" />
+          <result column="TEL" property="tel" jdbcType="VARCHAR" />
+          <result column="MAIL" property="mail" jdbcType="VARCHAR" />
+       </association>
+	</resultMap>
+	<resultMap id="BasePersonMap" type="com.yikuyi.party.person.model.Person">
+		<result column="GENDER" property="gender" jdbcType="VARCHAR" />
+	    <result column="RELATION_STATUS_ID" property="relationSratus"/>
+	    <result column="LAST_NAME_LOCAL" property="lastNameLocal" jdbcType="VARCHAR" />
+	    <result column="CREATED_DATE" property="createdDate" jdbcType="TIMESTAMP" />
+	    <result column="CREATOR" property="creator" jdbcType="VARCHAR" />
+	    <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+	    <result column="LAST_UPDATE_USER" property="lastUpdateUser" jdbcType="VARCHAR" />
+	    <result column="TEL" property="tel" jdbcType="VARCHAR" />
+	    <result column="MAIL" property="mail" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 查询单个地址信息 -->
+	<select id="findPersonById" resultMap="BaseResultMap">
+		  SELECT t.`PARTY_ID`,t.`LAST_NAME_LOCAL`,t.RELATION_STATUS_ID,t.`GENDER` FROM PERSON t WHERE t.`PARTY_ID`=#{id}
+	</select>
+	
+	<select id="getPersons" parameterType="com.yikuyi.party.model.Party" resultType="com.yikuyi.party.contact.vo.UserVo">
+		SELECT 
+		  p.`PARTY_ID` AS id,
+		  p.`LAST_NAME_LOCAL` AS NAME,
+		  DATE_FORMAT(
+		    p.`LAST_UPDATE_DATE`,
+		    '%Y-%m-%d %H:%i:%s'
+		  ) AS relationDate,
+		  cm.INFO_STRING AS mail 
+		FROM
+		  PERSON p 
+		  LEFT JOIN PARTY_CONTACT_MECH me 
+		    ON p.`PARTY_ID` = me.`PARTY_ID` 
+		  LEFT JOIN CONTACT_MECH cm 
+		    ON me.`CONTACT_MECH_ID` = cm.`CONTACT_MECH_ID` 
+		WHERE me.`CONTACT_MECH_PURPOSE_TYPE_ID` = 'REGISTER_LOCATION'
+		  AND (me.`THRU_DATE` > NOW() OR me.`THRU_DATE` IS NULL )
+		  AND p.`PARTY_ID` IN(
+			SELECT 
+			  t.`PARTY_ID_FROM` 
+			FROM
+			  PARTY_RELATIONSHIP t 
+			WHERE t.`ROLE_TYPE_ID_FROM` IN ('EMPLOYEE', 'MAIN_ROLE')  
+			  AND t.`ROLE_TYPE_ID_TO` = 'CORPORATION'
+			  AND (
+			    t.`THRU_DATE` > NOW() OR t.`THRU_DATE` IS NULL
+			  )
+			  <if test="corporationId != null">
+			  	AND t.`PARTY_ID_TO` = #{corporationId}
+			  </if>
+			  <if test="id != null">
+			  	AND t.`PARTY_ID_FROM` != #{id}
+			  </if>  
+		  )
+		    <if test="person != null and person.relationSratus != null">
+		    	and p.RELATION_STATUS_ID=#{person.relationSratus}
+		    </if>
+	</select>
+	<select id="getUser" parameterType="com.yikuyi.party.model.Party" resultType="com.yikuyi.party.contact.vo.UserVo">
+		SELECT 
+		  p.`PARTY_ID` AS id,
+		  p.`LAST_NAME_LOCAL` AS NAME
+		FROM
+		  PERSON p 
+		WHERE 1=1
+		    <if test="person != null and person.lastNameLocal != null">
+		    	and p.LAST_NAME_LOCAL like concat('%',#{person.lastNameLocal},'%')
+		    </if>
+	</select>
+	<select id="getUsers" parameterType="com.yikuyi.party.model.Party" resultType="com.yikuyi.party.contact.vo.UserVo">
+		SELECT 
+		  p.`PARTY_ID` AS id,
+		  p.`LAST_NAME_LOCAL` AS NAME
+		FROM
+		  PERSON p 
+		WHERE 1=1
+		    <if test="person != null and person.lastNameLocal != null">
+		    	and p.LAST_NAME_LOCAL = #{person.lastNameLocal}
+		    </if>
+	</select>
+	<insert id="insert" parameterType="com.yikuyi.party.model.Party">
+		insert into PERSON
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				PARTY_ID,
+			</if>
+		   <if test="person != null and person.gender != null" >
+				GENDER,
+			</if>
+			<if test="person != null and person.lastNameLocal != null" >
+				LAST_NAME_LOCAL,
+			</if>
+			<if test="person != null and person.creator != null" >
+				CREATOR,
+			</if>
+			<if test="person != null and person.createdDate != null" >
+				CREATED_DATE,
+			</if>
+			<if test="person != null and person.lastUpdateUser != null" >
+				LAST_UPDATE_USER,
+			</if>
+			<if test="person != null and person.lastUpdateDate != null" >
+				LAST_UPDATE_DATE,
+			</if>
+			<if test="person != null and person.tel != null" >
+				TEL,
+			</if>
+			<if test="person != null and person.mail != null" >
+				MAIL,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+		    <if test="person != null and person.gender != null" >
+				#{person.gender,jdbcType=VARCHAR},
+			</if>
+			 <if test="person != null and person.lastNameLocal != null" >
+			   #{person.lastNameLocal,jdbcType=VARCHAR},
+			</if>
+			<if test="person != null and person.creator != null" >
+				#{person.creator,jdbcType=VARCHAR},
+			</if>
+			<if test="person != null and person.createdDate != null" >
+				#{person.createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="person != null and person.lastUpdateUser != null" >
+				#{person.lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="person != null and person.lastUpdateDate != null" >
+				#{person.lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="person != null and person.tel != null" >
+				#{person.tel},
+			</if>
+			<if test="person != null and person.mail != null" >
+				#{person.mail},
+			</if>
+		</trim>
+	</insert>
+    <update id="editPerson" parameterType="com.yikuyi.party.model.Party">
+    update PERSON
+    <set >
+       <if test="person != null and person.gender != null" >
+        GENDER = #{person.gender},
+      </if>
+      <if test="person != null and person.relationSratus != null" >
+        RELATION_STATUS_ID = #{person.relationSratus},
+      </if>
+      <if test="person != null and person.lastName != null" >
+        LAST_NAME = #{person.lastName},
+      </if>
+      <if test="person != null and person.lastNameLocal != null" >
+        LAST_NAME_LOCAL = #{person.lastNameLocal},
+      </if>
+      <if test="person != null and person.logoImageUrl != null" >
+        LOGO_IMAGE_URL = #{person.logoImageUrl},
+      </if>
+      <if test="person != null and person.logoImageUrlSmall != null" >
+        LOGO_IMAGE_URL_SMALL = #{person.logoImageUrlSmall},
+      </if>
+      <if test="person != null and person.lastUpdateUser != null" >
+        LAST_UPDATE_USER = #{person.lastUpdateUser},
+      </if>
+      <if test="person != null and person.lastUpdateDate != null" >
+        LAST_UPDATE_DATE = #{person.lastUpdateDate},
+      </if>
+      <if test="person != null and person.tel != null" >
+        TEL = #{person.tel},
+      </if>
+	  <if test="person != null and person.mail != null" >
+		MAIL = #{person.mail},
+	  </if>
+    </set>
+    where party_id = #{id}
+  </update>
+  <!-- 查询认证部邮件 -->
+	<select id="findSpecialist" resultMap="BaseResultMap">
+	   SELECT a.`PARTY_ID`, a.LAST_NAME_LOCAL FROM PERSON a , PARTY_ROLE b WHERE a.party_id = b.party_id  AND b.role_type_Id ='CUST_CERT_SPECIALIST'
+	</select>
+	
+	<select id="getPersonByUserId" resultMap="BaseResultMap">
+		SELECT 
+		  PARTY_ID,
+		  SALUTATION,
+		  FIRST_NAME,
+		  LAST_NAME,
+		  PERSONAL_TITLE,
+		  FIRST_NAME_LOCAL,
+		  LAST_NAME_LOCAL,
+		  GENDER,
+		  COMMENTS,
+		  OCCUPATION,
+		  RELATION_STATUS_ID,
+		  CREATOR,
+		  CREATED_DATE,
+		  LAST_UPDATE_USER,
+		  LAST_UPDATE_DATE,
+		  LOGO_IMAGE_URL,
+		  LOGO_IMAGE_URL_SMALL,
+		  MAIL
+		FROM
+		  PERSON
+		WHERE PARTY_ID=#{userId}
+	</select>
+	
+	<select id="getReportsTo" resultMap="BaseResultMap">
+		SELECT 
+		  t1.PARTY_ID,
+		  t1.SALUTATION,
+		  t1.FIRST_NAME,
+		  t1.LAST_NAME,
+		  t1.PERSONAL_TITLE,
+		  t1.FIRST_NAME_LOCAL,
+		  t1.LAST_NAME_LOCAL,
+		  t1.GENDER,
+		  t1.COMMENTS,
+		  t1.OCCUPATION,
+		  t1.RELATION_STATUS_ID,
+		  t1.CREATOR,
+		  t1.CREATED_DATE,
+		  t1.LAST_UPDATE_USER,
+		  t1.LAST_UPDATE_DATE,
+		  t1.LOGO_IMAGE_URL,
+		  t1.LOGO_IMAGE_URL_SMALL 
+		FROM
+		  PERSON t1,
+		  PARTY_RELATIONSHIP t2,
+		  PARTY t3
+		  WHERE t1.`PARTY_ID` = t2.`PARTY_ID_FROM`
+		  AND t1.`PARTY_ID` = t3.`PARTY_ID`
+		  AND t2.PARTY_ID_TO = #{partyId} 
+		  AND t2.PARTY_RELATIONSHIP_TYPE_ID = #{roleTypeFrom}
+		  AND t2.THRU_DATE IS NULL
+		  AND t3.`STATUS_ID`='PARTY_ENABLED'
+	</select>
+	
+	<select id="getEmailListByRoleType" resultMap="BasePersonMap">
+		SELECT a.LAST_NAME_LOCAL,a.TEL,a.mail FROM PERSON a LEFT JOIN PARTY_ROLE b ON a.`PARTY_ID`=b.`PARTY_ID` 
+		WHERE b.`ROLE_TYPE_ID`=#{roleType} AND a.mail IS NOT NULL
+	</select>
+	
+	<select id="getPartyByIds" resultType="com.yikuyi.party.contact.vo.UserVo">
+		SELECT 
+		  p.`PARTY_ID` AS partyId,
+		  p.`LAST_NAME_LOCAL` AS name,
+		  p.`TEL` AS telNumber,
+		  p.`MAIL` AS mail,
+		  CASE WHEN r.`ROLE_TYPE_ID` IS NULL THEN '0'
+		  ELSE '1' END AS isEnterprise,
+		  t.`CORPORATION_ID` AS enterpriseId,
+		  g.`GROUP_NAME` AS companyName
+		FROM
+		  PERSON p 
+		  LEFT JOIN PARTY_ROLE r 
+		    ON p.`PARTY_ID` = r.`PARTY_ID` 
+		    AND r.`ROLE_TYPE_ID` = 'ENTERPRISE_CUST'
+		  LEFT JOIN PARTY t ON p.`PARTY_ID`= t.`PARTY_ID`
+		  LEFT JOIN PARTY_GROUP g ON t.`CORPORATION_ID`= g.`PARTY_ID`
+		 <if test="ids != null and ids.size() !=0">
+			WHERE p.`PARTY_ID` in 
+	        <foreach collection="ids" item="id" index="index"
+	            open="(" close=")" separator=",">
+	            #{id}
+	        </foreach>
+        </if>
+      
+	</select>
+	
+</mapper>

@@ -1,0 +1,121 @@
+.form-group:after{
+	content:'';
+	display:block;
+	clear:both;
+}
+.applicant-info,.company-info{
+	display:none;
+	border:solid 1px #eee;
+	padding-top:10px; ;
+}
+.applicant-info .col-md-11,.company-info .col-md-11,.attachment-list .col-md-11{
+	padding-bottom:10px;
+}
+/* .certifi-info .col-md-11{
+	margin-bottom:20px;
+} */
+.certifi-info .col-md-11 .control-label,.control-label{
+	text-align:right;
+}
+.box-wrap{
+	border-bottom:dashed 1px #ddd;
+	padding-bottom:20px;
+    margin-bottom: 15px;
+}
+.box-wrap:after {
+    display: block;
+    clear: both;
+    content: '';
+}
+.content{
+	color:#666;
+}
+.show-btn{
+	cursor:pointer;
+}
+.show-btn .pull-right{
+	transform: rotate(-90deg);
+	float: inherit !important;
+    margin-left: 5px;
+    font-size: 16px;
+}
+.show-btn.show .pull-right{
+	transform: rotate(90deg);
+}
+.btn-list{
+	text-align:center;
+}
+.btn-list .btn{
+	padding: 10px 20px;
+    cursor: pointer;
+    border: solid 1px #ddd;
+    border-radius: 3px;
+    font-size: 14px;
+    color: #919191;
+    margin-right: 30px;
+}
+.btn-list .btn-yes{
+	background:#c11f2e;
+	border-color:#c11f2e;
+	color:#fff;
+}
+.btn-list .btn-no:hover{
+	color: #c11f2e;
+    border-color:#c11f2e;
+}
+.up_skin_class .layui-layer-btn{
+	background:#fff;
+	border-color:#fff;
+}
+.reason-wrap{
+	display:none;
+}
+.reason-box{
+	position:relative;
+}
+.reason-box textarea{
+	width:350px;
+	height:120px;
+}
+.reason-box .num-wrap{
+	position:absolute;
+	bottom:10px;
+	right:20px;
+}
+.btd{
+	border-top:dashed 1px #ddd;
+	padding-top:20px;
+}
+.radio-wrap label{
+	font-weight:400;
+	position:relative;
+	top:-2px;
+	margin-right:20px;
+	margin-left:5px;
+}
+.month-pay{
+	float:left;
+	padding-left:15px;
+}
+.s-unit{
+	position:relative;
+	top:5px;
+}
+.wrap-info .col-md-11{
+	margin-bottom: 15px;
+}
+.form-group.has-success .help-block {
+    color: #4D4D4D;
+}
+.form-group.has-success .form-control{
+	border-color:#d2d6de;
+}
+.form-control-feedback{
+	right:16.5px;
+}
+.has-success .form-control-feedback{
+	display:none !important;
+}
+.err-wrap{
+	padding-top:7px;
+}

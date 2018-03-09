@@ -1,0 +1,104 @@
+.row {
+	margin: 0;
+}
+
+.mt20 {
+	margin-top: 20px;
+}
+
+.mb20 {
+	margin-bottom: 20px;
+}
+
+.line {
+	margin: 40px 0;
+	height: 1px;
+	background: #ddd;
+}
+
+.img-thumbnail {
+	box-sizing: content-box;
+	width: 160px;
+	height: 120px;
+	vertical-align: top;
+}
+
+.table>tbody>tr>td {
+	padding: 8px;
+}
+
+.verify-status {
+	margin-left: 20px;
+	padding: 4px 6px;
+	border-radius: 4px;
+	color: #fff;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 12px;
+}
+
+.verify-status.primary {
+	background-color: #3c8dbc;
+	border-color: #367fa9;
+}
+
+.verify-status.success {
+	background-color: #13af15;
+	border-color: #13af15;
+}
+
+.verify-status.info {
+	background-color: #31708f;
+	border-color: #31708f;
+}
+
+.verify-status.danger {
+	background-color: #a94442;
+	border-color: #a94442;
+}
+
+.content-wrapper .content{
+	background-color:#fff;
+	min-height:300px;
+	margin:10px;
+	color: #666;
+}
+
+.section-item .title {
+	margin-bottom: 30px;
+}
+
+.section-item .title::before {
+	content: '';
+	display: inline-block;
+	margin-right: 10px;
+	width: 2px;
+	height: 16px;
+	background: #d48081;
+	vertical-align: -3px;
+}
+
+.change-record .con {
+	padding-left: 0;
+}
+
+.section-item .row label {
+	display: inline-block;
+	width: 150px;
+	text-align: right;
+	margin-right: 15px;
+	font-weight: normal;
+}
+
+.no-record td{
+	line-height: 100px !important;
+	text-align: center;
+}
+
+.no-record:hover {
+	background-color: #fff !important;
+}
+
+.dib {
+	margin-left: 10px;
+}

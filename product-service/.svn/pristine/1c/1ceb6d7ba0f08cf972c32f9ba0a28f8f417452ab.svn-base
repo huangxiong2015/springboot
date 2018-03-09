@@ -1,0 +1,354 @@
+package com.yikuyi.product.vo;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yikuyi.product.model.ProductPriceV8;
+import com.ykyframework.model.AbstractEntity;
+
+import io.swagger.annotations.ApiModelProperty;
+
+/**
+ * ProductVoV8
+ */
+public class ProductV8 extends AbstractEntity  {
+	  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@JsonProperty("id")
+	  private String id = null;
+
+	  @JsonProperty("vendorName")
+	  private String vendorName = null;
+
+	  @JsonProperty("vendorLogo")
+	  private String vendorLogo = null;
+
+	  @JsonProperty("vendorId")
+	  private String vendorId = null;
+
+	  @JsonProperty("moq")
+	  private Integer moq = null;
+
+	  @JsonProperty("qty")
+	  private Long qty = null;
+
+	  @JsonProperty("unit")
+	  private String unit = null;
+
+	  @JsonProperty("sourceName")
+	  private String sourceName = null;
+
+	  @JsonProperty("description")
+	  private String description = null;
+
+	  @JsonProperty("standardUrl")
+	  private String standardUrl = null;
+
+	  @JsonProperty("leadTimeCH")
+	  private String leadTimeCH = null;
+
+	  @JsonProperty("leadTimeHK")
+	  private String leadTimeHK = null;
+
+	  @JsonProperty("mpn")
+	  private String mpn = null;
+
+	  @JsonProperty("mfr")
+	  private String mfr = null;
+
+	  @JsonProperty("price")
+	  private ProductPriceV8 price  = null;
+
+	  public ProductV8 id(String id) {
+	    this.id = id;
+	    return this;
+	  }
+
+	   /**
+	   * Get id
+	   * @return id
+	  **/
+	  @ApiModelProperty(value = "")
+
+
+	  public String getId() {
+	    return id;
+	  }
+
+	  public void setId(String id) {
+	    this.id = id;
+	  }
+
+	  public ProductV8 vendorName(String vendorName) {
+	    this.vendorName = vendorName;
+	    return this;
+	  }
+
+	   /**
+	   * 供应商名称
+	   * @return vendorName
+	  **/
+	  @ApiModelProperty(value = "供应商名称")
+
+
+	  public String getVendorName() {
+	    return vendorName;
+	  }
+
+	  public void setVendorName(String vendorName) {
+	    this.vendorName = vendorName;
+	  }
+
+	  public ProductV8 vendorLogo(String vendorLogo) {
+	    this.vendorLogo = vendorLogo;
+	    return this;
+	  }
+
+	   /**
+	   * 供应商logo
+	   * @return vendorLogo
+	  **/
+	  @ApiModelProperty(value = "供应商logo")
+
+
+	  public String getVendorLogo() {
+	    return vendorLogo;
+	  }
+
+	  public void setVendorLogo(String vendorLogo) {
+	    this.vendorLogo = vendorLogo;
+	  }
+
+	  public ProductV8 vendorId(String vendorId) {
+	    this.vendorId = vendorId;
+	    return this;
+	  }
+
+	   /**
+	   * 供应商id
+	   * @return vendorId
+	  **/
+	  @ApiModelProperty(value = "供应商id")
+
+
+	  public String getVendorId() {
+	    return vendorId;
+	  }
+
+	  public void setVendorId(String vendorId) {
+	    this.vendorId = vendorId;
+	  }
+
+	  public ProductV8 moq(Integer moq) {
+	    this.moq = moq;
+	    return this;
+	  }
+
+	   /**
+	   * 最小交易量  起定量
+	   * @return moq
+	  **/
+	  @ApiModelProperty(value = "最小交易量  起定量")
+
+
+	  public Integer getMoq() {
+	    return moq;
+	  }
+
+	  public void setMoq(Integer moq) {
+	    this.moq = moq;
+	  }
+
+	  public ProductV8 qty(Long qty) {
+	    this.qty = qty;
+	    return this;
+	  }
+
+	   /**
+	   * 库存
+	   * @return qty
+	  **/
+	  @ApiModelProperty(value = "库存")
+
+
+	  public Long getQty() {
+	    return qty;
+	  }
+
+	  public void setQty(Long qty) {
+	    this.qty = qty;
+	  }
+
+	  public ProductV8 unit(String unit) {
+	    this.unit = unit;
+	    return this;
+	  }
+
+	   /**
+	   * 单位
+	   * @return unit
+	  **/
+	  @ApiModelProperty(value = "单位")
+
+
+	  public String getUnit() {
+	    return unit;
+	  }
+
+	  public void setUnit(String unit) {
+	    this.unit = unit;
+	  }
+
+	  public ProductV8 sourceName(String sourceName) {
+	    this.sourceName = sourceName;
+	    return this;
+	  }
+
+	   /**
+	   * 仓库名称
+	   * @return sourceName
+	  **/
+	  @ApiModelProperty(value = "仓库名称")
+
+
+	  public String getSourceName() {
+	    return sourceName;
+	  }
+
+	  public void setSourceName(String sourceName) {
+	    this.sourceName = sourceName;
+	  }
+
+	   /**
+	   * 商品备注
+	   * @return remark
+	  **/
+	  @ApiModelProperty(value = "商品备注")
+
+	   public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+
+	  public ProductV8 standardUrl(String standardUrl) {
+	    this.standardUrl = standardUrl;
+	    return this;
+	  }
+
+	   /**
+	   * 标准图路径
+	   * @return standardUrl
+	  **/
+	  @ApiModelProperty(value = "标准图路径")
+
+
+	  public String getStandardUrl() {
+	    return standardUrl;
+	  }
+
+	  public void setStandardUrl(String standardUrl) {
+	    this.standardUrl = standardUrl;
+	  }
+
+	  public ProductV8 leadTimeCH(String leadTimeCH) {
+	    this.leadTimeCH = leadTimeCH;
+	    return this;
+	  }
+
+	   /**
+	   * 国内交期（新增）
+	   * @return leadTimeCH
+	  **/
+	  @ApiModelProperty(value = "国内交期（新增）")
+
+
+	  public String getLeadTimeCH() {
+	    return leadTimeCH;
+	  }
+
+	  public void setLeadTimeCH(String leadTimeCH) {
+	    this.leadTimeCH = leadTimeCH;
+	  }
+
+	  public ProductV8 leadTimeHK(String leadTimeHK) {
+	    this.leadTimeHK = leadTimeHK;
+	    return this;
+	  }
+
+	   /**
+	   * 香港交期（新增）
+	   * @return leadTimeHK
+	  **/
+	  @ApiModelProperty(value = "香港交期（新增）")
+
+
+	  public String getLeadTimeHK() {
+	    return leadTimeHK;
+	  }
+
+	  public void setLeadTimeHK(String leadTimeHK) {
+	    this.leadTimeHK = leadTimeHK;
+	  }
+
+	  public ProductV8 mpn(String mpn) {
+	    this.mpn = mpn;
+	    return this;
+	  }
+
+	   /**
+	   * 型号（新增）
+	   * @return mpn
+	  **/
+	  @ApiModelProperty(value = "型号（新增）")
+
+
+	  public String getMpn() {
+	    return mpn;
+	  }
+
+	  public void setMpn(String mpn) {
+	    this.mpn = mpn;
+	  }
+
+	  public ProductV8 mfr(String mfr) {
+	    this.mfr = mfr;
+	    return this;
+	  }
+
+	   /**
+	   * 制造商名称
+	   * @return mfr
+	  **/
+	  @ApiModelProperty(value = "制造商名称")
+
+
+	  public String getMfr() {
+	    return mfr;
+	  }
+
+	  public void setMfr(String mfr) {
+	    this.mfr = mfr;
+	  }
+
+	  /**
+	   * 梯度价格
+	   * @return prices
+	  **/
+	  @ApiModelProperty(value = "梯度价格")
+	
+	  public ProductPriceV8 getPrice() {
+			return price;
+		}
+
+		public void setPrice(ProductPriceV8 price) {
+			this.price = price;
+		}
+	  
+	  
+	}
+

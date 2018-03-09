@@ -1,0 +1,108 @@
+/**
+ * create by roy.he@yikuyi.com at 2017-8-18
+ */
+var vm = new Vue({
+	el: '#detailVendor',
+	data: {
+		id: getQueryString('partyId'),
+		tabValue: 'baseData', //baseData,product,credit,sales
+		baseData: {
+			vendorInfoAttributeMap:{}
+		},
+		productLines: [],
+		creditInfo: {
+			creditAttributeMap:{}
+		},
+		salesInfo: {
+			saleAttributeMap:{}
+		},
+		vendorLogo: '',
+
+	},
+	created: function(){
+		var _this =this;
+
+		getBaseData(_this.id)
+		
+		getProductLine(_this.id)
+		
+		getCreditInfo(_this.id);
+		
+		getSalesInfo(_this.id)
+		
+	
+
+	},
+	methods: {
+		
+	},
+	watch: {
+		
+	}
+})
+
+function getBaseData(id){
+	syncData(ykyUrl.party + "/v1/vendors/vendorInfo/"+id, 'GET', null, function(res, err) {
+		if (!err) {
+			vm.baseData = res;
+			if(vm.baseData.logoImageUrl){
+				getPrivateUrl(vm.baseData.logoImageUrl);
+			}
+		}
+	});
+}
+
+function getProductLine(id){
+	syncData(ykyUrl.party + "/v1/vendors/productLine/"+id, 'GET', null, function(res, err) {
+		if (!err) {
+			vm.productLines = res;
+		}
+	});
+}
+
+function getCreditInfo(id){
+	syncData(ykyUrl.party + "/v1/vendors/vendorCredit/"+id, 'GET', null, function(res, err) {
+		if (!err) {
+			vm.creditInfo = res;
+		}
+	});
+}
+
+function getSalesInfo(id){
+	syncData(ykyUrl.party + "/v1/vendors/vendorSaleInfo/"+id, 'GET', null, function(res, err) {
+		if (!err) {
+			vm.salesInfo = res;
+			if(res){	
+				for(var i = 0; i<vm.salesInfo.contactPersonInfoList.length; i++){
+					if(vm.salesInfo.contactPersonInfoList[i].partyProductLineIdList){
+						vm.salesInfo.contactPersonInfoList[i].partyProductLineList = [];
+						for(var j = 0; j < vm.salesInfo.contactPersonInfoList[i].partyProductLineIdList.length; j++){
+	        				for(var k = 0; k < vm.salesInfo.partyProductLineList.length; k++){
+	        					if(vm.salesInfo.contactPersonInfoList[i].partyProductLineIdList[j] === vm.salesInfo.partyProductLineList[k].partyProductLineId){
+	        						vm.salesInfo.contactPersonInfoList[i].partyProductLineList.push(vm.salesInfo.partyProductLineList[k]);
+	        					}
+	        				}
+	        			}
+					}    					        		
+				}
+			}
+		}
+	});
+}
+
+var getPrivateUrl =  function(url){
+	$.aAjax({
+		url: ykyUrl.party + "/v1/enterprises/getImgUrl",
+     	type:"POST",
+     	data:JSON.stringify({"id":url}),
+     	success: function(data) {
+     		if(null !=data || data == ""){
+     			vm.vendorLogo = data;
+     		}
+     	},
+     	error:function(e){
+	    	console.log("系统错误，审批失败，请联系系统管理员："+e.responseText);
+	    }
+ 	});
+}
+

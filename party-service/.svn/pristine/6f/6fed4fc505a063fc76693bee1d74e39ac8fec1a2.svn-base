@@ -1,0 +1,28 @@
+package com.yikuyi.party.v8.message.vo;
+
+import java.io.Serializable;
+
+import io.swagger.annotations.ApiModelProperty;
+
+
+
+public class MessageCodeVo implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7051742985228611775L;
+
+	@ApiModelProperty(value = "返回状态")
+	private boolean status;
+
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+
+	
+}

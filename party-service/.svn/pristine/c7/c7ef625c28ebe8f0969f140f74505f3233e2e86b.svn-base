@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.profiles.dao.PartyProfileDefaultDao">
+	<resultMap id="BaseResultMap"
+		type="com.yikuyi.party.model.PartyProfileDefault">
+		<id column="PARTY_ID" property="partyId" jdbcType="VARCHAR" />
+		<result column="DEFAULT_SHIP_ADDR" property="defaultShipAddr.id"
+			jdbcType="VARCHAR" />
+			
+		<result column="DEFAULT_SHIP_ADDR_CNY" property="defaultShipAddrCNY.id"
+			jdbcType="VARCHAR" />
+		<result column="DEFAULT_SHIP_ADDR_HK" property="defaultShipAddrHK.id"
+			jdbcType="VARCHAR" />
+		<result column="DEFAULT_BILL_ADDR" property="defaultBillAddr.id"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectProfileDefault" resultMap="BaseResultMap">
+		SELECT
+		a.PARTY_ID,
+		a.DEFAULT_SHIP_ADDR,
+		a.DEFAULT_SHIP_ADDR_CNY,
+		a.DEFAULT_SHIP_ADDR_HK,
+		a.DEFAULT_BILL_ADDR
+		FROM
+		PARTY_PROFILE_DEFAULT a
+		WHERE a.PARTY_ID = #{partyId,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insertProfileDefault" parameterType="com.yikuyi.party.model.PartyProfileDefault">
+		insert into PARTY_PROFILE_DEFAULT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="partyId != null">
+				PARTY_ID,
+			</if>
+			<if test="defaultShipAddrCNY != null and defaultShipAddrCNY.id != null">
+				DEFAULT_SHIP_ADDR_CNY,
+			</if>
+			<if test="defaultShipAddrHK != null and defaultShipAddrHK.id != null">
+				DEFAULT_SHIP_ADDR_HK,
+			</if>
+			<if test="defaultBillAddr != null and defaultBillAddr.id != null">
+				DEFAULT_BILL_ADDR,
+			</if>
+
+			<if test="creator != null">
+				CREATOR,
+			</if>
+			<if test="createdDate != null">
+				CREATED_DATE,
+			</if>
+			<if test="lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="partyId != null">
+				#{partyId,jdbcType=VARCHAR},
+			</if>
+			<if test="defaultShipAddrCNY != null and defaultShipAddrCNY.id != null">
+				#{defaultShipAddrCNY.id},
+			</if>
+			<if test="defaultShipAddrHK != null and defaultShipAddrHK.id != null">
+				#{defaultShipAddrHK.id},
+			</if>
+			<if test="defaultBillAddr != null and defaultBillAddr.id != null">
+				#{defaultBillAddr.id,jdbcType=VARCHAR},
+			</if>
+
+			<if test="creator != null">
+				#{creator,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDate != null">
+				#{createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastUpdateUser != null">
+				#{lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateProfileDefault" parameterType="com.yikuyi.party.model.PartyProfileDefault">
+		update PARTY_PROFILE_DEFAULT
+		<set>
+			<if test="defaultShipAddrCNY !=null and defaultShipAddrCNY.id != null">
+				DEFAULT_SHIP_ADDR_CNY =
+				#{defaultShipAddrCNY.id,jdbcType=VARCHAR},
+			</if>
+			<if test="defaultShipAddrHK !=null and defaultShipAddrHK.id != null">
+				DEFAULT_SHIP_ADDR_HK =
+				#{defaultShipAddrHK.id,jdbcType=VARCHAR},
+			</if>
+			<if test="defaultBillAddr !=null and defaultBillAddr.id != null">
+				DEFAULT_BILL_ADDR =
+				#{defaultBillAddr.id,jdbcType=VARCHAR},
+			</if>
+
+			<if test="creator != null">
+				CREATOR = #{creator,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDate != null">
+				CREATED_DATE= #{createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastUpdateUser != null">
+				LAST_UPDATE_USER= #{lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE= #{lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+
+		</set>
+		where PARTY_ID = #{partyId,jdbcType=VARCHAR}
+	</update>
+	
+   <!--删除指定默认信息 -->
+    <update id="deleteProfileDefault" >
+		UPDATE `PARTY_PROFILE_DEFAULT` a 
+		<set>
+			<if test="defaultType == 'DEFAULT_SHIP_ADDR_CNY'">
+				 a.`DEFAULT_SHIP_ADDR_CNY` = NULL,
+			</if>
+			<if test="defaultType == 'DEFAULT_SHIP_ADDR_HK'">
+				 a.`DEFAULT_SHIP_ADDR_HK` = NULL,
+			</if>
+			<if test="defaultType == 'DEFAULT_BILL_ADDR'">
+				 a.`DEFAULT_BILL_ADDR` = NULL,
+			</if>
+			<if test="defaultType == 'DEFAULT_PAY_METH'">
+				a.`DEFAULT_PAY_METH` = NULL,
+			</if>
+			<if test="defaultType == 'DEFAULT_SHIP_METH'">
+				 a.`DEFAULT_SHIP_METH` = NULL,
+			</if>
+			<if test="defaultType == 'PRODUCT_STORE_ID'">
+				a.`PRODUCT_STORE_ID` = NULL,
+			</if>
+		</set>
+		where a.PARTY_ID = #{partyId,jdbcType=VARCHAR}
+	</update>
+</mapper>

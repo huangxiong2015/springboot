@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.product.promotion.dao.PromoModuleProductDraftDao">
+
+	<resultMap id="BaseEntityResultMap" type="com.yikuyi.promotion.model.PromoModuleProductDraft">
+		<id column="PROMO_MODULE_PRODUCT_ID" property="promoModuleProductId" jdbcType="VARCHAR" />
+		<result column="PROMO_MODULE_ID" property="promoModuleId" jdbcType="VARCHAR" />
+		<result column="PRODUCT_ID" property="productId" jdbcType="VARCHAR" />
+		<result column="PROMOTION_ID" property="promotionId" jdbcType="VARCHAR" />
+		<result column="MANUFACTURER_PART_NUMBER" property="manufacturerPartNumber" jdbcType="VARCHAR" />
+		<result column="MANUFACTURER" property="manufacturer" jdbcType="VARCHAR" />
+		<result column="SOURCE_ID" property="sourceId" jdbcType="VARCHAR" />
+		<result column="SOURCE_NAME" property="sourceName" jdbcType="VARCHAR" />
+		<result column="VENDOR_ID" property="vendorId" jdbcType="VARCHAR" />
+		<result column="VENDOR_NAME" property="vendorName" jdbcType="VARCHAR" />
+		<result column="DISCOUNT" property="discount" jdbcType="FLOAT" />
+		<result column="CURRENCY_UOM_ID" property="currencyUomId" jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_1" property="qtyBreak1" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_1" property="priceBreak1" jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_2" property="qtyBreak2" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_2" property="priceBreak2" jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_3" property="qtyBreak3" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_3" property="priceBreak3" jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_4" property="qtyBreak4" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_4" property="priceBreak4" jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_5" property="qtyBreak5" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_5" property="priceBreak5" jdbcType="VARCHAR" />
+		<result column="ORIGINAL_UNIT_PRICE" property="originalUnitPrice"
+			jdbcType="VARCHAR" />
+		<result column="RESALE_UNIT_PRICE" property="resaleUnitPrice"
+			jdbcType="VARCHAR" />
+		<result column="TITLE" property="title" jdbcType="VARCHAR" />
+		<result column="SUB_TITLE" property="subTitle" jdbcType="VARCHAR" />
+		<result column="IMAGE_1" property="image1" jdbcType="VARCHAR" />
+		<result column="IMAGE_2" property="image2" jdbcType="VARCHAR" />
+		<result column="IMAGE_3" property="image3" jdbcType="VARCHAR" />
+		<result column="IMAGE_4" property="image4" jdbcType="VARCHAR" />
+		<result column="IMAGE_5" property="image5" jdbcType="VARCHAR" />
+		<result column="ERROR_DESCRIPTION" property="errorDescription" jdbcType="VARCHAR" />
+		<result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+		<result column="TOTAL_QTY" property="totalQty" jdbcType="VARCHAR" />
+		<result column="QTY" property="qty" jdbcType="VARCHAR" />
+		<result column="CREATOR" property="creator" jdbcType="TIMESTAMP" />
+		<result column="CREATED_DATE" property="createdDate" jdbcType="TIMESTAMP" />
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser"
+			jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate"
+			jdbcType="TIMESTAMP" />
+		<result column="CATEGORY_3_ID" property="category3Id" jdbcType="VARCHAR" />
+		<result column="CATEGORY_3_NAME" property="category3Name"
+			jdbcType="VARCHAR" />
+		<result column="PROCESS_ID" property="processId" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status"/>
+	</resultMap>
+<resultMap id="BaseEntityResultMap1"
+		type="com.yikuyi.promotion.vo.PromotionProductVo">
+		<id column="PROMO_MODULE_ID" property="promoModuleId" jdbcType="VARCHAR" />
+		<result column="PROMO_MODULE_PRODUCT_ID" property="promoModuleProductId"
+			jdbcType="VARCHAR" />
+		<result column="PRODUCT_ID" property="productId" jdbcType="VARCHAR" />
+		<result column="PROMOTION_ID" property="promotionId" jdbcType="VARCHAR" />
+		<result column="MANUFACTURER_PART_NUMBER" property="manufacturerPartNumber"
+			jdbcType="VARCHAR" />
+		<result column="MANUFACTURER" property="manufacturer" jdbcType="VARCHAR" />
+		<result column="SOURCE_ID" property="sourceId" jdbcType="VARCHAR" />
+		<result column="SOURCE_NAME" property="sourceName" jdbcType="VARCHAR" />
+		<result column="VENDOR_ID" property="vendorId" jdbcType="VARCHAR" />
+		<result column="VENDOR_NAME" property="vendorName" jdbcType="VARCHAR" />
+		<result column="DISCOUNT" property="discount" jdbcType="FLOAT" />
+		<result column="CURRENCY_UOM_ID" property="currencyUomId"
+			jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_1" property="qtyBreak1" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_1" property="priceBreak1" jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_2" property="qtyBreak2" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_2" property="priceBreak2" jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_3" property="qtyBreak3" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_3" property="priceBreak3" jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_4" property="qtyBreak4" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_4" property="priceBreak4" jdbcType="VARCHAR" />
+		<result column="QTY_BREAK_5" property="qtyBreak5" jdbcType="VARCHAR" />
+		<result column="PRICE_BREAK_5" property="priceBreak5" jdbcType="VARCHAR" />
+		<result column="ORIGINAL_UNIT_PRICE" property="originalUnitPrice"
+			jdbcType="VARCHAR" />
+		<result column="RESALE_UNIT_PRICE" property="resaleUnitPrice"
+			jdbcType="VARCHAR" />
+		<result column="TITLE" property="title" jdbcType="VARCHAR" />
+		<result column="SUB_TITLE" property="subTitle" jdbcType="VARCHAR" />
+		<result column="IMAGE_1" property="image1" jdbcType="VARCHAR" />
+		<result column="IMAGE_2" property="image2" jdbcType="VARCHAR" />
+		<result column="IMAGE_3" property="image3" jdbcType="VARCHAR" />
+		<result column="IMAGE_4" property="image4" jdbcType="VARCHAR" />
+		<result column="IMAGE_5" property="image5" jdbcType="VARCHAR" />
+		<result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+		<result column="TOTAL_QTY" property="totalQty" jdbcType="VARCHAR" />
+		<result column="QTY" property="qty" jdbcType="VARCHAR" />
+		<result column="CREATOR" property="creator" jdbcType="TIMESTAMP" />
+		<result column="CREATED_DATE" property="createdDate" jdbcType="TIMESTAMP" />
+		<result column="LAST_UPDATE_USER" property="lastUpdateUser"
+			jdbcType="VARCHAR" />
+		<result column="LAST_UPDATE_DATE" property="lastUpdateDate"
+			jdbcType="TIMESTAMP" />
+		<result column="CATEGORY_3_ID" property="category3Id" jdbcType="VARCHAR" />
+		<result column="CATEGORY_3_NAME" property="category3Name"
+			jdbcType="VARCHAR" />
+		<result column="PROCESS_ID" property="processId" jdbcType="VARCHAR" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="ERROR_DESCRIPTION" property="errorDescription" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List" >
+	   `PROMO_MODULE_PRODUCT_ID`,`PROMOTION_ID`,`PROMO_MODULE_ID`, `PRODUCT_ID`,`MANUFACTURER_PART_NUMBER`,`MANUFACTURER`,`SOURCE_ID`,`SOURCE_NAME`,`VENDOR_ID`,`VENDOR_NAME`,
+       `DISCOUNT`,`CURRENCY_UOM_ID`,`QTY_BREAK_1`,`PRICE_BREAK_1`,`QTY_BREAK_2`,`PRICE_BREAK_2`,`QTY_BREAK_3`,
+       `PRICE_BREAK_3`,`QTY_BREAK_4`,`PRICE_BREAK_4`,`QTY_BREAK_5`,`PRICE_BREAK_5`,`ORIGINAL_UNIT_PRICE`,`RESALE_UNIT_PRICE`,
+       `TITLE`,`SUB_TITLE`,`IMAGE_1`,`IMAGE_2`,`IMAGE_3`,`IMAGE_4`,`IMAGE_5`,`DESCRIPTION`,`TOTAL_QTY`,
+       `QTY`,`CREATOR`,`CREATED_DATE`,`LAST_UPDATE_USER`,`LAST_UPDATE_DATE`,`CATEGORY_3_NAME`,`CATEGORY_3_ID`,`PROCESS_ID`,`STATUS`,ERROR_DESCRIPTION
+	</sql>
+
+	<select id="getEntityByPromoModuleId" resultMap="BaseEntityResultMap">
+		SELECT
+		`PROMO_MODULE_PRODUCT_ID`,
+		`PROMO_MODULE_ID`,
+		`PROMOTION_ID`,
+		`PRODUCT_ID`,
+		`MANUFACTURER_PART_NUMBER`,
+		`MANUFACTURER`,
+		`SOURCE_ID`,
+		`SOURCE_NAME`,
+		`VENDOR_ID`,
+		`VENDOR_NAME`,
+		`DISCOUNT`,
+		`CURRENCY_UOM_ID`,
+		`QTY_BREAK_1`,
+		`PRICE_BREAK_1`,
+		`QTY_BREAK_2`,
+		`PRICE_BREAK_2`,
+		`QTY_BREAK_3`,
+		`PRICE_BREAK_3`,
+		`QTY_BREAK_4`,
+		`PRICE_BREAK_4`,
+		`QTY_BREAK_5`,
+		`PRICE_BREAK_5`,
+		`ORIGINAL_UNIT_PRICE`,
+		`RESALE_UNIT_PRICE`,
+		`TITLE`,
+		`SUB_TITLE`,
+		`IMAGE_1`,
+		`IMAGE_2`,
+		`IMAGE_3`,
+		`IMAGE_4`,
+		`IMAGE_5`,
+		`DESCRIPTION`,
+		`TOTAL_QTY`,
+		`QTY`,
+		`CREATOR`,
+		`CREATED_DATE`,
+		`LAST_UPDATE_USER`,
+		`LAST_UPDATE_DATE`,
+		`CATEGORY_3_ID`,
+		`CATEGORY_3_NAME`,
+		`PROCESS_ID`
+		FROM
+		PROMO_MODULE_PRODUCT_DRAFT
+		<where>
+			<if test="promoModuleId != null">
+				and PROMO_MODULE_ID = #{promoModuleId}
+			</if>
+		</where>
+	</select>
+
+	<!-- 创建活动 -->
+	<insert id="insert" parameterType="com.yikuyi.promotion.model.PromoModuleProductDraft">
+		insert into PROMO_MODULE_PRODUCT_DRAFT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="promoModuleProductId != null">
+				PROMO_MODULE_PRODUCT_ID,
+			</if>
+			<if test="promoModuleId != null">
+				PROMO_MODULE_ID,
+			</if>
+			<if test="promotionId != null">
+				PROMOTION_ID,
+			</if>
+			<if test="productId != null">
+				PRODUCT_ID,
+			</if>
+			<if test="manufacturerPartNumber != null">
+				MANUFACTURER_PART_NUMBER,
+			</if>
+			<if test="manufacturer != null">
+				MANUFACTURER,
+			</if>
+			<if test="sourceId != null">
+				SOURCE_ID,
+			</if>
+			<if test="sourceName != null">
+				SOURCE_NAME,
+			</if>
+			<if test="vendorId != null">
+				VENDOR_ID,
+			</if>
+			<if test="vendorName != null">
+				VENDOR_NAME,
+			</if>
+			<if test="discount != null">
+				DISCOUNT,
+			</if>
+			<if test="currencyUomId != null">
+				CURRENCY_UOM_ID,
+			</if>
+			<if test="qtyBreak1 != null">
+				QTY_BREAK_1,
+			</if>
+			<if test="priceBreak1 != null">
+				PRICE_BREAK_1,
+			</if>
+			<if test="qtyBreak2 != null">
+				QTY_BREAK_2,
+			</if>
+			<if test="priceBreak2 != null">
+				PRICE_BREAK_2,
+			</if>
+
+			<if test="qtyBreak3 != null">
+				QTY_BREAK_3,
+			</if>
+			<if test="priceBreak3 != null">
+				PRICE_BREAK_3,
+			</if>
+			<if test="qtyBreak4 != null">
+				QTY_BREAK_4,
+			</if>
+			<if test="priceBreak4 != null">
+				PRICE_BREAK_4,
+			</if>
+			<if test="qtyBreak5 != null">
+				QTY_BREAK_5,
+			</if>
+			<if test="priceBreak5 != null">
+				PRICE_BREAK_5,
+			</if>
+			<if test="originalUnitPrice != null">
+				ORIGINAL_UNIT_PRICE,
+			</if>
+			<if test="resaleUnitPrice != null">
+				RESALE_UNIT_PRICE,
+			</if>
+			<if test="title != null">
+				TITLE,
+			</if>
+			<if test="subTitle != null">
+				SUB_TITLE,
+			</if>
+			<if test="image1 != null">
+				IMAGE_1,
+			</if>
+			<if test="image2 != null">
+				IMAGE_2,
+			</if>
+			<if test="image3 != null">
+				IMAGE_3,
+			</if>
+			<if test="image4 != null">
+				IMAGE_4,
+			</if>
+			<if test="image5 != null">
+				IMAGE_5,
+			</if>
+			<if test="errorDescription != null">
+				ERROR_DESCRIPTION,
+			</if>
+			<if test="description != null">
+				DESCRIPTION,
+			</if>
+			<if test="totalQty != null">
+				TOTAL_QTY,
+			</if>
+			<if test="qty != null">
+				QTY,
+			</if>
+			<if test="category3Name != null">
+				CATEGORY_3_NAME,
+			</if>
+			<if test="category3Id != null">
+				CATEGORY_3_ID,
+			</if>
+			<if test="processId != null">
+				PROCESS_ID,
+			</if>
+			<if test="creator != null">
+				CREATOR,
+			</if>
+			<if test="createdDate != null">
+				CREATED_DATE,
+			</if>
+			<if test="lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE,
+			</if>
+			<if test="status != null" >
+        		STATUS,
+      		</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="promoModuleProductId != null">
+				#{promoModuleProductId,jdbcType=VARCHAR},
+			</if>
+			<if test="promoModuleId != null">
+				#{promoModuleId,jdbcType=VARCHAR},
+			</if>
+			<if test="promotionId != null">
+				#{promotionId,jdbcType=VARCHAR},
+			</if>
+			<if test="productId != null">
+				#{productId,jdbcType=VARCHAR},
+			</if>
+			<if test="manufacturerPartNumber != null">
+				#{manufacturerPartNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="manufacturer != null">
+				#{manufacturer,jdbcType=VARCHAR},
+			</if>
+			<if test="sourceId != null">
+				#{sourceId,jdbcType=VARCHAR},
+			</if>
+			<if test="sourceName != null">
+				#{sourceName,jdbcType=VARCHAR},
+			</if>
+			<if test="vendorId != null">
+				#{vendorId,jdbcType=VARCHAR},
+			</if>
+			<if test="vendorName != null">
+				#{vendorName,jdbcType=VARCHAR},
+			</if>
+			<if test="discount != null">
+				#{discount,jdbcType=VARCHAR},
+			</if>
+			<if test="currencyUomId != null">
+				#{currencyUomId,jdbcType=VARCHAR},
+			</if>
+			<if test="qtyBreak1 != null">
+				#{qtyBreak1,jdbcType=VARCHAR},
+			</if>
+			<if test="priceBreak1 != null">
+				#{priceBreak1,jdbcType=VARCHAR},
+			</if>
+			<if test="qtyBreak2 != null">
+				#{qtyBreak2,jdbcType=VARCHAR},
+			</if>
+			<if test="priceBreak2 != null">
+				#{priceBreak2,jdbcType=VARCHAR},
+			</if>
+
+			<if test="qtyBreak3 != null">
+				#{qtyBreak3,jdbcType=VARCHAR},
+			</if>
+			<if test="priceBreak3 != null">
+				#{priceBreak3,jdbcType=VARCHAR},
+			</if>
+			<if test="qtyBreak4 != null">
+				#{qtyBreak4,jdbcType=VARCHAR},
+			</if>
+			<if test="priceBreak4 != null">
+				#{priceBreak4,jdbcType=VARCHAR},
+			</if>
+			<if test="qtyBreak5 != null">
+				#{qtyBreak5,jdbcType=VARCHAR},
+			</if>
+			<if test="priceBreak5 != null">
+				#{priceBreak5,jdbcType=VARCHAR},
+			</if>
+			<if test="originalUnitPrice != null">
+				#{originalUnitPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="resaleUnitPrice != null">
+				#{resaleUnitPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="subTitle != null">
+				#{subTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="image1 != null">
+				#{image1,jdbcType=VARCHAR},
+			</if>
+			<if test="image2 != null">
+				#{image2,jdbcType=VARCHAR},
+			</if>
+			<if test="image3 != null">
+				#{image3,jdbcType=VARCHAR},
+			</if>
+			<if test="image4 != null">
+				#{image4,jdbcType=VARCHAR},
+			</if>
+			<if test="image5 != null">
+				#{image5,jdbcType=VARCHAR},
+			</if>
+			<if test="errorDescription != null">
+				#{errorDescription,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="totalQty != null">
+				#{totalQty,jdbcType=VARCHAR},
+			</if>
+			<if test="qty != null">
+				#{qty,jdbcType=VARCHAR},
+			</if>
+			<if test="category3Name != null">
+				#{category3Name,jdbcType=VARCHAR},
+			</if>
+			<if test="category3Id != null">
+				#{category3Id,jdbcType=VARCHAR},
+			</if>
+			<if test="processId != null">
+				#{processId,jdbcType=VARCHAR},
+			</if>
+			<if test="creator != null">
+				#{creator,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDate != null">
+				#{createdDate,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateUser != null">
+				#{lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null" >
+       			#{status,jdbcType=VARCHAR},
+      		</if>
+		</trim>
+	</insert>
+
+	<!-- 创建活动 -->
+	<insert id="inserts" parameterType="java.util.List">
+		INSERT INTO PROMO_MODULE_PRODUCT_DRAFT
+		(PROMO_MODULE_PRODUCT_ID,PROMO_MODULE_ID ,PROMOTION_ID , PRODUCT_ID , MANUFACTURER_PART_NUMBER,MANUFACTURER , SOURCE_ID, SOURCE_NAME,VENDOR_ID,VENDOR_NAME,DISCOUNT,
+		CURRENCY_UOM_ID,QTY_BREAK_1,PRICE_BREAK_1,QTY_BREAK_2,PRICE_BREAK_2,QTY_BREAK_3,PRICE_BREAK_3,QTY_BREAK_4,PRICE_BREAK_4,QTY_BREAK_5,PRICE_BREAK_5,ORIGINAL_UNIT_PRICE,RESALE_UNIT_PRICE,
+		TITLE,SUB_TITLE,IMAGE_1,IMAGE_2,IMAGE_3,IMAGE_4,IMAGE_5,ERROR_DESCRIPTION,DESCRIPTION,TOTAL_QTY,QTY,CATEGORY_3_NAME,CATEGORY_3_ID,PROCESS_ID,CREATOR,CREATED_DATE,LAST_UPDATE_USER,LAST_UPDATE_DATE,STATUS)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.promoModuleProductId}, #{item.promoModuleId},#{item.promotionId}, #{item.productId},#{item.manufacturerPartNumber}, #{item.manufacturer},
+			#{item.sourceId} , #{item.sourceName} ,#{item.vendorId},
+			#{item.vendorName}, #{item.discount}, #{item.currencyUomId},
+			#{item.qtyBreak1}, #{item.priceBreak1}, #{item.qtyBreak2},
+			#{item.priceBreak2}, #{item.qtyBreak3}, #{item.priceBreak3},
+			#{item.qtyBreak4}, #{item.priceBreak4}, #{item.qtyBreak5}
+			,#{item.priceBreak5}, #{item.originalUnitPrice}
+			,#{item.resaleUnitPrice}, #{item.title}, #{item.subTitle}
+			,#{item.image1}, #{item.image2}, #{item.image3}, #{item.image4},
+			#{item.image5}, #{item.errorDescription}, #{item.description} ,#{item.totalQty}
+			, #{item.qty}, #{item.category3Name},#{item.category3Id}, #{item.processId}, #{item.creator}
+			,#{item.createdDate}, #{item.lastUpdateUser},#{item.lastUpdateDate},#{item.status})
+		</foreach>
+	</insert>
+
+	
+	<!-- 根据参数查询相应list -->
+  	<select id="getPromoModuleProductDraftList" parameterType="com.yikuyi.promotion.model.PromoModuleProductDraft" resultMap="BaseEntityResultMap">
+		SELECT d.`PROMO_MODULE_PRODUCT_ID`,d.`PROMO_MODULE_ID`,d.`PRODUCT_ID`,d.`MANUFACTURER_PART_NUMBER`,d.`MANUFACTURER`,d.`SOURCE_ID`,d.`SOURCE_NAME`,
+		d.`VENDOR_ID`,d.`VENDOR_NAME`,d.`DISCOUNT`,d.`CURRENCY_UOM_ID`,d.`QTY_BREAK_1`,d.`PRICE_BREAK_1`,d.`QTY_BREAK_2`,d.`PRICE_BREAK_2`,d.`QTY_BREAK_3`,
+		d.`PRICE_BREAK_3`,d.`QTY_BREAK_4`,d.`PRICE_BREAK_4`,d.`QTY_BREAK_5`,d.`PRICE_BREAK_5`,d.`ORIGINAL_UNIT_PRICE`,d.`RESALE_UNIT_PRICE`,d.`TITLE`,
+		d.`SUB_TITLE`,d.`IMAGE_1`,d.`IMAGE_2`,d.`IMAGE_3`,d.`IMAGE_4`,d.`IMAGE_5`,d.`DESCRIPTION`,d.`TOTAL_QTY`,d.`QTY`,d.`CREATOR`,d.`CREATED_DATE`,
+		d.`LAST_UPDATE_USER`,d.`LAST_UPDATE_DATE`,d.`CATEGORY_3_ID`,d.`CATEGORY_3_NAME`,d.`PROCESS_ID`,d.`PROMOTION_ID`
+ 		FROM PROMO_MODULE_PRODUCT_DRAFT d  WHERE 1=1
+ 		<if test="promoModuleId != null ">
+			And d.`PROMO_MODULE_ID` =#{promoModuleId}
+		</if>
+ 		<if test="promotionId != null ">
+			And d.`PROMOTION_ID` =#{promotionId}
+		</if>
+		<if test="manufacturerPartNumber != null ">
+			And d.`MANUFACTURER_PART_NUMBER` =#{manufacturerPartNumber}
+		</if>
+		<if test="currencyUomId != null ">
+			And d.`CURRENCY_UOM_ID` =#{currencyUomId}
+		</if>
+		ORDER BY d.`LAST_UPDATE_DATE` DESC
+  	</select>
+  	
+  	<select id="listDraftModuleProduct"  parameterType="com.yikuyi.promotion.vo.PromotionProductVo" resultMap="BaseEntityResultMap1" >
+	  	 SELECT 
+	  	 <include refid="Base_Column_List" />
+	  	  FROM PROMO_MODULE_PRODUCT_DRAFT
+	  	  where  1=1
+	  	  <if test="promoModuleId != null ">
+			And `PROMO_MODULE_ID` =#{promoModuleId}
+		 </if>
+ 		 <if test="promotionId != null ">
+			And `PROMOTION_ID` =#{promotionId}
+		 </if>
+		 <if test="status != null ">
+			AND `STATUS` =#{status}
+		</if>
+  	</select>
+  	
+  	<select id="findPromoModuleProductDraftByCondition" resultMap="BaseEntityResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		`PROMO_MODULE_PRODUCT_DRAFT`
+		 <where>
+		  	<if test="promoModuleId != null">
+				AND PROMO_MODULE_ID = #{promoModuleId}
+			</if>
+			<if  test="promotionId != null">
+				 AND PROMOTION_ID = #{promotionId}      
+			</if>
+			<if test="manufacturer != null">
+				AND MANUFACTURER = #{manufacturer}
+			</if>
+			<if test="manufacturerPartNumber != null" >
+				AND MANUFACTURER_PART_NUMBER = #{manufacturerPartNumber}
+			</if>
+			<if test="sourceName != null" >
+				AND SOURCE_NAME = #{sourceName}
+			</if>
+			<if test="vendorName != null">
+				AND VENDOR_NAME = #{vendorName}
+			</if>
+			<if test="status != null">
+				AND STATUS = #{status}
+			</if>
+		  </where>
+	</select>
+	
+	
+	<select id="findRealDraftProduct" resultMap="BaseEntityResultMap">
+		SELECT
+		t2.*
+		FROM
+		PROMOTION_MODULE t1 INNER  JOIN `PROMO_MODULE_PRODUCT_DRAFT` t2 ON 
+		t1.`PROMO_MODULE_ID` = t2.`PROMO_MODULE_ID` 
+		WHERE t1.`PROMO_MODULE_STATUS` ='ENABLE'
+		<if  test="promotionId != null">
+			 AND t1.PROMOTION_ID = #{promotionId}      
+		</if>
+	</select>
+	
+	<delete id="deletePromoModuleProductDraftById">
+		DELETE FROM PROMO_MODULE_PRODUCT_DRAFT WHERE PROMO_MODULE_PRODUCT_ID = #{promoModuleProductId}
+	</delete>
+	
+	<delete id="deletePromoModuleProductDraftBatch" parameterType="java.util.List">
+	  	DELETE FROM PROMO_MODULE_PRODUCT_DRAFT WHERE PROMO_MODULE_PRODUCT_ID IN
+	  	<foreach collection ="list" item="item" open="(" separator ="," close=")">
+	  		#{item}
+	  	</foreach>
+	</delete>
+	
+	<delete id="deletePromoModuleProductDraft" >
+	  	DELETE FROM PROMO_MODULE_PRODUCT_DRAFT WHERE PROMO_MODULE_ID = #{promoModuleId}
+	  	AND PRODUCT_ID IN
+	  	<foreach collection ="list" item="item" open="(" separator ="," close=")">
+	  		#{item}
+	  	</foreach>
+	</delete>
+	
+	<select id="findPromoModuleProductsByIds" resultMap="BaseEntityResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM
+		`PROMO_MODULE_PRODUCT_DRAFT`
+		where PROMO_MODULE_PRODUCT_ID in
+	        <foreach collection="promoModuleProductIds" item="promoModuleProductId" index="index"
+	            open="(" close=")" separator=",">
+	            #{promoModuleProductId}
+	        </foreach>
+	        <if test="status != null">
+				AND STATUS = #{status}
+			</if>
+	</select>
+	<select id="productCount" resultType="java.lang.Integer" parameterType="com.yikuyi.promotion.model.PromoModuleProductDraft">
+		 SELECT COUNT(*) FROM `PROMO_MODULE_PRODUCT_DRAFT`
+		 <where>
+		  	<if test="promoModuleId != null">
+				AND PROMO_MODULE_ID = #{promoModuleId}
+			</if>
+			<if  test="promotionId != null">
+				 AND PROMOTION_ID = #{promotionId}      
+			</if>
+			<if test="status != null">
+				AND STATUS = #{status}
+			</if>
+		  </where>
+	</select>
+</mapper>

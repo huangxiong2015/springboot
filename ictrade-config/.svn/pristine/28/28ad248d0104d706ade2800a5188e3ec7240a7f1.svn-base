@@ -1,0 +1,117 @@
+# \u6b64\u6587\u4ef6\u5b9a\u4e49\u7cfb\u7edf\u5e38\u7528\u7684\u53d8\u91cf
+msa.gateway.domain=http://10.3.229.112
+msa.gateway.ssl.domain=https://10.3.229.112
+
+#cas.serverUrlPrefix \u8868\u793aweb\u9875\u9762\u8df3\u8f6c\u7684cas\u7684\u5730\u5740\uff0c\u662f\u5916\u90e8url\u5730\u5740
+cas.serverUrlPrefix=https://passport-uat.ic-trade.com
+login.cas.serverUrlPrefix=https://login-uat.ic-trade.com
+
+#cas.serverUrlPrefix.internal \u8868\u793atomcat\u6240\u5728\u670d\u52a1\u5668\u8fdb\u884cticket\u8ba4\u8bc1\u7684\u5730\u5740\uff0c\u5185\u7f51\u5730\u5740
+cas.serverUrlPrefix.internal=https://passport-uat.ic-trade.com
+login.cas.serverUrlPrefix.internal=http://login-uat.ic-trade.com
+
+## \u540e\u7aef\u8d26\u6237\u5ba1\u6838\u8c03\u7528
+operation1.serverUrlPrefix=http://operation-uat.ic-trade.com/main
+
+#\u7ed9\u524d\u7aef\u4f7f\u7528\u7684\u5404\u4e2a\u5de5\u7a0b\u7684URL\u524d\u7f00
+quotation.api.serverUrlPrefix=http://10.3.229.112:27089
+mobile.serverUrlPrefix=//m-uat.ic-trade.com
+portal.serverUrlPrefix=//www-uat.ic-trade.com
+admin.serverUrlPrefix=//admin-uat.ic-trade.com
+main.serverUrlPrefix=//my-uat.ic-trade.com
+ueditor.iframeUrl=//component-uat.ic-trade.com/editor
+operation.serverUrlPrefix=//operation-uat.ic-trade.com/main
+quotation.serverUrlPrefix=//operation-uat.ic-trade.com/quotation
+pay.serverUrlPrefix=//operation-uat.ic-trade.com/pay
+customer.serverUrlPrefix=//home-uat.ic-trade.com/main
+vendor.serverUrlPrefix=//vendor-uat.ic-trade.com
+payweb.serverUrlPrefix=//pay-uat.ic-trade.com
+payweb.ssl.serverUrlPrefix=//pay-uat.ic-trade.com
+
+#\u7ed9\u9875\u9762\u4f7f\u7528\u7684\u5404\u4e2a\u5de5\u7a0b\u7684\u5b8c\u6574URL\u524d\u7f00
+full.mobile.serverUrlPrefix=http://m-uat.ic-trade.com
+full.portal.serverUrlPrefix=http://www-uat.ic-trade.com
+full.admin.serverUrlPrefix=http://admin-uat.ic-trade.com
+full.main.serverUrlPrefix=http://my-uat.ic-trade.com
+full.ueditor.iframeUrl=http://component-uat.ic-trade.com/editor
+full.operation.serverUrlPrefix=http://operation-uat.ic-trade.com/main
+full.quotation.serverUrlPrefix=http://operation-uat.ic-trade.com/quotation
+full.customer.serverUrlPrefix=http://home-uat.ic-trade.com/main
+full.vendor.serverUrlPrefix=http://vendor-uat.ic-trade.com
+
+## cas \u5ba2\u6237\u7aef\u6821\u9a8cticket\u7684URL\uff0c\u540e\u7eed\u6539
+main.cas.client.validation.url=http://my-uat.ic-trade.com/login.htm
+admin.cas.client.validation.url=http://admin-uat.ic-trade.com/login.htm
+portal.cas.client.validation.url=http://www-uat.ic-trade.com/login.htm
+mobile.cas.client.validation.url=http://m-uat.ic-trade.com/login.htm
+operation.cas.client.validation.url=http://operation-uat.ic-trade.com/main/login.htm
+quotation.cas.client.validation.url=http://operation-uat.ic-trade.com/quotation/login.htm
+pay.cas.client.validation.url=http://pay-uat.ic-trade.com/login.htm
+customer.cas.client.validation.url=http://home-uat.ic-trade.com/main/login.htm
+vendor.cas.client.validation.url=http://vendor-uat.ic-trade.com/login.htm
+
+
+#\u5fae\u670d\u52a1\u76f8\u5173\u7684\u524d\u7f00
+api.transaction.serverUrlPrefix=http://10.3.229.112:27084
+api.product.serverUrlPrefix=http://10.3.229.112:27083
+api.basedata.serverUrlPrefix=http://10.3.229.112:27081
+api.party.serverUrlPrefix=http://10.3.229.112:27082
+api.pay.serverUrlPrefix=http://10.3.229.112:27085
+api.shipment.serverUrlPrefix=http://10.3.229.112:27086
+api.search.serverUrlPrefix=http://10.2.1.1:27087
+api.message.serverUrlPrefix=http://10.3.229.112:27088
+api.quotation.serverUrlPrefix=http://10.3.229.112:27089
+api.workflow.serverUrlPrefix=http://10.3.229.112:27090
+api.ueditor.serverUrlPrefix=http://10.3.229.112:27091
+#pay-api https
+pay.api.url.prefix=https://sslpay-uat.ic-trade.com:7443/payments
+
+#\u767b\u5f55\u6210\u529f\u9875\u9762
+portal.cas.login.successUrl=http://home-uat.ic-trade.com/main
+
+#mq\u670d\u52a1\u5668\u5730\u5740
+#mq.namesrvAddr=172.16.0.2:9876
+
+#redis
+redis.hostName=r-bp139fad16243784.redis.rds.aliyuncs.com
+redis.port=6379
+redis.password=yKy1lZsx
+redis.database=0
+
+#aliyun.OSS
+aliyun.OSS.bucket.publicread=ictrade-biz-public-hz-uat
+aliyun.OSS.bucket.privateread=ictrade-private-hz-uat
+aliyun.OSS.bucket.material=ictrade-public-hz-uat
+aliyun.OSS.endpoint=OSS_CN_HANGZHOU
+aliyun.OSS.accessKeyId=OTRxkGCUJ8Rh8xFu
+aliyun.OSS.accessKeySecret=ljykU9VjebI9DrTUoVK9mjTDO8UFwb
+aliyun.OSS.role=acs:ram::1058949072375933:role/uat-ossaccess-role
+aliyun.OSS.bucket.root=uat/
+
+#dns-prefetchs
+dns-prefetchs =  //img0.ykystatic.com,//img1.ykystatic.com
+
+#\u7269\u6599\u56fe\u7247\u8def\u5f84
+item.FileUrl = //file-uat.ykystatic.com/material/
+item.ImgUrl  = //img0-uat.ykystatic.com/material/
+
+#\u5bcc\u6587\u672c\u7f16\u8f91\u5668URL
+ueditor.iframeUrl = http://component-uat.ic-trade.com/editor
+
+#shiro\u5fae\u670d\u52a1
+service.auth.role=http://10.3.229.112:27082/v1/acl/roles?partyId=
+service.auth.permission=http://10.3.229.112:27082/v1/acl/permissions?partyId=
+
+#mongoDb \u7684\u5fae\u670d\u52a1\u7684\u914d\u7f6egoods \u5e94\u7528
+mongodb.hostName=http://10.3.229.112
+mongodb.port=10000
+
+
+#\u4f9b\u5e94\u94fe\u8ba4\u8bc1\u90e8\u95e8ID
+deptId=e6f0ec513c3a11e79187
+
+#\u8fd0\u8425\u90e8ID
+operateDeptId=e69b18ba3c3a11e79187
+
+#\u914d\u7f6e\u73af\u5883\u53d8\u91cf 
+serverEnvironment=uat

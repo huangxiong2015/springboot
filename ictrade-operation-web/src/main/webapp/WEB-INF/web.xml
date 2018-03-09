@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="schedule-console"
+	version="3.0">
+
+  <display-name>Archetype Created Web Application</display-name>
+  <context-param>
+    	<param-name>spring.profiles.active</param-name>
+	    <param-value>${env.type}</param-value>
+	</context-param>
+	<!-- 保证springmvc form提交的都经过escape转义 -->
+	<context-param>
+		<param-name>defaultHtmlEscape</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	
+ 	 <context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+          	classpath:web-config/operation/spring.xml
+      </param-value>
+	</context-param>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<!-- 用于单点退出，该过滤器用于实现单点登出功能，可选配置 -->
+	<listener>
+		<listener-class>org.jasig.cas.client.session.SingleSignOutHttpSessionListener</listener-class>
+	</listener> 
+	
+	<!-- spring session集群管理的过滤器 -->
+	<filter>
+    	<filter-name>springSessionRepositoryFilter</filter-name>
+    	<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  	</filter>
+	<filter-mapping>
+    	<filter-name>springSessionRepositoryFilter</filter-name>
+<!--     	<servlet-name>action</servlet-name> -->
+<!--     	<servlet-name>restaction</servlet-name> -->
+    	<url-pattern>/*</url-pattern>
+  	</filter-mapping>
+	
+	<!-- 该过滤器用于实现单点登出功能，可选配置。 -->
+	<filter>
+		<filter-name>CAS Single Sign Out Filter</filter-name>
+		<filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>	
+	</filter>
+	<filter-mapping>
+		<filter-name>CAS Single Sign Out Filter</filter-name>
+		<url-pattern>/login.htm</url-pattern>
+<!-- 		<url-pattern>/*</url-pattern> -->
+	</filter-mapping>
+	
+	
+	<!-- POST中文乱码过滤器 -->
+	<filter>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>utf-8</param-value>
+		</init-param>
+		<init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<servlet-name>action</servlet-name>
+		<servlet-name>restaction</servlet-name>
+	</filter-mapping>
+	
+<filter>  
+	    <filter-name>shiroFilter</filter-name>  
+	    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>  
+	    <init-param>  
+	    <!-- 该值缺省为false,表示生命周期由SpringApplicationContext管理,设置为true则表示由ServletContainer管理 -->  
+	    <param-name>targetFilterLifecycle</param-name>  
+	    <param-value>true</param-value>  
+	    </init-param>  
+	</filter>  
+	<filter-mapping>  
+	        <filter-name>shiroFilter</filter-name>  
+	        <servlet-name>action</servlet-name> 
+	        <servlet-name>restaction</servlet-name> 
+	        <url-pattern>*.jsp</url-pattern> 
+	</filter-mapping>
+	
+	<servlet>
+		<servlet-name>action</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:common-config/spring/spring-mvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>action</servlet-name>
+		<url-pattern>/index.htm</url-pattern>
+	</servlet-mapping> 
+
+	<servlet-mapping>
+		<servlet-name>action</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+	
+	<error-page>
+		<error-code>400</error-code>
+		<location>/WEB-INF/jsp/errors/400.jsp</location>
+	</error-page>
+
+	<error-page>
+		<error-code>401</error-code>
+		<location>/WEB-INF/jsp/errors/401.jsp</location>
+	</error-page>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/WEB-INF/jsp/errors/404.jsp</location>
+	</error-page>
+
+	<error-page>
+		<error-code>500</error-code>
+		<location>/WEB-INF/jsp/errors/error.jsp</location>
+	</error-page>
+
+</web-app>

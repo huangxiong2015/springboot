@@ -1,0 +1,78 @@
+.select_label {
+	margin-right: 21px;
+	padding-left: 63px;
+	margin-top: 10px;
+}
+#app-select .form-group {
+	margin-bottom: 0;
+}
+#app-select .control-label {
+	display: none;
+}
+.company_name {
+	margin-left: 11px;
+	margin-right: 3px;
+}
+
+.noselect {
+	-webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
+.select_industry {display: inline-block;height: 30px;line-height: 30px;border: solid 1px #ddd;/*  color: #37a; */padding: 0 5px; cursor: pointer}
+.container-fluid .ui-selectmenu-button.ui-button{width:354px;margin-left: 0;}
+.select_industry:hover {color: #37a}
+.select_industry i {float: right;margin-top: 10px; margin-right: 10px}
+.industry_content { padding: 20px 15px; position: absolute;top: 0; background: #fff;  border: 1px solid #b11919; z-index: 99; width: 680px;}
+.industry_list .company_type {display: inline-block; font-size: 12px;margin-right: 30px; cursor: pointer;}
+.industry_list .other_attr {height: 22px;border: 0; border-bottom: 1px solid #e4e4ea; width: 136px;padding-left: 10px;margin-left: 5px; color: #333}
+.company_genre .company_type { width: 95px; position: relative}
+.company_type i { display: inline-block; line-height: 24px;color: #333}
+.industry_btn a {padding: 6px 20px; border: 1px solid #b11919; border-radius: 3px;cursor: pointer; line-height: 1;}
+.industry_btn .btn_y { background: #fff7f8;color: #b1191a; display: inline-block}
+.industry_btn .btn_y:hover {background-color: #c81724;color: #fff}
+.industry_btn .btn_c {border-color: #ddd;margin-left: 20px;color: #666}
+.industry_btn .btn_c:hover {border-color: #c81724;color: #c81724}
+.select-area { margin-top: 10px; width: 370px;}
+.select-area .area-item {position: relative;display: inline-block;margin: 0 10px 10px 0;padding: 0 9px 0 11px; height: 28px;  line-height: 28px;
+ border: 1px dashed #ddd;cursor: pointer;color: #333}
+.select-area .area-item:hover { border: 1px dashed #b11919;color: #b11919}
+.area-item .icon-close-min {margin: 8px 0 0 8px;color: #333;font-size: 12px}
+.close{opacity: 1!important;}
+.select-area .area-item:hover .icon-close-min {color: #b11919}
+/*check-box*/
+.check-box-white {background: url(../../images/static/sprite.png) no-repeat 0 -400px;
+ width: 13px;height: 13px;display: inline-block;overflow: hidden;margin-right: 7px;position: relative;top: 2px}
+.check-box-red {background: url(../../images/static/sprite.png?v=170510093940) no-repeat -20px -400px;width: 13px;height: 13px}
+.btn_register.disabled { background: #b4b4b4;cursor: default}
+.industryOther {border-color: rgb(228, 228, 234); display: none;}
+
+.industry_list .other_attr.hong {
+	border-color: #B1191A;
+}
+.industry_list .other_attr.hong:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #B1191A;
+}
+
+.industry_list .other_attr.hong::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #B1191A;
+}
+
+.industry_list .other_attr.hong:-ms-input-placeholder{
+    color: #B1191A;
+}
+
+.industry_list .other_attr.hong::-webkit-input-placeholder{
+    color: #B1191A;
+}
+.kaitongquanxian {
+	margin-left: -72px;
+}
+.description,#description {
+	width: 340px;
+	height: 100px;
+	padding: 5px 10px;
+	resize: none;
+}

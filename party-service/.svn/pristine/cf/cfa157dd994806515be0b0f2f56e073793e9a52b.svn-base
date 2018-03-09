@@ -1,0 +1,57 @@
+package com.yikuyi.party.audit.bll;
+
+import java.util.Date;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+import com.yikuyi.party.audit.model.Audit;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+		TransactionDbUnitTestExecutionListener.class })
+@Transactional
+@Rollback
+public class AuditManagerTest {
+
+	@Autowired
+	private AuditManager auditManager;
+
+	/**
+	 * 测试插入
+	 * 
+	 * @since 2016年10月18日
+	 * @author zr.tongkun@yikuyi.com
+	 */
+	@Test
+	@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT, value = "classpath:com/yikuyi/party/audit/audit_sample.xml")
+	@ExpectedDatabase(assertionMode = DatabaseAssertionMode.NON_STRICT, value = "classpath:com/yikuyi/party/audit/audit_insert_result.xml")
+	public void testInsert() {
+		Audit audit = new Audit();
+		audit.setUserId("9999999901");
+		audit.setClientIp("127.0.0.1");
+		audit.setServerIp("192.168.1.253");
+		audit.setResource("[{\"id\":\"9999999901\",\"partyStatus\":\"PARTY_DISABLED\"}]");
+		audit.setAction("User Modify");
+		audit.setApplicationCode("PARTY");
+		audit.setDate(new Date());
+		audit.setActionId("test01");
+		audit.setActionDesc("修改9999999901账号状态为PARTY_DISABLED");
+		audit.setActionRst("SUCCEEDED");
+		auditManager.insertAduit(audit);
+	}
+}

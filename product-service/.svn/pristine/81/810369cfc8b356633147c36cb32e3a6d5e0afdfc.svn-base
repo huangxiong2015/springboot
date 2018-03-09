@@ -1,0 +1,399 @@
+package com.yikuyi.product.strategy.manager;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Service;
+
+import com.framework.springboot.model.LoginUser;
+import com.framewrok.springboot.web.RequestHelper;
+import com.github.pagehelper.PageInfo;
+import com.yikuyi.product.common.dao.BaseMongoClient;
+import com.yikuyi.product.common.utils.BusiErrorCode;
+import com.yikuyi.product.common.utils.UtilsHelp;
+import com.yikuyi.product.strategy.cache.PackageMailCacheManager;
+import com.yikuyi.product.strategy.reposity.StrategyProductDraftRepository;
+import com.yikuyi.product.strategy.reposity.StrategyProductRepository;
+import com.yikuyi.product.strategy.reposity.StrategyRepository;
+import com.yikuyi.strategy.model.Strategy;
+import com.yikuyi.strategy.model.Strategy.StrategyStatus;
+import com.yikuyi.strategy.model.Strategy.StrategyType;
+import com.yikuyi.strategy.model.StrategyProduct;
+import com.yikuyi.strategy.model.StrategyProductDraft.ProductStatus;
+import com.yikuyi.strategy.vo.StrategyVo;
+import com.ykyframework.exception.BusinessException;
+
+/**
+ * 包邮模块
+ * @author zr.wuxiansheng@yikuyi.com
+ * @version 1.0.0
+ */
+@Service
+public class StrategyManager {
+	
+	private static final Logger logger = LoggerFactory.getLogger(StrategyManager.class);
+	
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	@Autowired
+	private StrategyRepository strategyRepository;
+	
+	@Autowired
+	private StrategyProductRepository strategyProductRepository;
+	
+	@Autowired
+	private StrategyProductDraftRepository strategyProductDraftRepository;
+	
+	@Autowired
+	private PackageMailCacheManager packageMailCacheManager;
+
+	private static final String OK = "ok";
+	
+	private static final String ONE_POINT = "1.0";
+	
+	@Autowired
+	private BaseMongoClient baseMongoClient;
+	
+	/**
+	 * 包邮规则列表查询
+	 * @param title
+	 * @param updateDateStart
+	 * @param updateDateEnd
+	 * @param creatorName
+	 * @param strategyStatus
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 * @since 2018年1月8日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public PageInfo<StrategyVo> list(String title, String updateDateStart, String updateDateEnd, String creatorName,
+			StrategyStatus strategyStatus, int page, int pageSize) {
+		try {
+			//拼装查询条件以及排序
+			Query query = this.mergeCondition(title,updateDateStart,updateDateEnd,creatorName,strategyStatus);
+			int pageNo = 0;
+			if(page>0){
+				pageNo = page-1;
+			} 
+			Sort sort = new Sort(Direction.DESC,"createdTimeMillis");
+			PageRequest pageable = new PageRequest(pageNo,pageSize,sort);
+			Page<StrategyVo> pageInfo = strategyRepository.findStrategyByPage(query.getQueryObject(), pageable);
+			List<StrategyVo> volist = pageInfo.getContent();
+			if(!CollectionUtils.isEmpty(volist)){
+				volist = handleStrategyVoList(volist);
+			}
+			PageInfo<StrategyVo> pageResult = new PageInfo<>(volist);		
+			pageResult.setPageNum(page);
+			pageResult.setPageSize(pageSize);
+			pageResult.setTotal(pageInfo.getTotalElements());	
+			return pageResult;
+		} catch (Exception e) {
+			logger.error("专属特价列表信息：{}", e);
+		}
+		return null;
+	}
+
+	
+	/**
+	 * 条件查询
+	 * @param title
+	 * @param updateDateStart
+	 * @param updateDateEnd
+	 * @param creatorName
+	 * @param strategyStatus
+	 * @return
+	 * @since 2018年1月8日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	private Query mergeCondition(String title, String updateDateStart, String updateDateEnd, String creatorName,
+			StrategyStatus strategyStatus) {
+		
+		Query query = new Query();
+		Criteria criteria = new Criteria();
+		Optional<Criteria> optCriteria = Optional.ofNullable(criteria);
+		if(!optCriteria.isPresent()){
+			criteria = new Criteria();
+		}
+		if(StringUtils.isNotBlank(title)){
+			criteria.and("title").is(title);
+		}
+		try {
+		if(StringUtils.isNotBlank(updateDateStart) && StringUtils.isNotBlank(updateDateEnd)){
+				String startTime = String.valueOf(sdf.parse(updateDateStart+" 00:00:00").getTime());
+				String endTime = String.valueOf(sdf.parse(updateDateEnd +" 23:59:59").getTime());
+				criteria.and("updatedTimeMillis").gte(startTime).lt(endTime);
+		}
+		} catch (Exception e) {
+			logger.error("时间查询：{}", e);
+		}
+		if(StringUtils.isNotBlank(creatorName)){
+			criteria.and("creatorName").is(creatorName);
+		}
+		if(strategyStatus!=null){
+			criteria.and("strategyStatus").is(strategyStatus.toString());
+		}
+		criteria.and("strategyType").is(StrategyType.FREE_DERIVERY.toString());//包邮模块
+		criteria.and("strategyStatus").ne(StrategyStatus.DELETED.toString());//过滤条件
+		query.addCriteria(criteria);
+		return query;
+	}
+	
+	/**
+	 * 处理数据
+	 * @param list
+	 * @return
+	 * @since 2018年1月8日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	private List<StrategyVo> handleStrategyVoList(List<StrategyVo> list) {
+		if(CollectionUtils.isNotEmpty(list)){
+			for (StrategyVo strategyVo : list) {
+				getStrategyVo(strategyVo);				
+			}
+		}
+		return list;
+	}
+
+
+	/**
+	 * 处理数据
+	 * @param strategyVo
+	 * @return
+	 * @since 2018年1月10日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	private void getStrategyVo(StrategyVo strategyVo) {
+		long startTime = Long.parseLong(strategyVo.getStartDate());
+		long endTime = Long.parseLong(strategyVo.getEndDate());
+		long currentTime = System.currentTimeMillis();
+		if(StrategyStatus.START.toString().equals(strategyVo.getStrategyStatus().toString())){
+			//如果是启动状态设置为进行中
+			if(currentTime < startTime){
+				strategyVo.setStatusShow(StrategyStatus.START.toString());
+			}else if(currentTime > startTime  && currentTime < endTime){
+				strategyVo.setStatusShow(StrategyStatus.PUBLISHED.toString());
+			}else if(currentTime > endTime){
+				strategyVo.setStatusShow(StrategyStatus.END.toString());
+			}
+		}else{
+			strategyVo.setStatusShow(strategyVo.getStrategyStatus().toString());
+		}
+		strategyVo.setStartDate(UtilsHelp.timeStamp2Date(strategyVo.getStartDate()));
+		strategyVo.setEndDate(UtilsHelp.timeStamp2Date(strategyVo.getEndDate()));
+		strategyVo.setCreatedTimeMillis(UtilsHelp.timeStamp2Date(strategyVo.getCreatedTimeMillis()));
+		strategyVo.setUpdatedTimeMillis(UtilsHelp.timeStamp2Date(strategyVo.getUpdatedTimeMillis()));
+	}
+
+
+	/**
+	 * 查询包邮规则详情
+	 * @param id
+	 * @return
+	 * @since 2018年1月8日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public StrategyVo getStrategy(String id) {
+		StrategyVo strategyVo = new StrategyVo();
+		Strategy strategy = strategyRepository.findOne(id);
+		if(strategy!=null){
+			BeanUtils.copyProperties(strategy, strategyVo);
+			getStrategyVo(strategyVo);
+		}
+		return strategyVo;
+	}
+
+
+	/**
+	 * 删除包邮信息
+	 * @param id
+	 * @since 2018年1月8日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public void deleteStrategyById(String id) throws BusinessException{
+		LoginUser userInfo = RequestHelper.getLoginUser();
+		Strategy strategy = strategyRepository.findOne(id);
+		//1.删除正式商品数据
+		strategyProductRepository.deleteStrategyProductBystrategyId(id);
+		//1.判断状态,非停用状态下不能删除,软删除
+		Strategy strategyNew = new Strategy();
+		if(strategy!=null){
+			if(strategy.getStrategyStatus()!=null && !StrategyStatus.HOLD.toString().equals(strategy.getStrategyStatus().toString())){
+				throw new BusinessException(BusiErrorCode.STRATEGY_STATUS_NOT_HOLD, "非停用状态下，不能删除");
+			}
+			BeanUtils.copyProperties(strategy, strategyNew);
+			strategyNew.setStrategyStatus(StrategyStatus.DELETED);
+			strategyNew.setUpdatedTimeMillis(String.valueOf(System.currentTimeMillis()));
+			strategyNew.setLastUpdateUser(userInfo.getId());
+			strategyNew.setLastUpdateUserName(userInfo.getUsername());
+			strategyRepository.save(strategyNew);
+		}
+	}
+
+
+	/**
+	 * 修改状态
+	 * @param id
+	 * @param strategyStatus
+	 * @throws BusinessException
+	 * @throws ParseException
+	 * @since 2018年1月10日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public void updateStrategyStatus(String id, StrategyStatus strategyStatus) throws BusinessException,ParseException{
+			Strategy strategy = strategyRepository.findOne(id);
+			if(strategy!=null){
+				long currentTime = System.currentTimeMillis();
+				long endDate = Long.parseLong(strategy.getEndDate());
+				if(currentTime>endDate && StrategyStatus.START.toString().equals(strategyStatus.toString())){
+						throw new BusinessException(BusiErrorCode.ENDDATE_BEFORE_CURRENT, "活动已过期，不能被启用");
+				}
+				Strategy strategyNew = new Strategy();
+				BeanUtils.copyProperties(strategy, strategyNew);
+				strategyNew.setId(id);
+				strategyNew.setStrategyStatus(strategyStatus);
+				strategyNew.setUpdatedTimeMillis(String.valueOf(System.currentTimeMillis()));
+				strategyRepository.save(strategyNew);
+				//查询关联的商品，去重组成list
+				List<String> productIdsList = new ArrayList<>(); 
+				Set<String> idsList = new HashSet<>();
+				List<StrategyProduct> productList = strategyProductRepository.findProductIdByStrategyId(id);
+				if(CollectionUtils.isNotEmpty(productList)){
+					for (StrategyProduct strategyProduct : productList) {
+						idsList.add(strategyProduct.getProductId());
+					}
+					productIdsList.addAll(idsList);
+				}
+				if(CollectionUtils.isNotEmpty(productIdsList) && StrategyStatus.START.toString().equals(strategyStatus.toString())){//启用
+						packageMailCacheManager.addStrategyCache(productIdsList, strategyNew);
+				}else if(CollectionUtils.isNotEmpty(productIdsList) && StrategyStatus.HOLD.toString().equals(strategyStatus.toString())){//停用时删除缓存
+						productIdsList.stream().forEach(key -> {
+							packageMailCacheManager.deleteStrategyCache(key, strategyNew);
+						});
+				}
+				
+			}
+		
+	}
+
+	
+	/**
+	 * 添加包邮模块相关信息
+	 * @param strategyId
+	 * @param strategy
+	 * @since 2018年1月9日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public void addStrategy(String strategyId, Strategy strategy)  throws BusinessException{
+			LoginUser userInfo = RequestHelper.getLoginUser();
+			//添加包邮规则信息
+			strategy.setId(strategyId);
+			strategy.setStrategyType(StrategyType.FREE_DERIVERY);
+			strategy.setStrategyStatus(StrategyStatus.HOLD);
+			strategy.setCreator(userInfo.getId());
+			strategy.setCreatorName(userInfo.getUsername());
+			strategy.setCreatedTimeMillis(String.valueOf(System.currentTimeMillis()));
+			strategy.setUpdatedTimeMillis(String.valueOf(System.currentTimeMillis()));
+			strategy.setLastUpdateUser(userInfo.getId());
+			strategy.setLastUpdateUserName(userInfo.getUsername());
+			//判断活动起始时间不能大于活动结束时间
+			if(strategy.getStartDate()!=null && strategy.getEndDate()!=null){
+				long startDate = Long.parseLong(strategy.getStartDate());
+				long endDate = Long.parseLong(strategy.getEndDate());
+				if(startDate > endDate){//
+					throw new BusinessException(BusiErrorCode.ENDDATE_BEFORE_STARTDATE, "活动结束时间不能大于活动起始时间");
+				}
+			}
+			int num = strategyProductDraftRepository.findNumStrategyId(strategyId,ProductStatus.ENABLE.toString());
+			if(num == 0)
+			{
+				throw new BusinessException(BusiErrorCode.SPECIAL_PRODUCT_ENABLE_NULL, "没有有效的数据，不能保存");
+			}
+			//将商品的信息从草稿表中迁移到正式表中
+			Document result = baseMongoClient.getDatabase().runCommand(new Document("eval","copyStrategyProductDraft(\""+strategyId+"\")"));
+			if(!ONE_POINT.equals(result.get(OK).toString())){
+				throw new BusinessException(BusiErrorCode.COPY_PRODUCT_DRAFT, " 商品信息迁移到正式表中报错");
+				}
+			strategyRepository.insert(strategy);
+		}
+
+
+	/**
+	 * 将正式商品表中的数据迁移到草稿表中
+	 * @param strategyId
+	 * @since 2018年1月9日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public void copyStrategyProductToDraft(String strategyId) throws BusinessException{
+		//在迁移数据之前先清除一下草稿表中的数据
+		strategyProductDraftRepository.deleteStrategyProductDraftByStrategyId(strategyId);
+		Document result = baseMongoClient.getDatabase().runCommand(new Document("eval","copyStrategyProductToDraft(\""+strategyId+"\")"));
+		if(!ONE_POINT.equals(result.get(OK).toString())){
+			throw new BusinessException(BusiErrorCode.COPY_PRODUCT_TO_DRAFT, " 将商品信息从正式表迁移到草稿表抛异常");
+		}				
+		
+	}
+
+
+	/**
+	 * 编辑包邮模块信息
+	 * @param strategy
+	 * @since 2018年1月9日
+	 * @author zr.wuxiansheng@yikuyi.com
+	 */
+	public void updateStrategy(String id,Strategy strategy) throws BusinessException{
+		Strategy strategyOld = strategyRepository.findOne(strategy.getId());
+		LoginUser userInfo = RequestHelper.getLoginUser();
+		if(strategyOld!=null){//编辑产品线内容信息
+			strategy.setStrategyType(StrategyType.FREE_DERIVERY);
+			strategy.setStrategyStatus(strategyOld.getStrategyStatus());
+			strategy.setCreator(strategyOld.getCreator());
+			strategy.setCreatorName(strategyOld.getCreatorName());
+			strategy.setCreatedTimeMillis(strategyOld.getCreatedTimeMillis());
+			strategy.setUpdatedTimeMillis(String.valueOf(System.currentTimeMillis()));
+			strategy.setLastUpdateUser(userInfo.getId());
+			strategy.setLastUpdateUserName(userInfo.getUsername());
+		}
+		//1.清除正式表中的数据
+		strategyProductRepository.deleteStrategyProductBystrategyId(id);
+
+		//2.如果草稿表中没有有效的数据是不能编辑的
+		int num = strategyProductDraftRepository.findNumStrategyId(id,ProductStatus.ENABLE.toString());
+		if(num == 0)
+		{
+			throw new BusinessException(BusiErrorCode.SPECIAL_PRODUCT_ENABLE_NULL, "没有有效的数据，不能保存");
+		}
+		//3.从草稿表中重新迁移数据
+		Document result = baseMongoClient.getDatabase().runCommand(new Document("eval","copyStrategyProductDraft(\""+id+"\")"));
+		if(!ONE_POINT.equals(result.get(OK).toString())){//迁移数据成功
+			throw new BusinessException(BusiErrorCode.COPY_PRODUCT_DRAFT, " 商品信息迁移到正式表中报错");
+		}
+		//3.保存包邮主表信息
+		strategyRepository.save(strategy);
+	}
+	
+	
+	
+	
+
+
+		 
+}

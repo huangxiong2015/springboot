@@ -1,0 +1,314 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
+<%@taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %> 
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<c:set var="ctx" value="${pageContext.request.contextPath }" scope="request" />
+<html>
+<head>
+  <c:import url ="/WEB-INF/jsp/include/main/constants.jsp"/>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>创建代金券页</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="http://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Theme style -->
+<!--   <link rel="stylesheet" href="${ctx}/css/common/base.css"> -->
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+<link rel="stylesheet" type="text/css" href="${ctx}/js/lib/laydate/need/laydate.css"/>
+  <link rel="stylesheet" href="${ctx}/css/app/setCouponInfo.css">
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+<!---index header  start   ---->
+	<jsp:directive.include file="../include/main/header.jsp" />
+	<!---index header  end   ---->
+	 <!---index nav  start   ---->
+	<jsp:directive.include file="../include/main/menu.jsp" />
+	<!---index nav  end   ---->
+
+  
+  <!-- 右边内容显示 -->
+  <div class="content-wrapper">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<span class="header_tab">创建代金券</span>
+	</section>
+    <!-- Main content -->
+	<section class="content">
+		<div class="panel panel-default" style="padding: 0 0;">
+		  <div class="panel-body">
+		  	<!-- main_cont-->
+		  	<div class="main_cont" ms-controller="data">
+		  		<!-- main_cont_l -->
+			    <div class="main_cont_l">
+			    	<div class="panel panel-default" >
+					  <div class="panel-heading">
+					    <h3 class="panel-title">代金券基本属性</h3>
+					  </div>
+					  <div class="panel-body">
+					    <!-- body -->
+					    <ul class="list-group">
+						  <li class="item">
+						  	<span class="item_label"><i class="r_tag">*</i>代金券类型：</span>
+						  	<div class="item_r">
+						  		<span  class="c_type_wrap">
+						  			<select name="cType" id="cType">
+							  			<option value="PLATFORM_PROMO" selected="selected">平台推广劵</option>
+							  			<option value="EXACT_PROMO">平台定向劵</option>
+							  			<option value="OFFLINE_PROMO">地推劵</option>
+							  		</select>
+						  		</span>
+						  	</div>
+						  </li>
+						  <li class="item">
+						  	 <span class="item_label"><i class="r_tag">*</i>代金券名称：</span>
+							 <div class="item_r">
+								<input type="text" name="cName" id="cName" class="s_input" placeholder="不超过10个字" maxlength="10"   ms-duplex="@postData.name" onblur="cNameVerify()">
+							 	<em for="" id="cNameError" class="error" ></em>
+							 </div>
+						  </li>
+						  <li class="item">
+						  	 <span class="item_label"><i class="r_tag">*</i>有效时间：</span>
+							 <div class="item_r">
+								<p class="effect_type_wrap">
+									<select name="cEffectTimeType" id="cEffectTimeType">
+										<option value="EXACT_DATE_ZONE">限时领取</option>
+										<option value="FROM_GET_DATE">限时使用</option>
+									</select>
+							 	</p>
+								<p class="mt10" style="position:relative;">
+							 		<span class="item_label"></span>
+							 		<!-- 限时领取 -->
+							 		<span style="display:inline-block;" :visible="@postData.thruTypeId=='EXACT_DATE_ZONE'">
+								 		<span class="rel dib">
+							                <input id="applyBegin" value="" name="applyBegin" ms-duplex="@postData.fromDate"  class="main_head_input " type="text" onblur="effectTimeVerify()">
+							                <span class="cc1 icon-calendar"></span>
+						                </span>
+						                <span style="color:#aaa; margin-left:5px;margin-right:5px;">-</span>
+						                <span class="rel dib">
+							                <input id="applyEnd" value="" name="applyEnd" ms-duplex="@postData.thruDate"  class="main_head_input" type="text"  onblur="effectTimeVerify()">
+							                <span class="cc2 icon-calendar"></span>
+						                </span>
+					                </span>
+					                <!-- 限时领取 -->
+					                <span style="display:inline-block;" :visible="@postData.thruTypeId=='FROM_GET_DATE'">
+					                	<span>领取后<input type="text" name="" id="cLimitMonth" class="s_input l_month_input" ms-duplex="@postData.limitMonth" onblur="effectTimeVerify()" maxlength="4"/>个月内有效</span>
+					                </span>
+					                <em for="" id="cDateError" class="error st2" ></em>
+					                <em for="" id="cLimitMonthError" class="error st2"  ></em>
+							 	</p>
+							 </div>
+						  </li>
+						  <li class="item">
+						  	 <span class="item_label"><i class="r_tag">*</i>总发行量：</span>
+							 <div class="item_r">
+								<div>
+									<input type="text" name="cTotal" id="cTotal" class="s_input " placeholder="" maxlength="8"  ms-duplex="@postData.totalQty" onblur="cTotalVerify()">
+									<span class="ml5">张</span>
+									<em for="" id="cTotalError" class="error" ></em>
+								</div>
+							 </div>
+						  </li>
+						  <li class="item">
+						  	 <span class="item_label"><i class="r_tag">*</i>单张面值：</span>
+							 <div class="item_r">
+								<input type="text" name="cValue"  id="cValue" class="s_input " placeholder="" maxlength="7"  ms-duplex="@postData.unitAmount" onblur="cValueVerify()">
+							 	<span class="c_wrap">
+							 		<select name="cCurrency" id="cCurrency">
+								 		<option value="CNY" selected="selected">RMB</option>
+								 		<option value="USD">USD</option>
+								 	</select>
+							 	</span>
+							 	<em for="" id="cValueError" class="error" ></em>
+							 </div>
+						  </li>
+						</ul>
+					    <!-- body -->
+					  </div>
+					</div>
+					
+					<!-- panel start -->
+					<div class="panel panel-default">
+					  <div class="panel-heading">
+					    <h3 class="panel-title">使用条件</h3>
+					  </div>
+					  <div class="panel-body">
+					    <ul class="list-group">
+						  <li class="item">
+						  	<span class="item_label"><i class="r_tag">*</i>可用货品：</span>
+						  	<div class="item_r">
+						  		<p class="rel mb5"><span ><i class="r_tag">*</i>供应商:</span><input id="activeVendor" type="text" class="s_input st2 ml5" ms-duplex="@showData.vendorName" disabled /><span class="ml5 choose_btn" ms-click="@choose_supplier">选择</span><em for="" id="cVendorError" class="error" style="line-height:17px;"></em></p>
+						  		<p class="rel"><span class="item_label"></span><span ><i class="r_tag">*</i>制造商:</span><input id="activeBrand" type="text" class="s_input st2 ml5" ms-duplex="@showData.brandName"  disabled/><span class="ml5 choose_btn" ms-click="@choose_brand">选择</span><em for="" id="cBrandError" class="error" style="line-height: 17px;"></em></p>
+						  		<!-- 制造商 -->
+						  		<div class="party_layer dn" ms-controller="supplierData">
+						  			<div class="party_cont">
+						  				<div class="all_party">
+						  					<input type="radio" class="party_input " name="vendorName" value="" data-vendorname="" style="margin-left:5px;"><label for="" class="party_label">不限</label>
+						  				</div>
+						  				<div class="party_list">
+						  					<span class="party_item" ms-for="($i, item) in @supplierlist"><input type="radio" class="party_input" name="vendorName" :attr="{value: item.id, 'data-vendorname':item.partyGroup.groupName}" /><label for="" class="party_label">{{item.partyGroup.groupName}}</label></span>
+						  				</div>
+						  			</div>
+						  		</div>
+						  		<!-- 制造商 -->
+						  		<!-- 供应商 -->
+						  		<div class="brand_layer dn" ms-controller="brandData">
+						  			<!-- <div class="choose_bar"><span class="brand_choosed">选择分类</span><span class="brand_c_btn">不限</span><span class="brand_c_btn">关闭</span></div> -->
+						  			<div class="brand_cont">
+							  			<div class="all_brand">
+							  				<input type="radio" class="brand_input" name="brandName" data-brandname="" value="" style="margin-left:5px;" /><label for="" class="brand_label">不限</label>
+							  			</div>
+						  				<div class="brand_list"> 
+						  					<span class="brand_item" ms-for="($i, item) in @datalist"><input type="radio" class="brand_input" name="brandName"  :attr="{value: item.id, 'data-brandname': item.brandName}"/><label for="" class="brand_label">{{item.brandName}}</label></span>
+						  				</div>
+						  			</div>
+						  		</div>
+						  		<!-- 供应商-->
+						  	</div>
+						  </li>
+						  <li class="item">
+						  	 <span class="item_label"><i class="r_tag">*</i>使用限额：</span>
+							 <div class="item_r">
+								<span>单笔订单中此优惠券指定货品金额满</span>
+								<span class="ml5"><input type="text" name="cLimitAmount"  id="cLimitAmount" class="s_input" placeholder="" maxlength="8"  style="width:80px;" ms-duplex="@postData.consumeLimitAmount" onblur="cLimitAmountVerify()"></span>
+								<span class="currency ml5 mr5"><em :visible="@postData.couponCurrency=='CNY'">RMB</em><em :visible="@postData.couponCurrency=='USD'">USD</em></span>
+								<span>使用</span>
+								<em for="" id="cLimitAmountError" class="error" ></em>
+							 </div>
+						  </li>  
+						</ul>
+					  </div>
+					</div>
+					<!-- panel end -->
+					<!-- panel start -->
+					<div class="panel panel-default">
+					  <div class="panel-heading">
+					    <h3 class="panel-title">领取条件</h3>
+					  </div>
+					  <div class="panel-body">
+					    <ul class="list-group">
+						  <li class="item">
+						  	<span class="item_label"><i class="r_tag">*</i>推广方式：</span>
+						  	<div class="item_r">
+						  		<p>
+						  		<span><input type="radio" name="getMethod" value="FREE_WGET" id="freeGet" checked = "checked"/><label for="">自助领取</label></span>
+						  		<span class="ml20"><input type="radio" name="getMethod"  value="EXACT_SEND" id="exactSend" disabled/><label for="">定向发放</label></span>
+						  		</p>
+						  	</div>
+						  </li>
+						  <li class="item">
+						  	 <span class="item_label"><i class="r_tag">*</i>推广对象：</span>
+							 <div class="item_r">
+								<p>
+								<span><input type="checkbox" name="orientedTarget" value="PARTY_GROUP"  id="checkbox_1" checked = "checked" class="chk_1"/><label for="checkbox_1"></label><em style="margin-left:8px;">企业用户</em></span>
+								<span class="ml20"><input type="checkbox" name="orientedTarget" value="PERSON" id="checkbox_2"  checked = "checked" class="chk_1"/><label for="checkbox_2"></label><em style="margin-left:8px;">个人用户</em></span>
+								<em for="" id="cOrientedError" class="error" style="line-height:20px;top:-6px;"></em>
+								</p>
+							 </div>
+						  </li>  
+						</ul>
+					  </div>
+					</div>
+					<!-- panel end -->
+					<!-- panel start -->
+					<div class="panel panel-default">
+					  <div class="panel-heading">
+					    <h3 class="panel-title">其他</h3>
+					  </div>
+					  <div class="panel-body">
+					    <ul class="list-group">
+						  <li class="item">
+						  	<span class="item_label" style="margin-right:10px;"><i class="r_tag">*</i>代金券申请凭证：</span>
+						  	<input type="hidden" name="proofUrl" id="proofUrl" />
+						  	<div class="item_r">
+						  		<p>
+						  		<span class="shotImage" ms-click="@showBigImage();"><img id="minIMG"  src="" alt=""  style="width:35px;height:35px;border:0;"/></span>
+						  		<span  class="up_btn">
+						  			<input type="file"  id="upBtn" class="up_file" style="z-index: 1;">
+						  			<span class="up_btn_txt">选择文件</span>
+						  		</span>
+						  		<span class="originalImage" style="display:none;"><img id="maxIMG"   alt="" /></span>
+						  		<span class="g9 ml10">支持图片格式.jpg .jpeg .png .bmp，文件大小不能超过5MB！</span>
+						  		<em for="" id="cApprovedProofError" class="error" style="line-height:20px;top:-6px;" ></em>
+						  		</p>
+						  	</div>
+						  </li>
+						  <li class="item">
+						  	 <span class="item_label" style="min-width:106px;margin-right:10px;"><i class="r_tag">*</i>代金券备注：</span>
+							 <div class="item_r">
+								<textarea name="" id="couponText" cols="30" rows="10" placeholder="可对代金券进行描述，如：此代金券为市场部推广申请创建的……"  maxlength="100" ms-duplex="@postData.couponText"></textarea>
+							 	<em for="" id="cCouponTextError" class="error" style="line-height:20px;" ></em>
+							 </div>
+						  </li>  
+						</ul>
+					  </div>
+					</div>
+					<!-- panel end -->
+					<div class="btn_bar">
+						<span class="y_btn" style="margin-left:134px;" ms-click="@newCoupon">创建代金券</span>
+						<a class="r_btn ml5" href="${ctx}/couponList.htm">返回</a>
+					</div>
+			    </div>
+			    <!-- main_cont_l -->
+			    <!-- main_cont_r -->
+			    <div class="c_item_wrap">
+					<div class="c_item">
+						<div class="c_item_top">
+							<p class="price"><span ms-text="@postData.unitAmount"></span><span ms-if="@postData.couponCurrency=='CNY'">元</span><span ms-if="@postData.couponCurrency=='USD'">美元</span></p>
+							<p>单笔订单满 <span ms-text="@postData.consumeLimitAmount"></span><span ms-if="@postData.couponCurrency=='CNY'">元</span><span ms-if="@postData.couponCurrency=='USD'">美元</span>使用</p>
+						</div>
+						<div class="c_item_bottom">
+							<p :if="(@postData.vendorName)||(@postData.brandName)">
+								<span >供应商</span>
+					  			<span :if="@postData.vendorName" ms-text="@postData.vendorName"></span>
+					  			<span :if="!@postData.vendorName">不限</span>
+					  			<span ></span><span >,制造商</span>
+					  			<span :if="@postData.brandName" ms-text="@postData.brandName"></span>
+					  			<span :if="!@postData.brandName">不限</span>
+							</p>
+							<p :if="(!@postData.vendorName)&&(!@postData.brandName)">
+								<span >[ 全平台通用 ]</span>
+							</p>
+							<p ms-if="(@postData.thruTypeId =='FROM_GET_DATE')||(@postData.thruTypeId =='from_get_date')">有效期：领取后<em ms-text="@postData.limitMonth"></em>个月内有效</p>
+							<p ms-if="(@postData.thruTypeId =='EXACT_DATE_ZONE')||(@postData.thruTypeId =='exact_date_zone')">有效期：<span ms-text="@postData.fromDate"></span><span :if="@postData.thruDate">至</span><span ms-text="@postData.thruDate"></span></p>
+						</div>
+					</div>
+				</div>	
+			    <!-- main_cont_r -->
+			 </div>
+			 <!-- main_cont-->
+		  </div>
+		</div>
+	</section>
+	<!-- /.content -->
+  </div>
+	
+</div>
+<!-- ./wrapper -->
+
+<script type="text/javascript">
+		var selectCatid = "242,250";
+</script>
+<!---footer  start   ---->
+<jsp:directive.include file="../include/main/footer.jsp" />
+<!---footer  end   ---->
+<script>
+	var thisPrefix ='${ctx}';
+</script>
+<script type="text/javascript" src="${ctx}/js/lib/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="${ctx}/js/app/coupon_oss.js"></script>
+<script src="${ctx}/js/app/createcoupon.js"></script>
+</body>
+</html>

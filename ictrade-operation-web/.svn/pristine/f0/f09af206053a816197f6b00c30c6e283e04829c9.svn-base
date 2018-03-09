@@ -1,0 +1,84 @@
+/* 物料核对start */
+.content_main {
+    margin: 50px 30px;
+}
+.content_main_img {
+    float: left;
+}
+.content_main_msg {
+    display: inline-block;
+    margin-left: 30px;
+}
+.content_btn {
+    margin-left: 40px;
+    margin-top: 20px;
+    position: relative;
+}
+.f-tip{
+	color:#333;
+}
+.l-tip{
+	color:#999;
+}
+.content_btn_up{
+	padding: 8px 20px;
+    color: #fff;
+    background-color: #B1191A;
+    display: inline-block;
+}
+.btn-danger{
+    width: inherit;
+}
+.btn_down{
+	position: relative;
+    top: 3px;
+    margin-left: 10px;
+}
+/* 物料核对end */
+
+/* 物料上传start */
+.s-upload .box{
+	padding:20px;
+}
+.upload_area .upload_btn {
+    border: solid 1px #ddd;
+    color: #333;
+    cursor: pointer;
+    display: inline-block;
+    padding: 5px 10px;
+    height: inherit;
+    line-height: initial;
+}
+.upload_area .upload_btn:hover{
+	border: solid 1px #b1191a;
+    color: #b1191a;
+}
+.progressBar{
+    display: inline-block;
+    width: 100px;
+    height: 8px;
+    background: #ddd;
+    border: 0 !important;
+    border-radius: 0;
+}	
+.ui-widget-header {
+    background: #87b848;
+    border-radius: 0;
+}
+.operation_explain {
+    padding: 15px;
+    background-color: #fafafa;
+    border: solid 1px #eee;
+    margin-top:15px;
+}
+.dn{
+	display:none;
+}
+.ui-progressbar .ui-progressbar-value{
+	margin:0px;
+}
+.uploading-tip{
+	margin-left:65px;
+	margin-bottom:15px;
+}
+/* 物料上传end */

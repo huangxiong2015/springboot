@@ -1,0 +1,589 @@
+var vendorIdTemp,
+		vendorNameTemp,
+		brandIdTemp,
+		brandNameTemp;
+var couponPost = avalon.define({
+    $id: "data",
+    postData:{
+	  "name": "",
+	  "couponCurrency": "CNY", //默认RMB
+	  "totalQty": "",
+	  "unitAmount": "",
+	  "couponText": "",
+	  "thruTypeId": "EXACT_DATE_ZONE",  //默认限时使用
+	  "couponCate": "PLATFORM_PROMO",  //默认平台
+	  "couponPartyType": "UNLIMIT",
+	  "couponMethodType": "FREE_WGET",
+	  "consumeLimitAmount": "",
+	  "approvedProof": "",
+	  "vendorId": "",
+	  "vendorName":"",
+	  "brandId": "",
+	  "brandName":"",
+	  "fromDate": "",   
+	  "thruDate": "",
+	  "limitMonth": ""
+	},
+	showData:{
+		"vendorName":"",
+		"brandName":"",	
+	},
+	showBigImage:function(){
+		if($('#maxIMG').attr("src")!=''){
+			layer.open({
+				  type: 1,
+				  title: false,
+				  closeBtn: 0,
+				  area: ['800px', '500px'],
+				  offset: '100px',
+				  shadeClose: true,
+				  content: $('.originalImage')
+			});
+		}
+	},
+	newCoupon:function(e){
+		var booleanTag1 = cNameVerify();
+		var booleanTag2 = cTotalVerify();
+		var booleanTag3 = cValueVerify();
+		var booleanTag4 = cLimitAmountVerify();
+		var booleanTag5 = effectTimeVerify();
+		var booleanTag6 = cBrandVerify();
+		var booleanTag7 = cVendorVerify();
+		var booleanTag8 = cOrientedTarget();
+		var booleanTag9 = cApprovedProof();
+		var booleanTag10 = cCouponText();
+		var booleanTag11 = cAmountCompare();
+		if(!booleanTag1||!booleanTag2||!booleanTag3||!booleanTag4||!booleanTag5||!booleanTag6||!booleanTag7||!booleanTag8||!booleanTag9||!booleanTag10||!booleanTag11){
+			return false;
+		}else{
+			postCouponData();
+		}
+	},
+	choose_supplier:function(){
+		layer.open({
+  			type: 1,
+		  	title: "选择供应商", //不显示标题
+			shade: 0.5,
+			btn: ['确定', '取消'],
+			offset:"100px",
+			area: ['800px', '500px'],
+			skin:"up_skin_class",
+  			content: $('.party_layer'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+  			cancel: function(){
+   		 	
+  			},
+  			yes:function(index, layero){
+  				if(vendorIdTemp==undefined || vendorNameTemp==undefined){
+  					layer.msg("请选择供应商！",{
+  						skin:"m_coupon_tip",
+  						offset:"300px",
+  						time:"1500"
+  					})
+  					return false;
+  				}
+  				couponPost.postData.vendorId=vendorIdTemp;
+  				couponPost.postData.vendorName=vendorNameTemp;
+  				couponPost.showData.vendorName=vendorNameTemp?vendorNameTemp:'不限';
+  				$("#cVendorError").hide();
+  				layer.close(index);
+  			}
+		});
+	},
+	choose_brand:function(){
+		layer.open({
+  			type: 1,
+		  	title: "选择制造商", //不显示标题
+			shade: 0.5,
+			btn: ['确定', '取消'],
+			offset:"100px",
+			area: ['800px', '500px'],
+			skin:"up_skin_class",
+  			content: $('.brand_layer'), //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+  			cancel: function(){
+   		 	
+  			},
+  			yes:function(index, layero){
+  				if(brandIdTemp==undefined || brandNameTemp==undefined){
+  					layer.msg("请选择制造商！",{
+  						skin:"m_coupon_tip",
+  						offset:"300px",
+  						time:"1500"
+  					})
+  					return false;
+  				}
+  				couponPost.postData.brandId=brandIdTemp;
+  				couponPost.postData.brandName=brandNameTemp;
+  				couponPost.showData.brandName=brandNameTemp?brandNameTemp:'不限';
+  				$("#cBrandError").hide();
+  				layer.close(index);
+  			}
+		});
+	}
+})
+
+//校验
+var cNameVerify = function(){
+	var cName = $.trim($("#cName").val());
+	if(cName!=''){
+		$("#cNameError").hide();
+		return true;	
+	}else{
+		$("#cNameError").text("代金券名称不能为空").css({
+			"display":"inline-block"
+		});
+		return false;
+	}
+}
+var cTotalVerify = function(){
+	var cTotal = $.trim($("#cTotal").val());
+	if(cTotal!='' && cTotal>0){
+		$("#cTotalError").hide();
+		return true;
+	}else if(cTotal!='' && cTotal<=0){
+		$("#cTotalError").text("发行量不能为零").css({
+			"display":"inline-block"
+		});
+		return false;
+	}else if(!cTotal){
+		$("#cTotalError").text("发行量不能为空").css({
+			"display":"inline-block"
+		});
+		return false;
+	}
+}
+var cValueVerify =  function(){
+	var cValue = $.trim($("#cValue").val());
+	if(cValue!=''){
+		$("#cValueError").hide();
+		return true;
+	}else{
+		$("#cValueError").text("面值不能为空").css({
+			"display":"inline-block"
+		});
+		return false;
+	}
+}
+
+var cLimitAmountVerify = function(){
+	var cValue = $.trim($("#cLimitAmount").val());
+	if(cValue!=''){
+		$("#cLimitAmountError").hide();
+		return true;
+	}else{
+		$("#cLimitAmountError").text("使用条件不能为空").css({
+			"display":"inline-block"
+		});
+		return false;
+	}
+}
+
+var effectTimeVerify = function(){
+	var sTag = $("#cEffectTimeType option:selected").val();
+	if("EXACT_DATE_ZONE"==sTag){
+		$("#cLimitMonthError").hide();
+		var beginTime = $.trim($("#applyBegin").val());
+		var endTime = $.trim($("#applyEnd").val());
+		if(!beginTime&&!endTime){
+			$("#cDateError").text("起始时间和结束时间不能为空").css({
+				"display":"inline-block"
+			});
+			return false;
+		}else if(!beginTime&&endTime){
+			$("#cDateError").text("起始时间不能为空").css({
+				"display":"inline-block"
+			});
+			return false;
+		}else if(beginTime&&!endTime){
+			$("#cDateError").text("结束时间不能为空").css({
+				"display":"inline-block"
+			});
+			return false;
+		}else{
+			$("#cDateError").hide();
+			return true;
+		}
+	}else if("FROM_GET_DATE"==sTag){
+		$("#cDateError").hide();
+		if($.trim($("#cLimitMonth").val())!=''){
+			$("#cLimitMonthError").hide();
+			return true;
+		}else{
+			$("#cLimitMonthError").text("有效时间不能为空").css({
+				"display":"inline-block"
+			});
+			return false;
+		}
+	}
+}
+var cVendorVerify = function(){	
+	if(couponPost.postData.vendorId =="" && couponPost.postData.vendorName =="" && $("#activeVendor").val() =="不限"){
+		$("#cVendorError").hide();
+		return true;
+	}else if(couponPost.postData.vendorId !=="" || couponPost.postData.vendorName !==""){
+		$("#cVendorError").hide();
+		return true;
+	}else if(couponPost.postData.vendorId =="" && couponPost.postData.vendorName ==""){
+		$("#cVendorError").text("请选择供应商").css({
+			"display":"inline-block"
+		});
+		return false;
+	}
+}
+var cBrandVerify = function(){
+	if(couponPost.postData.brandId =="" && couponPost.postData.brandName =="" && $("#activeBrand").val() =="不限"){
+		$("#cBrandError").hide();
+		return true;
+	}else if(couponPost.postData.brandId !=="" || couponPost.postData.brandName !==""){
+		$("#cBrandError").hide();
+		return true;
+	}else if(couponPost.postData.brandId =="" && couponPost.postData.brandName ==""){
+		$("#cBrandError").text("请选择制造商").css({
+			"display":"inline-block",
+		});
+		return false;
+	}
+}
+ var cOrientedTarget = function(){
+	 var checkArr = $("[name=orientedTarget]:checked");
+	 if(checkArr.length){
+		 return true;
+	 }else{
+		 $("#cOrientedError").text("请选择推广对象").css({
+				"display":"inline-block",
+			});
+			return false;
+		 
+	 }
+ }
+ var cApprovedProof = function(){
+	 if(couponPost.postData.approvedProof==""){
+		 $("#cApprovedProofError").text("请上传图片").css({
+				"display":"inline-block",
+			});
+			return false;
+	 }else{
+		 $("#cApprovedProofError").hide();
+			return true;
+	 }
+ }
+ var cCouponText = function(){
+	 if($.trim(couponPost.postData.couponText)==""){
+		 $("#cCouponTextError").text("请填写代金券备注").css({
+			 "display":"inline-block",
+		 })
+			return false;
+	 }else{
+		 $("#cCouponTextError").hide();
+			return true;
+	 }
+ }
+var cAmountCompare = function(){
+	var cValue = Number($.trim($("#cValue").val()));
+	var cLimitAmount = Number($.trim($("#cLimitAmount").val()));
+	if(cValue>cLimitAmount){
+		layer.msg("使用限额不能小于单张面值",{
+				skin:"m_coupon_tip",
+					offset:"300px",
+					time:"1500"
+				});
+		
+		return false;
+	}else{
+		return true;
+	}
+}
+var brandVm = avalon.define({
+    $id: "brandData",
+    datalist:[]   
+});
+
+var supplierVm = avalon.define({
+    $id: "supplierData",
+    supplierlist:[]
+});
+var getBrand = function(){
+	var brandUrl =ykyUrl.product +"/v1/products/brands";
+	$.aAjax({
+		url: brandUrl,
+		type:"GET",
+	    success: function(data) {
+	    	brandVm.datalist = data;
+	    },
+	    error:function(e){
+	    	console.log("系统错误，审批失败，请联系系统管理员："+e.responseText);
+	    }
+	});
+}
+var getSupplier = function(){
+	var supplierUrl =ykyUrl.party +"/v1/party/allparty";
+	var params = {
+		   "roleType": "SUPPLIER",
+		    "status": "PARTY_ENABLED"
+		}
+	$.aAjax({
+		url: supplierUrl,
+		type:"PUT",
+		data:JSON.stringify(params),
+		contentType:'application/json',
+		dataType:'json',
+	    success: function(data) {
+	    	supplierVm.supplierlist = data;
+	    },
+	    error:function(e){
+	    	console.log("系统错误，审批失败，请联系系统管理员："+e.responseText);
+	    }
+	});
+}
+var postCouponData = function(){
+	var postUrl =ykyUrl.pay +"/v1/coupons/addCoupon";
+	var params = couponPost.postData.$model;
+	if("EXACT_DATE_ZONE"==params.thruTypeId||"exact_date_zone"==params.thruTypeId){  //表示明确的有效时间区间
+		params.limitMonth ='';
+	}else if("FROM_GET_DATE"==params.thruTypeId||"from_get_date"==params.thruTypeId){  //表示从领用开始计算时间 ,
+		delete params.fromDate;
+		delete params.thruDate;
+	}
+	$.aAjax({
+		url: postUrl,
+		type:"POST",
+		data:JSON.stringify(params),
+		contentType:'application/json',
+		dataType:"json",
+	    success: function(data) {
+	    	if("200"==data.code){
+	    		window.location.href= thisPrefix+"/couponList.htm";
+	    	}
+	    },
+	    error:function(e){
+	    	console.log("系统错误，审批失败，请联系系统管理员："+e.responseText);
+	    }
+	});
+}
+$(function() {
+	$('#cType').selectmenu({
+		change:function(){
+			//to do
+			var thisValue = $(this).val();
+			couponPost.postData.couponCate = thisValue;
+			setGetMethod(thisValue);
+		},
+		close:function(){
+			
+		}
+	});
+	$('#cCurrency').selectmenu({
+		change:function(){
+			//to do
+			couponPost.postData.couponCurrency = $(this).val();
+		},
+		close:function(){
+			
+		}
+	});  
+	$("#cEffectTimeType").selectmenu({
+		change:function(){
+			//to do
+			couponPost.postData.thruTypeId = $(this).val();
+			effectTimeVerify();
+		},
+		close:function(){
+		}
+	});
+	$("[name=orientedTarget]").on("click",function(){
+		$("#cOrientedError").css("display","none");
+	})
+	$("#couponText").blur(function(){
+		if($.trim($(this)).val!==''){
+			$("#cCouponTextError").hide();
+		}
+	})
+	/*发行量只能收入数字*/
+	couponPost.$watch("postData.totalQty",function(a,b){
+	    /*console.log("totalQty","新值："+a,"旧值："+b);*/
+	    if(a!==b){
+	    	var temp = a;
+	    	couponPost.postData.totalQty= temp.replace(/\D/g,'');
+	    }
+	});
+
+	/*单张面值只能收入数字*/
+	couponPost.$watch("postData.unitAmount",function(a,b){
+	    /*console.log("totalQty","新值："+a,"旧值："+b);*/
+	    if(a!==b){
+	    	var temp = a;
+	    	couponPost.postData.unitAmount= temp.replace(/\D/g,'');
+	    }
+	});
+	/*限额只能输入数字*/
+	couponPost.$watch("postData.consumeLimitAmount",function(a,b){
+	    /*console.log("totalQty","新值："+a,"旧值："+b);*/
+	    if(a!==b){
+	    	var temp = a;
+	    	couponPost.postData.consumeLimitAmount= temp.replace(/\D/g,'');
+	    }
+	});
+	/*月份只能输入数字*/
+	couponPost.$watch("postData.limitMonth",function(a,b){
+	    /*console.log("totalQty","新值："+a,"旧值："+b);*/
+	    if(a!==b){
+	    	var temp = a;
+	    	couponPost.postData.limitMonth= temp.replace(/\D/g,'');
+	    }
+	});
+	var setGetMethod =  function(cType){
+		if('PLATFORM_PROMO'==cType){
+			couponPost.postData.couponMethodType = 'FREE_WGET';
+			$("input[name='getMethod']").removeAttr("disabled");
+			$("#freeGet").click();
+			$("#exactSend").attr("disabled",true);
+		}else if('EXACT_PROMO'==cType){
+			couponPost.postData.couponMethodType = 'EXACT_SEND';
+			$("input[name='getMethod']").removeAttr("disabled");
+			$("#exactSend").click();
+			$("#freeGet").attr("disabled",true);
+		}else if('OFFLINE_PROMO'==cType){
+			couponPost.postData.couponMethodType = 'EXACT_SEND';
+			$("input[name='getMethod']").removeAttr("disabled");
+			$("#exactSend").click();
+			$("#freeGet").attr("disabled",true);
+		}
+	}
+	$(document).on("click", "input[name='orientedTarget']", function(event) {
+		var orientedTarget =[];
+		$("input[name='orientedTarget']:checked").each(function(){//遍历每一个名字为interest的复选框，其中选中的执行函数      
+			orientedTarget.push($(this).val());//将选中的值添加到数组orientedTarget中      
+        });  
+		if(orientedTarget.length==1){
+			couponPost.postData.couponPartyType = orientedTarget[0];
+		}else if(orientedTarget.length==2){
+			couponPost.postData.couponPartyType = 'UNLIMIT';
+		}else if(orientedTarget==0){
+			layer.msg("请至少选中一种推广对象", {time:1000,icon:7});
+		}
+		
+	});
+	/*监控供应商，制造商选择*/
+	$(document).on("click", "input[name='vendorName']", function(event) {
+		
+		vendorIdTemp = $("input[name='vendorName']:checked").val();
+		vendorNameTemp = $("input[name='vendorName']:checked").data("vendorname");
+	});
+	$(document).on("click", "input[name='brandName']", function(event) {
+		brandIdTemp = $("input[name='brandName']:checked").val();
+		brandNameTemp = $("input[name='brandName']:checked").data("brandname");
+	});
+	$("#applyBegin").on("click",function(){
+	    laydate(start);
+	});
+	$(".cc1").on("click",function(){
+	    laydate(start);
+	});
+	$("#applyEnd").on("click",function(){
+	    laydate(end);
+	});
+	$(".cc2").on("click",function(){
+	    laydate(end);
+	});
+	 var start = {
+	        elem: '#applyBegin',
+	        format: 'YYYY-MM-DD',
+	       // min: laydate.now(),    //设定最小日期为当前日期
+	        istime: false,    //是否显示时间
+	        istoday: false,
+	        isclear: false,   //是否显示清空
+	        //选择好日期的回调
+	        choose: function(dates){ 
+	            $(this.elem).trigger("blur");
+	            var startTime = $('#applyBegin').val();
+	       	    var applyEnd = $('#applyEnd').val();
+	       	    var arr1 = startTime.split('-');
+	       	    var sdate=new Date(arr1[0],parseInt(arr1[1]-1),arr1[2]);
+	       	    var arr2 = applyEnd.split('-');
+	       	    var edate=new Date(arr2[0],parseInt(arr2[1]-1),arr2[2]);
+	       	    if(sdate > edate){
+	       			layer.tips('开始时间不能大于结束时间', '#applyBegin',{
+	       				tips: 1,
+	     				time: 1000,
+	       			});
+	       			$('#applyBegin').val('');
+	       		};
+	        }
+	    };
+	 var end = {
+	      elem: '#applyEnd',
+	      format: 'YYYY-MM-DD',
+	      min: laydate.now(),    //设定最小日期为当前日期
+	      istime: false,    //是否显示时间
+	      istoday: false,
+	      isclear: false,   //是否显示清空
+	      //选择好日期的回调
+	      choose: function(dates){ 
+	          $(this.elem).trigger("blur");
+	          var startTime = $('#applyBegin').val();
+	     	  var applyEnd = $('#applyEnd').val();
+	     	  var arr1 = startTime.split('-');
+	     	  var sdate=new Date(arr1[0],parseInt(arr1[1]-1),arr1[2]);
+	     	  var arr2 = applyEnd.split('-');
+	     	  var edate=new Date(arr2[0],parseInt(arr2[1]-1),arr2[2]);
+	     	  var today=new Date();
+	     	  if(sdate > edate){
+	     			layer.tips('开始时间不能大于结束时间', '#applyEnd',{
+	     				tips: 1,
+	     				time: 1000,
+	     			});
+	     			$('#applyEnd').val('');
+	     		};
+	     	 if(edate<laydate.now(-1)){
+	     		layer.tips('结束时间不能小于当前时间', '#applyEnd',{
+     				tips: 1,
+     				time: 1000,
+     			});
+     			$('#applyEnd').val('');
+	     	 }	
+	      }
+	 };
+	 
+	 $('#applyBegin').on('blur',function(){
+		    var startTime = $('#applyBegin').val();
+		    var applyEnd = $('#applyEnd').val();
+		    var arr1 = startTime.split('-');
+		    var sdate=new Date(arr1[0],parseInt(arr1[1]-1),arr1[2]);
+		    var arr2 = applyEnd.split('-');
+		    var edate=new Date(arr2[0],parseInt(arr2[1]-1),arr2[2]);
+		    if(sdate > edate){
+				layer.tips('开始时间不能大于结束时间', '#applyBegin',{
+					tips: 1,
+					time: 1000,
+				});
+				$('#applyBegin').val('');
+			};
+			$("#search .g6").find('.cr').removeClass('cr');
+			$("#showColor").val('');
+	 });
+	 
+	 $('#applyEnd').on('blur',function(){
+		  var startTime = $('#applyBegin').val();
+		  var applyEnd = $('#applyEnd').val();
+		  var arr1 = startTime.split('-');
+		  var sdate=new Date(arr1[0],parseInt(arr1[1]-1),arr1[2]);
+		  var arr2 = applyEnd.split('-');
+		  var edate=new Date(arr2[0],parseInt(arr2[1]-1),arr2[2]);
+		  if(sdate > edate){
+				layer.tips('开始时间不能大于结束时间', '#applyEnd',{
+					tips: 1,
+					time: 1000,
+				});
+				$('#applyEnd').val('');
+			};
+			$("#search .g6").find('.cr').removeClass('cr');
+			$("#showColor").val('');
+	 });
+	 /* laydate call */	
+	 
+	 var imageUrl = "";
+	 var uploader = createUploader("upBtn", 4, "minIMG", "maxIMG");
+	 uploader.init();
+	 getSupplier();
+	 getBrand();
+	/* getBrand();*/
+});

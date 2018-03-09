@@ -1,0 +1,76 @@
+var sunrayActive = {
+		bannerUrl: ''
+};
+
+//文件上传	
+sunrayActive.fileUpInit = function(obj) {
+	var uploader = createUploader({
+		buttonId: obj.buttonId, 
+		uploadType: obj.uploadType,
+		url:  ykyUrl.webres,
+		types: obj.types || "jpg,jpeg,gif,png",
+		fileSize: obj.fileSize || "10mb",
+		isImage: true, 
+		init:{
+			FileUploaded : function() {
+				layer.close(index);
+				obj.FileUploaded && obj.FileUploaded();
+			}
+		}
+	}); 
+
+	uploader.init();
+}
+
+//上传banner
+sunrayActive.uploadBanner = function() {
+		
+	$('.panasonic-active .top_bg').on({
+		'mouseover': function() {
+			$(this).find('.floatlayer').show();
+			$(this).find('.btn-upload').show();
+		},
+		'mouseout': function() {
+			$(this).find('.floatlayer').hide();
+			$(this).find('.btn-upload').hide();
+		}
+	})
+	
+	this.fileUpInit({
+		buttonId: 'bannerUpload',
+		uploadType: 'productUpload.activityProductsUpload',
+		types: 'jpg,jpeg,gif,png',
+		FileUploaded: function(up, file, info) {
+			sunrayActive.bannerUrl = _fileUrl;
+			
+			/*banner替换*/
+			$('.panasonic-active .top_bg').css('background-image', 'url(' + _fileUrl + ')');
+			
+		}
+	})
+	
+}
+
+//广告文字
+sunrayActive.adText = function() {
+	
+	$('#adText .editTips').on('click', function(e) {
+		e.stopPropagation();
+	})
+	
+	$('#adText').focus();
+	
+}
+
+
+
+
+$(function() {
+	
+	//banner
+	sunrayActive.uploadBanner();
+	
+	//广告文字
+	sunrayActive.adText();
+	
+})

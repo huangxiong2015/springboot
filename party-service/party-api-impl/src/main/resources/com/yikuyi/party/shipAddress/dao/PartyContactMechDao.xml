@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yikuyi.party.shipAddress.dao.PartyContactMechDao">
+	<resultMap id="BaseResultMap"
+		type="com.yikuyi.party.model.PartyContactMech">
+		<id column="PARTY_ID" property="partyId" jdbcType="VARCHAR" />
+		  <id column="CONTACT_MECH_ID" property="contactMech.id" jdbcType="VARCHAR" />
+		<id column="CONTACT_MECH_PURPOSE_TYPE_ID" property="purposeType"
+			jdbcType="VARCHAR" />
+		<!--  
+	 	<association property="contactMech"	javaType="com.yikuyi.party.contact.model.ContactMech">
+		        <id column="CONTACT_MECH_ID" property="id" jdbcType="VARCHAR" />
+				<association property="contactMechAttributes"
+					javaType="com.yikuyi.party.contact.model.ContactMechAttributes">
+					<association property="usedCurruncy"
+						javaType="com.yikuyi.party.contact.model.ContactMechAttribute">
+						<result column="ATTR_NAME" property="key" />
+						<result column="ATTR_VALUE" property="value" />
+					</association>
+					<association property="usdCompany"
+						javaType="com.yikuyi.party.contact.model.ContactMechAttribute">
+						<result column="COMPANY_ATTR_NAME" property="key" />
+						<result column="COMPANY_ATTR_VALUE" property="value" />
+					</association>
+				</association>	
+		</association>
+		-->
+	</resultMap>
+	
+	<!-- 查询单个地址信息 -->
+	<select id="selectPartyContactMechByIdAndType" resultMap="BaseResultMap">
+		SELECT
+		a.PARTY_ID,
+		a.CONTACT_MECH_ID,
+		a.CONTACT_MECH_PURPOSE_TYPE_ID,
+		b.`ATTR_NAME`,
+		b.`ATTR_VALUE`
+		FROM
+		`PARTY_CONTACT_MECH` a
+		LEFT JOIN `CONTACT_MECH_ATTRIBUTE` b
+		ON a.`CONTACT_MECH_ID`=b.`CONTACT_MECH_ID`
+		WHERE a.`THRU_DATE` IS NULL
+		<if test="partyId != null">
+			AND a.`PARTY_ID` = #{partyId,jdbcType=VARCHAR}
+		</if>
+		<if test="addressType != null">
+			AND a.`CONTACT_MECH_PURPOSE_TYPE_ID` =
+			#{addressType,jdbcType=VARCHAR}
+		</if>
+		<if test="contactMechId != null">
+			AND a.`CONTACT_MECH_ID` =
+			#{contactMechId,jdbcType=VARCHAR}
+		</if>
+		<if test="currency != null">
+		    AND b.`ATTR_NAME`='USED_CURRUNCY'
+			AND b.`ATTR_VALUE`=
+			#{currency,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<!-- 查询地址列表 -->
+	<select id="selectPartyContactMechByType" resultMap="BaseResultMap">
+		SELECT
+		a.PARTY_ID,
+		a.CONTACT_MECH_ID,
+		a.CONTACT_MECH_PURPOSE_TYPE_ID,
+		b.`ATTR_NAME`,
+		b.`ATTR_VALUE`
+		FROM
+		`PARTY_CONTACT_MECH` a
+		LEFT JOIN `CONTACT_MECH_ATTRIBUTE` b
+		ON a.`CONTACT_MECH_ID`=b.`CONTACT_MECH_ID`
+		WHERE 
+		(a.`THRU_DATE` > NOW() or a.THRU_DATE is null)
+		<if test="partyId != null">
+			AND a.`PARTY_ID` = #{partyId,jdbcType=VARCHAR}
+		</if>
+		<if test="addressType != null">
+			AND a.`CONTACT_MECH_PURPOSE_TYPE_ID` =
+			#{addressType,jdbcType=VARCHAR}
+		</if>
+		<if test="contactMechId != null">
+			AND a.`CONTACT_MECH_ID` =
+			#{contactMechId,jdbcType=VARCHAR}
+		</if>
+		<if test="currency != null">
+		    AND b.`ATTR_NAME`='USED_CURRUNCY'
+			AND b.`ATTR_VALUE`=
+			#{currency,jdbcType=VARCHAR}
+		</if>
+		 ORDER BY a.`FROM_DATE` DESC
+	</select>
+	
+	<!-- 查询SDK用户收货地址列表 -->
+	<select id="selectPartyContactMechByContactMechIds" resultMap="BaseResultMap" >
+		SELECT
+		a.PARTY_ID,
+		a.CONTACT_MECH_ID,
+		a.CONTACT_MECH_PURPOSE_TYPE_ID,
+		a.`FROM_DATE`
+		FROM
+		`PARTY_CONTACT_MECH` a
+		WHERE a.`CONTACT_MECH_PURPOSE_TYPE_ID` = 'SHIPPING_LOCATION' AND
+		(a.`THRU_DATE` > NOW() or a.THRU_DATE is null)
+		AND a.`CONTACT_MECH_ID` IN
+		<foreach collection="contactMechIds" item="contactMechId" index="index"  open="(" close=")" separator=",">
+            #{contactMechId}
+        </foreach>
+		 ORDER BY a.`FROM_DATE` DESC
+	</select>
+
+	<insert id="insert" parameterType="com.yikuyi.party.model.PartyContactMech">
+		insert into PARTY_CONTACT_MECH
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="partyId != null">
+				PARTY_ID,
+			</if>
+			<if test="contactMech.id != null">
+				CONTACT_MECH_ID,
+			</if>
+			<if test="purposeType != null">
+				CONTACT_MECH_PURPOSE_TYPE_ID,
+			</if>
+			<if test="fromDate != null">
+				FROM_DATE,
+			</if>
+			<if test="thruDate != null">
+				THRU_DATE,
+			</if>
+			<if test="creator != null">
+				CREATOR,
+			</if>
+			<if test="createdDate != null">
+				CREATED_DATE,
+			</if>
+			<if test="lastUpdateUser != null">
+				LAST_UPDATE_USER,
+			</if>
+			<if test="lastUpdateDate != null">
+				LAST_UPDATE_DATE,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="partyId != null">
+				#{partyId,jdbcType=VARCHAR},
+			</if>
+			<if test="contactMech.id != null">
+				#{contactMech.id,jdbcType=VARCHAR},
+			</if>
+			<if test="purposeType != null">
+				#{purposeType,jdbcType=VARCHAR},
+			</if>
+			<if test="fromDate != null">
+				#{fromDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="thruDate != null">
+				#{thruDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="creator != null">
+				#{creator,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDate != null">
+				#{createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastUpdateUser != null">
+				#{lastUpdateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null">
+				#{lastUpdateDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+
+
+	<select id="selectAddressTypeByContactMechId" resultType="java.lang.String">
+		SELECT
+		  CONTACT_MECH_PURPOSE_TYPE_ID
+		FROM
+		`PARTY_CONTACT_MECH` 
+		where PARTY_ID = #{partyId,jdbcType=VARCHAR}
+		and CONTACT_MECH_ID = #{contactMechId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateDueTime">
+		UPDATE
+		PARTY_CONTACT_MECH a
+		SET
+		a.`THRU_DATE` = NOW()
+		where PARTY_ID = #{partyId,jdbcType=VARCHAR}
+		<if test="contactMechId != null">
+			and a.CONTACT_MECH_ID = #{contactMechId,jdbcType=VARCHAR}
+		</if>
+		<if test="purposeType != null">
+			AND a.`CONTACT_MECH_PURPOSE_TYPE_ID` =#{purposeType,jdbcType=VARCHAR}
+		</if>
+		
+		
+		
+	</update>
+
+</mapper>

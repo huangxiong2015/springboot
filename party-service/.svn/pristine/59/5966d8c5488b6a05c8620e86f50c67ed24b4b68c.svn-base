@@ -1,0 +1,101 @@
+package com.yikuyi.party.customer.api.impl;
+
+import java.io.IOException;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yikuyi.party.PartyApplication;
+import com.yikuyi.party.contact.vo.MsgResultVo;
+import com.yikuyi.party.contact.vo.UserExtendVo;
+import com.yikuyi.party.contact.vo.UserVo;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = { PartyApplication.class })
+public class CustomerSummeryResourceTest {
+	
+	@Autowired
+	private TestRestTemplate restTemplate; // = new TestRestTemplate();	
+	
+	@LocalServerPort
+	private int port;
+	
+	private String host;
+	
+	
+	@Before
+	public void setUpBefore() throws Exception {
+		this.host = "http://localhost" + ":" + this.port;
+		
+		RestTemplate rt = this.restTemplate.getRestTemplate();
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		ObjectMapper om = new ObjectMapper();
+		om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		converter.setObjectMapper(om);
+		rt.setMessageConverters(Arrays.asList(new HttpMessageConverter[]{converter}));
+		rt.setRequestFactory(new SimpleClientHttpRequestFactory() {
+			@Override
+        	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+        		ClientHttpRequest request = super.createRequest(uri, httpMethod);
+        		HttpHeaders header = request.getHeaders();
+        		header.add("Authorization", "Basic " + Base64Utils.encodeToString(("admin"+":"+"9999999901").getBytes()));
+        		return request;
+        	}
+		});
+	}
+	
+//	@Test
+//	public void accountSummaryTest(){
+//		String url = host+"v1/customersummery/summary";
+//		ResponseEntity<UserExtendVo> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<UserExtendVo>(){});
+//		response.getBody();
+//	}
+	
+	@Test
+	public void changePasswordTest(){
+		String url = host + "v1/customersummery/password";
+		UserVo userVo = new UserVo();
+		userVo.setPassword("123456");
+		userVo.setNewPassword("123456");
+		HttpEntity<UserVo> entity = new HttpEntity<UserVo>(userVo);
+		ResponseEntity<MsgResultVo> response = restTemplate.exchange(url, HttpMethod.PUT, entity, new ParameterizedTypeReference<MsgResultVo>(){});
+		response.getBody();
+	}
+	
+	@Test
+	public void checkedOldPwdTest(){
+		String url = host + "v1/customersummery/password/checked?password='123456'";
+		ResponseEntity<MsgResultVo> response = restTemplate.exchange(url, HttpMethod.PUT, null, new ParameterizedTypeReference<MsgResultVo>(){});
+		response.getBody();
+	}
+	
+	@Test
+	public void getUserLoginInfoTest(){
+		String url = host + "v1/customersummery";
+		ResponseEntity<UserExtendVo> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<UserExtendVo>(){});
+		response.getBody();
+	}
+
+}

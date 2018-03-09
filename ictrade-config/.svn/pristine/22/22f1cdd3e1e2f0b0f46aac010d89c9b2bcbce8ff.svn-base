@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+	default-lazy-init="false">
+	<!-- MQ topic配置，应用中使用的topic名 -->
+	<bean id="simleMailTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.simleMailTopic}"/>
+	</bean>
+	<bean id="leadInStrockTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.leadInStrockTopic}"/>
+	</bean>
+	
+	<bean id="syncStockFromItemTopicName" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="${mq.topic.syncStockFromItemTopic}"/>
+	</bean>
+	<bean id="syncRequireFromItemTopicName" class="java.lang.String">
+	    <constructor-arg type="java.lang.String" value="${mq.topic.syncRequireFromItemTopic}"/>
+	</bean>	
+	<bean id="ehCacheTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.ehCacheTopic}"/>
+	</bean>
+	<bean id="leadInMaterialItemTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.leadInMaterialItemTopic}"/>
+	</bean>
+	<bean id="SyncStrockTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.syncStockTopic}"/>
+	</bean>
+	<bean id="SyncStrockSubTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.syncStockSubTopic}"/>
+	</bean>
+	<bean id="createYkycodeTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.createYkycodeTopic}"/>
+	</bean>
+	<bean id="pushMsgTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.pushMsgTopic}"/>
+	</bean>
+	<bean id="recommendNewStocksTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.recommendNewStocksTopic}"/>
+	</bean>
+	<bean id="inquireDistributionTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.inquireDistributionTopic}"/>
+	</bean>
+	<bean id="recommendWaresCacheTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.recommendWaresCacheTopic}"/>
+	</bean>
+	<bean id="recommendGoodsCacheTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.recommendGoodsCacheTopic}"/>
+	</bean>
+	<bean id="topTenNewGoodsCacheTopicName" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.topTenNewGoodsCacheTopicName}"/>
+	</bean>	
+	
+	<!-- 系统配置，topic映射配置，向上边所设topic发送的信息，实际上会发送到下边所配置的映射topic中 -->
+	<bean id="originalTopicMessage" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="${mq.topic.target.original.MESSAGES}"/>
+	</bean>
+	<bean id="originalTopicProduct" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="${mq.topic.target.original.PRODUCTS}"/>
+	</bean>
+	<bean id="originalTopicOrderPayment" class="java.lang.String">
+		<constructor-arg type="java.lang.String" value="${mq.topic.target.original.ORDER_PAY}"/>
+	</bean>
+	<bean id="originalTopicDiscard" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.target.original.SYSTEM}"/>
+	</bean>
+	<bean id="originalTopicSystem" class="java.lang.String">
+	  <constructor-arg type="java.lang.String" value="${mq.topic.target.original.SYSTEM}"/>
+	</bean>
+	<!-- mq服务器上所配置的topic也仅包括下边所设的映射到的topic -->
+	<!-- 系统中所有取消的topic，统一发送至TOPIC_DISCARD -->	
+	<util:map id="topicMQMappingMaps" key-type="java.lang.String" value-type="java.lang.String">
+		<entry key-ref="leadInStrockTopicName" value-ref="originalTopicDiscard"/>
+		<entry key-ref="SyncStrockTopicName" value-ref="originalTopicDiscard"/>
+		<entry key-ref="SyncStrockSubTopicName" value-ref="originalTopicDiscard"/>
+		<entry key-ref="leadInMaterialItemTopicName" value-ref="originalTopicDiscard"/>
+		<entry key-ref="createYkycodeTopicName" value-ref="originalTopicDiscard"/>
+		<entry key-ref="syncStockFromItemTopicName" value-ref="originalTopicDiscard"/>
+		<entry key-ref="syncRequireFromItemTopicName" value-ref="originalTopicDiscard"/>
+		<entry key-ref="simleMailTopicName" value-ref="originalTopicMessage"/>
+		<entry key-ref="pushMsgTopicName" value-ref="originalTopicMessage"/>
+		<entry key-ref="ehCacheTopicName" value-ref="originalTopicMessage"/>
+		<entry key-ref="recommendWaresCacheTopicName" value-ref="originalTopicMessage"/>
+		<entry key-ref="recommendNewStocksTopicName" value-ref="originalTopicMessage"/>
+		<entry key-ref="recommendGoodsCacheTopicName" value-ref="originalTopicMessage"/>
+		<entry key-ref="topTenNewGoodsCacheTopicName" value-ref="originalTopicMessage"/>
+		<entry key-ref="inquireDistributionTopicName" value-ref="originalTopicDiscard"/>
+	</util:map>
+	<bean id="mqTopicMappings" class="com.ykyframework.mqservice.MQTopicMapping">
+		<constructor-arg ref="topicMQMappingMaps"/>
+	</bean>
+	<bean abstract="true" id="mappedMQSender">
+		<property name="topicMapping" ref="mqTopicMappings" />
+	</bean>
+	<beans profile="dev">
+		<bean id="rocketMQSender" parent="mappedMQSender"  class="com.ykyframework.mqservice.sender.ZeroMQSender" init-method="init" destroy-method="destroy"/>
+	</beans>
+	<beans profile="sit,sit1,uat">
+		<bean id="mqsendprops" abstract="true" parent="mappedMQSender">
+			<property name="namesrvAddr" value="${mq.namesrvAddr}"/>
+		</bean>
+		<bean id="rocketMQSender"  parent="mqsendprops" class="com.ykyframework.mqservice.sender.RocketMQSender" init-method="init" destroy-method="destroy">
+			<property name="producerGroup" value="YKY_MsgSender_Prod_Group"/>
+		</bean>
+	</beans>
+	<beans profile="hz-uat">		
+		<bean id="rocketMQSender" parent="mappedMQSender" class="com.ykyframework.mqservice.sender.AliyunMQSender" init-method="init" destroy-method="destroy">
+			<property name="producerId" value="PID_ICTRADE_PRODUCER_HZ_UAT"/>
+			<property name="accessKey" value="wiPMJzbY8uCw5f5K" />
+			<property name="secretKey" value="l0DLG6da2sTyv4K86EYKPWD3cZCK38" />
+		</bean>
+	</beans>
+	<beans profile="prod">		
+		<bean id="rocketMQSender" parent="mappedMQSender" class="com.ykyframework.mqservice.sender.AliyunMQSender" init-method="init" destroy-method="destroy">
+			<property name="producerId" value="PID_ICTRADE_PRODUCER_PROD"/>
+			<property name="accessKey" value="LTAIpr3XzuahR8b4" />
+			<property name="secretKey" value="iqsxAMEwCol9xkhb8s1uzVgbJ8o6DA" />
+		</bean>
+	</beans>
+</beans>

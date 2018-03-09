@@ -1,0 +1,157 @@
+/*
+ * Created: 2017年1月11日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2017 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+package com.yikuyi.party.customer.api;
+
+import java.util.List;
+
+import com.github.pagehelper.PageInfo;
+import com.yikuyi.party.contact.vo.UserExtendVo;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.login.model.UserLogin;
+import com.yikuyi.party.person.model.Person;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+/**
+ * 用户信息接口
+ * 
+ * @author helinmei
+ *
+ */
+public interface ICustomerResource {
+
+	/**
+	 * 基本信息带出信息
+	 * 
+	 * @param id
+	 * @return
+	 * @since 2016年1月11日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "查询基本信息", notes = "查询基本信息", response = UserExtendVo.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public UserExtendVo getBaseInfoDetail(@ApiParam(value = "用户登录id", required = true) String id,
+			@ApiParam(value = "个人账号", required = false) String loginId);
+
+	/**
+	 * 根据状态查询用户
+	 * 
+	 * @param relationSratus
+	 * @return
+	 * @since 2017年2月15日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value = "根据状态查询用户", notes = "根据状态查询用户", response = UserVo.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public List<UserVo> getPersons(@ApiParam(value = "用户状态", required = false) Person.RelationSratus relationSratus);
+
+	/**
+	 * @param
+	 * @since 2016年1月11日
+	 * @author zr.helinmei@yikuyi.com
+	 */
+	@ApiOperation(value = "保存基本信息", notes = "保存用户信息", response = UserExtendVo.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public void save(@ApiParam(value = "用户信息json", required = true) UserExtendVo userExtendVo);
+
+	/**
+	 * 更新用户信息
+	 * 
+	 * @param userInfoVo
+	 * @since 2017年2月14日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value = "更新用户信息", notes = "更新用户信息", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public void update(@ApiParam(value = "用户信息", required = true) UserExtendVo userExtendVo);
+
+	@ApiOperation(value = "根据用户名称查询用户列表", notes = "根据用户名称查询用户列表", response = UserVo.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public List<UserVo> getUserByName(@ApiParam(value = "用户名称", required = false) String username);
+
+	@ApiOperation(value = "根据用户名称精确查询用户列表", notes = "根据用户名称精确查询用户列表", response = UserVo.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public UserVo getUsersByName(@ApiParam(value = "用户名称", required = false) String username);
+
+	/**
+	 * 更新用户信息
+	 * 
+	 * @param userInfoVo
+	 * @since 2017年2月14日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value = "根据用户Id更新用户状态信息", notes = "根据用户Id更新用户状态信息", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public void updateById(@ApiParam(value = "用户id", required = true) String id,
+			@ApiParam(value = "用户状态", required = true) Person.RelationSratus relationSratus);
+
+	/**
+	 * 获取登陆人资料完整度信息
+	 * 
+	 * @return
+	 * @since 2017年2月9日
+	 * @author zr.aoxianbing@yikuyi.com
+	 */
+	@ApiOperation(value = "获取登陆人资料完整度信息", notes = "获取登陆人资料完整度信息", response = UserExtendVo.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public UserExtendVo getInfoLevel();
+
+	/**
+	 * 后台查询个人用户列表
+	 * 
+	 * @param phone
+	 * @param mail
+	 * @param name
+	 * @param status
+	 * @param registerStart
+	 * @param registerEnd
+	 * @param lastLoginStart
+	 * @param lastLoginEnd
+	 * @param page
+	 * @param size
+	 * @since 2017年1月12日
+	 * @author gongtianyu@yikuyi.com
+	 */
+	@ApiOperation(value = "保存基本信息", notes = "保存用户信息", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public PageInfo<UserExtendVo> getUserInfoList(@ApiParam(value = "注册手机", required = false) String phone,
+			@ApiParam(value = "邮箱", required = false) String mail,
+			@ApiParam(value = "姓名", required = false) String name,
+			@ApiParam(value = "状态", required = false) String status,
+			@ApiParam(value = "注册时间开始", required = false) String registerStart,
+			@ApiParam(value = "注册时间结束", required = false) String registerEnd,
+			@ApiParam(value = "最后登录时间开始", required = false) String lastLoginStart,
+			@ApiParam(value = "最后登录时间结束", required = false) String lastLoginEnd,
+			@ApiParam(value = "page", required = false, defaultValue = "1") int page,
+			@ApiParam(value = "size", required = false, defaultValue = "10") int size);
+
+	@ApiOperation(value = "根据用户ID查询用户姓名", notes = "根据用户ID查询用户姓名", response = Person.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public Person findPersonInfoByPartyId(@ApiParam(value = "用户ID", required = true) String userId);
+
+	@ApiOperation(value = "根据用户partyID查询用户loginId", notes = "根据用户partyID查询用户loginId", response = UserLogin.class)
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "请求参数不正确", response = Void.class),
+			@ApiResponse(code = 404, message = "访问的页面不存在", response = Void.class) })
+	public UserLogin findUserLogin(@ApiParam(value = "用户partyID", required = true) String partyId);
+}

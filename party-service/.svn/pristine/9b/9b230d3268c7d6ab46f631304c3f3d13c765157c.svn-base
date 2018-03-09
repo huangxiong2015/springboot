@@ -1,0 +1,198 @@
+/*
+ * Created: 2016年12月9日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2016 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+/**
+ * 
+ */
+package com.yikuyi.party.vendors.api;
+
+import java.io.IOException;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageInfo;
+import com.yikuyi.party.PartyApplication;
+import com.yikuyi.party.contact.vo.MsgResultVo;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.model.PartyRelationship;
+import com.yikuyi.party.vo.FacilityVo;
+import com.yikuyi.party.vo.SupplierVo;
+import com.yikuyi.party.vo.VendorVo;
+
+/**
+ * 
+ * @author zr.shuzuo@yikuyi.com
+ * @version 1.0.0
+ */
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = { PartyApplication.class })
+public class VendorsResourceTest {
+
+	@Autowired
+	private TestRestTemplate restTemplate;
+
+	@LocalServerPort
+	private int port;
+
+	private String host;
+
+	/**
+	 * @throws java.lang.Exception
+	 * @since 2016年12月9日
+	 * @author liudian@yikuyi.com
+	 */
+	@Before
+	public void setUpBefore() throws Exception {
+		this.host = "http://localhost" + ":" + this.port;
+
+		RestTemplate rt = this.restTemplate.getRestTemplate();
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		ObjectMapper om = new ObjectMapper();
+		om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		converter.setObjectMapper(om);
+		rt.setMessageConverters(Arrays.asList(new HttpMessageConverter[] { converter }));
+		rt.setRequestFactory(new SimpleClientHttpRequestFactory() {
+			@Override
+			public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+				ClientHttpRequest request = super.createRequest(uri, httpMethod);
+				HttpHeaders header = request.getHeaders();
+				header.add("Authorization",
+						"Basic " + Base64Utils.encodeToString(("admin" + ":" + "9999999901").getBytes()));
+				return request;
+			}
+		});
+	}
+
+	@Test
+	public void testGetPartyList() {
+		ResponseEntity<MsgResultVo> responseEntity = restTemplate.exchange(host + "/v1/vendors", HttpMethod.GET, null,
+				new ParameterizedTypeReference<MsgResultVo>() {
+				});
+		Assert.assertNotNull(responseEntity.getBody());
+	}
+
+	@Test
+	public void testGetPartyByPartyId() {
+		ResponseEntity<MsgResultVo> responseEntity = restTemplate.exchange(host + "/v1/vendors/digikey",
+				HttpMethod.GET, null, new ParameterizedTypeReference<MsgResultVo>() {
+				});
+		Assert.assertNull(responseEntity.getBody().getValue());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testGetVendorDetail() {
+		ResponseEntity<MsgResultVo> responseEntity = restTemplate.exchange(host + "/v1/vendors/detail?id=digikey",
+				HttpMethod.GET, null, new ParameterizedTypeReference<MsgResultVo>() {
+				});
+		Assert.assertEquals("digikey", ((Map<String, Object>) responseEntity.getBody().getValue()).get("id"));
+	}
+
+	@Test
+	public void testSave() {
+		VendorVo vo = new VendorVo();
+		vo.setIsShowName("Y");
+		vo.setVendorName("sz_junit_save");
+		vo.setLogoUrl("www.test-log.com");
+		List<FacilityVo> fList = new ArrayList<>();
+		FacilityVo fvo1 = new FacilityVo();
+		fvo1.setName("sz_junit_save_ffacility");
+		fList.add(fvo1);
+		vo.setItem(fList);
+		HttpEntity<VendorVo> entity = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "/v1/vendors", HttpMethod.POST, entity,
+				new ParameterizedTypeReference<MsgResultVo>() {
+				});
+	}
+
+	@Test
+	public void testUpdate() {
+		VendorVo vo = new VendorVo();
+		vo.setIsShowName("Y");
+		vo.setVendorName("sz_junit_save");
+		vo.setLogoUrl("www.test-log.com");
+		List<FacilityVo> fList = new ArrayList<>();
+		FacilityVo fvo1 = new FacilityVo();
+		fvo1.setName("sz_junit_save_ffacility");
+		fList.add(fvo1);
+		vo.setItem(fList);
+		HttpEntity<VendorVo> entity = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "/v1/vendors", HttpMethod.PUT, entity,
+				new ParameterizedTypeReference<MsgResultVo>() {
+				});
+		fList.get(0).setName("testa_add"+new Random().nextInt(100));
+		HttpEntity<VendorVo> entity2 = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "/v1/vendors", HttpMethod.PUT, entity2,
+				new ParameterizedTypeReference<MsgResultVo>() {
+				});
+	}
+
+	@Test
+	public void testDel() {
+		List<String> fList = new ArrayList<>();
+		fList.add("testid");
+		HttpEntity<List<String>> entity = new HttpEntity<>(fList);
+		restTemplate.exchange(host + "/v1/vendors/del", HttpMethod.PUT, entity,
+				new ParameterizedTypeReference<MsgResultVo>() {
+				});
+	}
+
+	@Test
+	public void testSaveSupplierShare() {
+		UserVo vo = new UserVo();
+		vo.setId("testSharId");
+		HttpEntity<UserVo> entity = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "/v1/vendors/testShar/save", HttpMethod.POST, entity,
+				new ParameterizedTypeReference<MsgResultVo>() {
+				});
+	}
+
+	@Test
+	public void testFindSupplierShare() {
+		restTemplate.exchange(host + "/v1/vendors/testShar/relation", HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<PartyRelationship>>() {
+				});
+	}
+	
+	@Test
+	public void testGetVendorList() {
+		restTemplate.exchange(host + "/v1/vendors/list?id=9999999901", HttpMethod.GET, null,
+				new ParameterizedTypeReference<PageInfo<SupplierVo>>() {
+				});
+	}
+}

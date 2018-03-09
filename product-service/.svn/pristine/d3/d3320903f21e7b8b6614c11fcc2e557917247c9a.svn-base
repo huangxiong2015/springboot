@@ -1,0 +1,168 @@
+package com.yikuyi.product.specialoffer.manager;
+
+import com.yikuyi.specialoffer.model.SpecialOfferRule;
+import org.apache.commons.collections.CollectionUtils;
+import org.assertj.core.util.Lists;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.List;
+
+@Service
+public class SpecialOfferCacheManager {
+
+    /**
+     * 特殊供应商商品id缓存名
+     */
+    private static final String SPECIAL_OFFER_PRODUCT_ID_CACHE_NAME = "specialOfferProductIdCacheName";
+
+    /**
+     * 特殊供应商产品规则缓存名
+     */
+    private static final String SPECIAL_OFFER_PRODUCT_RULE_CACHE_NAME = "specialOfferProductRuleCacheName";
+
+    /**
+     * 特殊供应商文本名缓存
+     */
+
+    private static final String SPECIAL_OFFER_TEXT_CACHE_NAME = "specialOfferTextCacheName";
+
+    @Resource(name = "redisTemplate")
+    private HashOperations<String,String,List<String>> specialOfferProductIdCacheOps;
+
+    @Resource(name = "redisTemplate")
+    private HashOperations<String,String,List<String>> specialOfferProductRuleCacheOps;
+
+    @Resource(name = "redisTemplate")
+    private HashOperations<String,String,String> specialOfferTextCacheOps;
+
+    /**
+     * 初始化规则缓存
+     * @param specialOfferRule
+     * @param vendorId
+     * @param ruleId
+     */
+    public void initSpecialOfferProductRuleCache(SpecialOfferRule specialOfferRule, String vendorId, String ruleId){
+        List<String> keys = this.getProductRuleKeys(specialOfferRule,vendorId,ruleId);
+        if(CollectionUtils.isEmpty(keys)){
+        	return;
+        }
+        keys.forEach(k -> {
+            //设置缓存
+            this.setSpecialOfferProductRuleCache(k,ruleId);
+        });
+    }
+
+    /**
+     * 获取keys
+     * @param specialOfferRule
+     * @param vendorId
+     * @param ruleId
+     * @return
+     */
+    private List<String> getProductRuleKeys(SpecialOfferRule specialOfferRule, String vendorId, String ruleId){
+        List<String> keys = Lists.newArrayList();
+        List<String > mfrIds = Arrays.asList(specialOfferRule.getMfrIds().split(","));
+        List<String > sourceIds = Arrays.asList(specialOfferRule.getSourceIds().split(","));
+        List<String > cateIds = Arrays.asList(specialOfferRule.getCatIds().split(","));
+        //key规则：供应商Id-品牌ID-仓库id-大类Id/小类Id/次小类Id
+        for(String mfrId:mfrIds){
+            StringBuilder sbMfr = new StringBuilder(vendorId);
+            sbMfr.append("-").append(mfrId);
+            for(String sourceId:sourceIds){
+                StringBuilder sbSource = new StringBuilder(sbMfr);
+                sbSource.append("-").append(sourceId);
+                for(String cateId:cateIds){
+                    StringBuilder sbCate = new StringBuilder(sbSource);
+                    keys.add(sbCate.append("-").append(cateId).toString());
+                }
+            }
+        }
+        return keys;
+    }
+
+    /**
+     * 删除规则缓存
+     * @param specialOfferRule
+     * @param vendorId
+     * @param ruleId
+     */
+    public void deleteSpecialOfferProductRuleCache(SpecialOfferRule specialOfferRule, String vendorId, String ruleId){
+        List<String> keys = this.getProductRuleKeys(specialOfferRule,vendorId,ruleId);
+        if(CollectionUtils.isEmpty(keys)){
+        	return;
+        }
+        keys.forEach(k -> {
+            //设置缓存
+            this.deleteProductRuleCache(k,ruleId);
+        });
+    }
+
+    /**
+     * 初始化商品Id缓存
+     * @param productId
+     * @param ruleId
+     */
+    public void initSpecialOfferProductIdCache(String productId,String ruleId){
+        List<String> stringList = specialOfferProductIdCacheOps.get(SPECIAL_OFFER_PRODUCT_ID_CACHE_NAME,productId);
+        if(CollectionUtils.isEmpty(stringList)){
+        	stringList = Lists.newArrayList();
+        }
+        stringList.add(ruleId);
+        specialOfferProductIdCacheOps.put(SPECIAL_OFFER_PRODUCT_ID_CACHE_NAME,productId,stringList);
+    }
+
+    /**
+     * 设置规则缓存
+     * @param key //key规则：供应商Id-品牌ID-仓库id-大类Id/小类Id/次小类Id
+     * @param ruleId
+     */
+    private void setSpecialOfferProductRuleCache(String key,String ruleId){
+        List<String> stringList = specialOfferProductRuleCacheOps.get(SPECIAL_OFFER_PRODUCT_RULE_CACHE_NAME,key);
+        if(CollectionUtils.isEmpty(stringList)){
+        	stringList = Lists.newArrayList();
+        }
+        stringList.add(ruleId);
+        specialOfferProductRuleCacheOps.put(SPECIAL_OFFER_PRODUCT_RULE_CACHE_NAME,key,stringList);
+    }
+
+    /**
+     * 初始化特殊供应商文案文本名称
+     * @param key
+     * @param value
+     */
+    public void initSpecialOfferTextCache(String vendorId,String value){
+        specialOfferTextCacheOps.put(SPECIAL_OFFER_TEXT_CACHE_NAME,vendorId,value);
+    }
+
+
+    /**
+     * 删除商品Id缓存value=ruleId
+     * @param productId
+     * @param ruleId
+     */
+    public void deleteSpecialOfferProductIdCache(String productId,String ruleId){
+        List<String> stringList = specialOfferProductIdCacheOps.get(SPECIAL_OFFER_PRODUCT_ID_CACHE_NAME,productId);
+        if(CollectionUtils.isEmpty(stringList)){
+        	return;
+        }
+        stringList.remove(ruleId);
+        specialOfferProductIdCacheOps.put(SPECIAL_OFFER_PRODUCT_ID_CACHE_NAME,productId,stringList);
+    }
+
+    /**
+     * 删除规则缓存 value=ruleId
+     * @param key //key规则：供应商Id-品牌ID-仓库id-大类Id/小类Id/次小类Id
+     * @param ruleId
+     */
+    private void deleteProductRuleCache(String key,String ruleId){
+        List<String> stringList = specialOfferProductRuleCacheOps.get(SPECIAL_OFFER_PRODUCT_RULE_CACHE_NAME,key);
+        if(CollectionUtils.isEmpty(stringList)){
+        	return;
+        }
+        stringList.remove(ruleId);
+        specialOfferProductRuleCacheOps.put(SPECIAL_OFFER_PRODUCT_RULE_CACHE_NAME,key,stringList);
+    }
+}

@@ -1,0 +1,51 @@
+/*
+ * Created: 2017年3月17日
+ *
+ * Shenzhen Yikuyi Co., Ltd. All rights reserved. 
+ * Copyright (c) 2015-2017 
+ * License, Version 1.0. Published by Yikuyi IT department.
+ *
+ * For the convenience of communicating and reusing of codes,
+ * any java names, variables as well as comments should be written according to the regulations strictly.
+ */
+package com.yikuyi.party.audit.bll;
+
+import org.apache.ibatis.session.RowBounds;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.pagehelper.PageInfo;
+import com.yikuyi.party.audit.dao.AuditDao;
+import com.yikuyi.party.audit.model.Audit;
+import com.yikuyi.party.audit.vo.AuditVo;
+
+@Service
+@Transactional
+public class AuditManager {
+	
+	@Autowired
+	private AuditDao auditDao;
+	
+	/**
+	 * 插入审计日志
+	 * @param audit
+	 * @since 2017年3月17日
+	 * @author guowenyao@yikuyi.com
+	 */
+	public void insertAduit(Audit audit){
+		auditDao.insert(audit);
+	}
+
+	/**
+	 * 根据审计条件查询审计日志
+	 * @param audit
+	 * @param rowBounds
+	 * @return
+	 * @since 2017年3月17日
+	 * @author guowenyao@yikuyi.com
+	 */
+	public PageInfo<AuditVo> getAduitListByEntity(AuditVo audit,RowBounds rowBounds){
+		return new PageInfo<>(auditDao.getAuditListByEntity(audit, rowBounds));
+	}
+}

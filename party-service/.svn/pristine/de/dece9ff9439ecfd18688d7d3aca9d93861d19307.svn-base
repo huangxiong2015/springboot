@@ -1,0 +1,108 @@
+package com.yikuyi.party.group.model;
+
+
+import java.util.List;
+
+import com.yikuyi.basedata.facility.model.Facility;
+import com.ykyframework.model.AbstractEntity;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+/**
+ * 
+ * @author zr.aoxianbing@yikuyi.com
+ * @version 1.0.0
+ */
+@ApiModel("PartyGroup")
+public class PartyGroup extends AbstractEntity {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2701771302393355916L;
+	@ApiModelProperty(value = "组织名称")
+	private String groupName;
+	
+	@ApiModelProperty(value = "年营收规模")
+	private String description;
+	
+	@ApiModelProperty(value = "备注")
+	private String comments;
+	
+	@ApiModelProperty(value = "logo 图片地址")
+	private String logoImageUrl;
+	
+	@ApiModelProperty(value = "供应商仓库")
+	private List<Facility> facilitylist;
+	
+	@ApiModelProperty(value = "logo 图片地址小图")
+	private String logoImageUrlSmall;
+	
+	@ApiModelProperty(value = "激活状态")
+	private ActiveStatus activeStatus;
+	
+	
+	public ActiveStatus getActiveStatus() {
+		return activeStatus;
+	}
+	public void setActiveStatus(ActiveStatus activeStatus) {
+		this.activeStatus = activeStatus;
+	}
+	public enum ActiveStatus{
+		/**
+		 *  未激活
+		 */
+		PARTY_NOT_VERIFIED,
+	
+		/**
+		 *  待审核
+		 */
+		WAIT_APPROVE,
+		/**
+		 *  激活驳回
+		 */
+		REJECTED,
+		
+		/**
+		 *  已激活
+		 */
+		PARTY_VERIFIED
+	}
+	
+	public String getLogoImageUrlSmall() {
+		return logoImageUrlSmall;
+	}
+	public void setLogoImageUrlSmall(String logoImageUrlSmall) {
+		this.logoImageUrlSmall = logoImageUrlSmall;
+	}
+	public String getGroupName() {
+		return groupName;
+	}
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getComments() {
+		return comments;
+	}
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+	public String getLogoImageUrl() {
+		return logoImageUrl;
+	}
+	public void setLogoImageUrl(String logoImageUrl) {
+		this.logoImageUrl = logoImageUrl;
+	}
+	public List<Facility> getFacilitylist() {
+		return facilitylist;
+	}
+	public void setFacilitylist(List<Facility> facilitylist) {
+		this.facilitylist = facilitylist;
+	}
+}

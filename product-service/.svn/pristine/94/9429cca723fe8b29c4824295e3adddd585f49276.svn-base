@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>  
+		<!--当检测出未知列（或未知属性）时，如何处理，默认情况下没有任何提示，这在测试的时候很不方便，不容易找到错误。
+		NONE : 不做任何处理 (默认值)
+		WARNING : 警告日志形式的详细信息
+		FAILING : 映射失败，抛出异常和详细信息
+		-->
+		<!-- <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/> -->
+		
+		<!-- 设置超时时间，它决定驱动等待一个数据库响应的时间 -->  
+        <setting name="defaultStatementTimeout" value="30000" />  
+		
+		<!--设置查询返回值数量，可以被查询数值覆盖  -->
+		<setting name="defaultFetchSize" value="200"/>
+		
+		<!-- 允许在嵌套语句中使用分页-->
+		<!-- <setting name="safeRowBoundsEnabled" value="false"/> -->
+		
+		<!--是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN 到经典 Java 属性名 aColumn 的类似映射。-->
+		<!-- <setting name="mapUnderscoreToCamelCase" value="false"/> -->
+		
+		<!-- 当没有为参数提供特定的 JDBC 类型时，为空值指定 JDBC 类型。 某些驱动需要指定列的 JDBC 类型，多数情况直接用一般类型即可，比如 NULL、VARCHAR
+		OTHER。-->
+		<!-- <setting name="jdbcTypeForNull" value="OTHER"/> -->
+		 
+	 </settings>
+ 	<typeHandlers>
+		<typeHandler handler="com.ykyframework.ibatis.type.IntEnumTypeHandler" javaType="com.yikuyi.document.model.Document$CancelStatus" />
+		<typeHandler handler="com.ykyframework.ibatis.type.JsonTypeHandler" javaType="com.alibaba.fastjson.JSONObject" />
+	</typeHandlers> 
+	<plugins>
+		<!-- com.github.pagehelper为PageHelper类所在包名 -->
+		<plugin interceptor="com.github.pagehelper.PageHelper">
+			<property name="dialect" value="mysql" />
+			<!-- 该参数默认为false -->
+			<!-- 设置为true时，会将RowBounds第一个参数offset当成pageNum页码使用 -->
+			<!-- 和startPage中的pageNum效果一样 -->
+			<property name="offsetAsPageNum" value="false" />
+			<!-- 该参数默认为false -->
+			<!-- 设置为true时，使用RowBounds分页会进行count查询 -->
+			<property name="rowBoundsWithCount" value="true" />
+			<!-- 设置为true时，如果pageSize=0或者RowBounds.limit = 0就会查询出全部的结果 -->
+			<!-- （相当于没有执行分页查询，但是返回结果仍然是Page类型） -->
+			<property name="pageSizeZero" value="true" />
+			<!-- 3.3.0版本可用 - 分页参数合理化，默认false禁用 -->
+			<!-- 启用合理化时，如果pageNum<1会查询第一页，如果pageNum>pages会查询最后一页 -->
+			<!-- 禁用合理化时，如果pageNum<1或pageNum>pages会返回空数据 -->
+			<property name="reasonable" value="true" />
+			<!-- 3.5.0版本可用 - 为了支持startPage(Object params)方法 -->
+			<!-- 增加了一个`params`参数来配置参数映射，用于从Map或ServletRequest中取值 -->
+			<!-- 可以配置pageNum,pageSize,count,pageSizeZero,reasonable,不配置映射的用默认值 -->
+			<property name="params" value="pageNum=start;pageSize=limit;pageSizeZero=zero;reasonable=heli;count=contsql" />
+		</plugin>
+	</plugins>
+</configuration>

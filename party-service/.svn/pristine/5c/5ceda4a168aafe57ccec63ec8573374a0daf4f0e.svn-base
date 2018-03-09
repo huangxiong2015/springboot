@@ -1,0 +1,180 @@
+package com.yikuyi.party.dept.bll.api.impl;
+
+import java.io.IOException;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.Base64Utils;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageInfo;
+import com.yikuyi.party.PartyApplication;
+import com.yikuyi.party.contact.vo.UserManage;
+import com.yikuyi.party.vo.DeptVo;
+import com.yikuyi.party.vo.PartyVo;
+import com.yikuyi.party.vo.RoleVo;
+
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = { PartyApplication.class })
+public class DeptResourceTest {
+	
+	@Autowired
+	private TestRestTemplate restTemplate; // = new TestRestTemplate();	
+	
+	@LocalServerPort
+	private int port;
+	
+	private String host;
+
+	@Before
+	public void setUpBefore() throws Exception {
+		this.host = "http://localhost" + ":" + this.port;
+		
+		RestTemplate rt = this.restTemplate.getRestTemplate();
+		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+		ObjectMapper om = new ObjectMapper();
+		om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		converter.setObjectMapper(om);
+		rt.setMessageConverters(Arrays.asList(new HttpMessageConverter[]{converter}));
+		rt.setRequestFactory(new SimpleClientHttpRequestFactory() {
+			@Override
+        	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+        		ClientHttpRequest request = super.createRequest(uri, httpMethod);
+        		HttpHeaders header = request.getHeaders();
+        		header.add("Authorization", "Basic " + Base64Utils.encodeToString(("admin"+":"+"9999999901").getBytes()));
+        		return request;
+        	}
+		});
+	}
+	
+	
+	
+	/*@Test
+	public void findRoleVoByDeptIdTest(){			
+		String url = host+"v1/dept/findRoleVoByDeptId?deptId=1";
+		ResponseEntity<List<RoleVo>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<RoleVo>>(){});
+		response.getBody();
+	}
+	*/
+	
+	@Test
+	public void findCustomerByDeptIdTest(){			
+		String url = host+"v1/dept/findCustomerByDeptId?deptId=1&page=1&size=10";
+		ResponseEntity<PageInfo<UserManage>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<PageInfo<UserManage>>(){});
+		response.getBody();
+	}
+	
+	@Test
+	public void deptSaveTest(){
+		DeptVo vo = new DeptVo();
+		vo.setName("认证部");
+		vo.setParentId("99999999");
+		HttpEntity<DeptVo> entity = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "v1/dept", HttpMethod.POST, entity,
+				new ParameterizedTypeReference<List<PartyVo>>() {});
+	}
+	
+	@Test
+	public void deptUpdateTest(){
+		DeptVo vo = new DeptVo();
+		vo.setName("认证部");
+		vo.setId("10001");
+		vo.setParentId("99999999");
+		HttpEntity<DeptVo> entity = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "v1/dept", HttpMethod.PUT, entity,
+				new ParameterizedTypeReference<List<PartyVo>>() {});
+	}
+	
+	@Test
+	public void deptListTest(){
+		String url = host+"v1/dept/list";
+		ResponseEntity<List<DeptVo>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<DeptVo>>(){});
+		response.getBody();
+	}
+	
+	@Test
+	public void findSonDeptListTest(){
+		String url = host+"v1/dept/sonlist?parentId=1001";
+		ResponseEntity<List<DeptVo>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<DeptVo>>(){});
+		response.getBody();
+	}
+	
+	@Test
+	public void deptDetailTest(){
+		String url = host+"v1/dept/detail?partyId=863203580700524544";
+		ResponseEntity<DeptVo> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<DeptVo>(){});
+		response.getBody();
+	}
+
+	@Test
+	public void roleSaveTest(){
+		RoleVo vo = new RoleVo();
+		vo.setName("CMO");
+		List<DeptVo> deptList = new ArrayList<>();
+		DeptVo vo1 = new DeptVo();
+		vo1.setId("9999999901");
+		DeptVo vo2 = new DeptVo();
+		vo2.setId("9999999902");
+		deptList.add(vo1);
+		deptList.add(vo2);
+		vo.setDeptVoList(deptList);
+		HttpEntity<RoleVo> entity = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "v1/dept/role", HttpMethod.POST, entity,
+				new ParameterizedTypeReference<List<RoleVo>>() {});
+	}
+	
+	@Test
+	public void roleUpdateTest(){
+		RoleVo vo = new RoleVo();
+		vo.setName("CMO");
+		vo.setId("1001");
+		List<DeptVo> deptList = new ArrayList<>();
+		DeptVo vo1 = new DeptVo();
+		vo1.setId("9999999901");
+		DeptVo vo2 = new DeptVo();
+		vo2.setId("9999999902");
+		deptList.add(vo1);
+		deptList.add(vo2);
+		vo.setDeptVoList(deptList);
+		HttpEntity<RoleVo> entity = new HttpEntity<>(vo);
+		restTemplate.exchange(host + "v1/dept/role", HttpMethod.PUT, entity,
+				new ParameterizedTypeReference<List<RoleVo>>() {});
+	}
+	
+	@Test
+	public void roleListTest(){
+		String url = host+"v1/dept/role/list";
+		ResponseEntity<PageInfo<RoleVo>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<PageInfo<RoleVo>>(){});
+		response.getBody();
+	}
+	
+	@Test
+	public void roleDetailTest(){
+		String url = host+"v1/dept/role/detail?id=9999999914";
+		ResponseEntity<RoleVo> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<RoleVo>(){});
+		response.getBody();
+	}
+}

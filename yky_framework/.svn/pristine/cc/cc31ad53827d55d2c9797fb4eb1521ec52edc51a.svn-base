@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.ykyframework</groupId>
+	<artifactId>framework-project</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<properties>
+		<!-- Dependency Versions -->
+		<dep.spring.version>4.2.6.RELEASE</dep.spring.version>
+		<dep.spring-security.version>4.1.0.RELEASE</dep.spring-security.version>
+		<dep.spring-session.version>1.2.1.RELEASE</dep.spring-session.version>
+		<dep.jackson.version>2.4.0</dep.jackson.version>
+		<dep.mybatis.version>3.2.8</dep.mybatis.version>
+		<dep.mybatis-spring.version>1.2.3</dep.mybatis-spring.version>
+		<dep.wink.version>1.4</dep.wink.version>
+		<dep.jaxb-api.version>2.2.12</dep.jaxb-api.version> <!-- wink 依赖的是 2.2 -->
+		<dep.jaxb-impl.version>2.2.11</dep.jaxb-impl.version> <!-- wink 依赖的是 2.2.1.1 -->
+		<dep.mysql-jdbc.version>5.1.37</dep.mysql-jdbc.version>
+		<dep.shiro.version>1.2.4</dep.shiro.version>
+
+
+		<dep.slf4j.version>1.7.12</dep.slf4j.version>
+		<dep.logback.version>1.0.9</dep.logback.version>
+
+		<!-- Plugin Versions -->
+
+		<!-- Project configuration -->
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<env.nexus.domain>https://develop.yikuyi.com:28443</env.nexus.domain> <!-- 私服库地址 -->
+		<argLine>-Dfile.encoding=UTF-8</argLine>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<url>${env.nexus.domain}/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>${env.nexus.domain}/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<dependencies>
+		<!-- <dependency> -->
+		<!-- <groupId>org.slf4j</groupId> -->
+		<!-- <artifactId>slf4j-simple</artifactId> -->
+		<!-- <version>${dep.slf4j.version}</version> -->
+		<!-- <optional>true</optional> -->
+		<!-- </dependency> -->
+
+		<!-- slf4j&logback相关 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${dep.slf4j.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${dep.logback.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<!-- logback表达式依赖此包 -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.codehaus.janino</groupId> -->
+<!-- 			<artifactId>janino</artifactId> -->
+<!-- 			<version>2.6.1</version> -->
+<!-- 			<optional>true</optional> -->
+<!-- 		</dependency> -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${dep.slf4j.version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>${dep.slf4j.version}</version>
+			<optional>true</optional>
+		</dependency>
+
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<scope>test</scope>
+			<version>1.3</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.1</version>
+					<configuration>
+						<source>${maven.compiler.source}</source> <!-- 源代码使用的开发版本 -->
+						<target>${maven.compiler.target}</target> <!-- 需要生成的目标class文件的编译版本 -->
+						<excludes>
+							<exclude>**/*.bak</exclude>
+						</excludes>
+
+						<meminitial>128m</meminitial>
+						<maxmem>512m</maxmem>
+						<!-- <fork>true</fork> -->
+						<showDeprecation>true</showDeprecation>
+						<compilerArgument>-Xlint:unchecked,deprecation,fallthrough,finally</compilerArgument>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+
+
+	<modules>
+		<module>framework-all</module>
+		<module>framework-mq</module>
+		<module>framework-test-support</module>
+<!-- 		<module>framework-demoweb</module> -->
+		<module>framework-aliyun</module>
+    <module>framework-web-cas-client</module>
+    <module>framework-model</module>
+    <module>framework-web</module>
+    <module>framework-data</module>
+    <module>framework-springboot</module>
+    <module>framework-springboot-client</module>
+  </modules>
+  
+  <profiles>
+		<profile>
+			<id>sonar</id>
+			<properties>
+				<env.type>dev</env.type>
+<!-- 				<sonar.jdbc.url>jdbc:mysql://192.168.1.254:3306/sonar?useUnicode=true&amp;characterEncoding=utf8&amp;rewriteBatchedStatements=true&amp;useConfigs=maxPerformance</sonar.jdbc.url> -->
+<!-- 				<sonar.jdbc.driver>com.mysql.jdbc.Driver</sonar.jdbc.driver> -->
+<!-- 				<sonar.jdbc.username>sonar</sonar.jdbc.username> -->
+<!-- 				<sonar.jdbc.password>sonar</sonar.jdbc.password> -->
+				<sonar.host.url>http://192.168.1.254:9000/sonarqube</sonar.host.url>
+				<sonar.jacoco.reportMissing.force.zero>true</sonar.jacoco.reportMissing.force.zero>
+				<argLine>-Xmx1024m</argLine>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>sonar-maven-plugin</artifactId>
+						<version>2.7.1</version>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<!-- Minimal supported version is 2.4 -->
+						<version>2.13</version>
+						<configuration>
+							<testFailureIgnore>true</testFailureIgnore>
+							<runOrder>random</runOrder>
+							<properties>
+								<property>
+									<name>listener</name>
+									<value>org.sonar.java.jacoco.JUnitListener</value>
+								</property>
+							</properties>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+
+			<dependencies>
+				<dependency>
+					<groupId>org.sonarsource.java</groupId>
+					<artifactId>sonar-jacoco-listeners</artifactId>
+					<version>3.8</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+</project>

@@ -1,0 +1,76 @@
+package com.yikuyi.party.customer.api.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.framework.springboot.model.LoginUser;
+import com.framewrok.springboot.web.RequestHelper;
+import com.yikuyi.party.contact.vo.MsgResultVo;
+import com.yikuyi.party.contact.vo.UserExtendVo;
+import com.yikuyi.party.contact.vo.UserVo;
+import com.yikuyi.party.customer.api.ICustomerSummeryResource;
+import com.yikuyi.party.customer.bll.CustomerSummeryManager;
+
+@RestController
+@RequestMapping("v1/customersummery")
+public class CustomerSummeryResource implements ICustomerSummeryResource {
+
+	@Autowired
+	private CustomerSummeryManager customerSummeryManager;
+
+	/**
+	 * 账户基本信息
+	 * 
+	 * @return
+	 * @since 2017年1月11日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value = "/summary", method = RequestMethod.GET)
+	public UserExtendVo accountSummary() {
+		String partyId = RequestHelper.getLoginUserId();
+		String loginId = RequestHelper.getLoginUser().getUsername();
+		return customerSummeryManager.getUserSummeryInfo(loginId, partyId);
+	}
+
+	/**
+	 * 修改密码
+	 * 
+	 * @param vo
+	 * @return
+	 * @since 2017年1月11日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value = "/password", method = RequestMethod.PUT)
+	public MsgResultVo changePassword(@RequestBody UserVo vo) {
+		String partyId = RequestHelper.getLoginUserId();
+		return customerSummeryManager.changePassword(partyId, vo);
+	}
+
+	/**
+	 * 校验原密码是否正确
+	 * 
+	 * @param password
+	 * @return
+	 * @since 2017年1月11日
+	 * @author tb.yumu@yikuyi.com
+	 */
+	@Override
+	@RequestMapping(value = "/password/checked", method = RequestMethod.PUT)
+	public MsgResultVo checkedOldPwd(@RequestParam(value = "password", required = true) String password) {
+		String partyId = RequestHelper.getLoginUserId();
+		return customerSummeryManager.checkedOldPassword(partyId, password);
+	}
+
+	@Override
+	@RequestMapping(method = RequestMethod.GET)
+	public UserExtendVo getUserLoginInfo() {
+		LoginUser user = RequestHelper.getLoginUser();
+		return customerSummeryManager.getUserLoginInfo(user);
+	}
+}
