@@ -1,6 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-	<PERSON PARTY_ID="1001" RELATION_STATUS_ID="REJECTED" LAST_NAME_LOCAL="111" LOGO_IMAGE_URL="www.baidu.com" />
-<!-- 	<PERSON PARTY_ID="9999999902" LOGO_IMAGE_URL="www.tengxun.com" /> -->
-<!-- 	<PERSON PARTY_ID="9999999903" LOGO_IMAGE_URL="www.taobao.com" /> -->
-</dataset> 

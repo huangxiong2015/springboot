@@ -1,4 +1,0 @@
-# Auto Configure
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.framework.springboot.config.RestExceptionHandlerConfig,\
-com.framework.springboot.config.DruidConfig

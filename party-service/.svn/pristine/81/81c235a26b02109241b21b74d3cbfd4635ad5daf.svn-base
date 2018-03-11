@@ -1,5 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-   <PARTY PARTY_ID="1" PARTY_TYPE_ID="PARTY_GROUP" PARTY_CODE="1" STATUS_ID="PARTY_ENABLED" IS_SYSTEM="1" />
-   <PARTY_GROUP PARTY_ID="1" GROUP_NAME="深圳市新蕾电子有限公司" DESCRIPTION="1" COMMENTS="1" LOGO_IMAGE_URL="1" />
-</dataset> 
