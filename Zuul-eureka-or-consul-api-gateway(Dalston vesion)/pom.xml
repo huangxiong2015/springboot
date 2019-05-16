@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.wanhui</groupId>
-	<artifactId>chapter5</artifactId>
+	<artifactId>Zuul-eureka-or-consul-api-gateway(Dalston vesion)</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>chapter6</name>
+	<name>Zuul-eureka-or-consul-api-gateway(Dalston vesion)</name>
 	<description>Demo project for Spring Boot</description>
 
 	<parent>
